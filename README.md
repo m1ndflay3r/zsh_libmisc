@@ -5,6 +5,9 @@ Some very powerful library functions for zsh.
 This is a collection of various utilities and functions packed into a one, neat little zsh library.
 
 
+This library is 100% self sufficient, and could theoretically operate with nothing but a linux kernel and static zsh.
+
+
 # zelfexec
 Arguably the star of the show, zelfexec is a much more powerful implementation of elfexec by abbat (https://github.com/abbat/elfexec)
 
