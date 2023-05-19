@@ -19,6 +19,9 @@ Written in a mixture of both C and pure zsh, this program is capable of executin
 differences to abbats' version: 
 
 
+- it's in a zsh library!
+
+
 - arg1 is no longer treated as a filepath for an executable instead of an argument (because why would it be when we can just run ./path/to/binary
 
 
@@ -28,4 +31,4 @@ differences to abbats' version:
 - arg0 can be spoofed (via the environment variable zELFSPOOF)
 
 
-
+- some misc. fixes for fringe use cases
