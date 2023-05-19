@@ -39,7 +39,7 @@ Below is a basic summary of the features and components of libmisc:
 
 
 
-    -- zelfexec    - highly powerful elfexec implementation
+    **--** zelfexec    - highly powerful elfexec implementation
     -- hexd        - lightweight hexdumper, with some extra features
      |-- hexdlf        - hexd, with large (infinite) filesize handling
      |-- chexd         - simple deflation-based hexdump compression program
