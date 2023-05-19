@@ -39,6 +39,7 @@ Below is a basic summary of the features and components of libmisc:
 
 
 
+    == libmiscinit : initialization program for libmisc
     == zelfexec    : highly powerful elfexec implementation
     == hexd        : lightweight hexdumper, with some extra features
      |-- hexdlf        : hexd, with large (infinite) filesize handling
