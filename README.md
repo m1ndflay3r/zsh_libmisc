@@ -1,7 +1,4 @@
 # zsh_libmisc
-Some very powerful library functions for zsh.
-
-
 This is a collection of various utilities and functions packed into a one, neat little zsh library.
 
 
