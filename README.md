@@ -57,3 +57,6 @@ Differences to abbats' version:
     command: fox-fr /path/to/busybox | zSTDIN="some text" zelfexec cat
 
     output: "some text"
+
+
+*requires linux > 3.17, and fexecve to be enabled and usable*
