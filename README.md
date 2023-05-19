@@ -12,11 +12,25 @@ To use libmisc, run the included build script like so:
 or
 
     ./build --static
+    
+    
+This will generate *libmisc.zwc* in the root of the source directory. Once this is done, add the following to your *.zshrc* :
+
+    fpath=(/path/to/source/directory/libmisc.zwc $fpath)
+    autoload libmiscinit
+    libmiscinit
+
+
+Once done, every subsequent zsh session will have the functions of libmisc available.
+
+
+Full documentation, including documentation on each individual feature of libmisc, is included in the *man* directory.
+
 --------------------------------------------------------------------------------------------------------------------------------
 
 
 ## zelfexec
-Arguably the star of the show, zelfexec is a much more powerful implementation of abbats' elfexec (https://github.com/abbat/elfexec).
+Arguably the star of the show (which is why it deserves a mention in the main README.md), zelfexec is a much more powerful implementation of abbats' elfexec (https://github.com/abbat/elfexec).
 
 
 Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is hilariously powerful. Many of libmisc's functions and utilities utilize this in their operation.
