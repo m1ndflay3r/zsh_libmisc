@@ -26,7 +26,6 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 
 Full documentation, including documentation on each individual feature of libmisc, is included in the *man* directory.
 
---------------------------------------------------------------------------------------------------------------------------------
 
 
 ## zelfexec
