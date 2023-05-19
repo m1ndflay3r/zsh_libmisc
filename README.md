@@ -32,3 +32,28 @@ Differences to abbats' version:
 
 
 - some misc. fixes for fringe use cases
+
+
+
+examples:
+
+
+  basic use:
+
+    command: fox-fr /path/to/busybox | zelfexec whoami
+
+    output: $USER
+
+
+  arg0 spoofing:
+
+    command: fox-fr /path/to/busybox | zELFSPOOF="whoami" zelfexec
+
+    output: $USER
+
+
+  child-process stdin handling:
+
+    command: fox-fr /path/to/busybox | zSTDIN="some text" zelfexec cat
+
+    output: "some text"
