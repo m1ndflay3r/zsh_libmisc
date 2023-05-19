@@ -9,14 +9,14 @@ This library is 100% self sufficient, and could theoretically operate with nothi
 
 
 # zelfexec
-Arguably the star of the show, zelfexec is a much more powerful implementation of elfexec (https://github.com/abbat/elfexec).
+Arguably the star of the show, zelfexec is a much more powerful implementation of abbats' elfexec (https://github.com/abbat/elfexec).
 
 
-Written in a mixture of both C and pure zsh, this program is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. Many of libmisc's functions utilize this in their operation.
+Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is hilariously powerful. Many of libmisc's functions and utilities utilize this software in their operation.
 
 
 
-differences to abbats' version: 
+Differences to abbats' version: 
 
 
 - it's in a zsh library!
