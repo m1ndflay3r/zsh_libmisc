@@ -35,10 +35,8 @@ Differences to abbats' version:
 
 ‎
 =
-examples:
+EXAMPLES:
 
-‎
-=
 
   basic use:
 
