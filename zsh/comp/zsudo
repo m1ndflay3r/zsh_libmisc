@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+zsudo() {
+  if which sudo &> /dev/null; then
+    sudo $@
+    return $?
+  else
+    print "warning: sudo not found. Cannot escalate privileges."
+    return 0
+  fi
+}

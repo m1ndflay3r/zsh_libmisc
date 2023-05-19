@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+zreadin() {
+  autoload fox
+  while IFS= noglob read -r -k1 -t3 -d '' -u0 ONEBYT3; do
+    zREADINVAR="$ONEBYT3"
+    break
+  done
+  if [ ! -z "$ONEBYT3" ]; then
+    zREADINVAR=$(fox)
+    zREADINVAR=""$ONEBYT3""$zREADINVAR""
+    fox <<(IFS= noglob print -nr "$zREADINVAR")
+    return 0
+  else
+    return 1
+  fi
+}

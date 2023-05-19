@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+fox-ec() {
+  autoload fox
+  if [ -z "$1" ]; then
+    return 1
+  else
+    fox <<(IFS= noglob print -nr "$@[@]")
+  fi
+}

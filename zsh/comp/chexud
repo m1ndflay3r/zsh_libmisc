@@ -1,0 +1,64 @@
+#!/usr/bin/env zsh
+chexud() {
+  #load modules
+  autoload fox
+  #fail printout
+  chexud_fail() {
+    print "Usage - hexd /path/to/file | chexd | chexud"
+  }
+  #fetch user input
+  if [ -z "$zCHEXUDWAITINDEF" ] || [ "$zCHEXUDWAITINDEF" = 0 ]; then
+    export zFOXT=33
+  else
+    unset zFOXT
+    unset zCHEXUDWAITINDEF
+  fi
+  CHEXUDIN="$(fox)"
+  CHEXUDINTEST="${CHEXUDIN: :5}"
+  if [ "$CHEXUDINTEST" = "error" ]; then
+    chexud_fail
+    return 1
+  fi
+  #create zero vars
+  unset ZERO4096
+  ZERO4096COUNT=0
+  until [ "$ZERO4096COUNT" -eq 4096 ]; do
+    if [ -z "$ZERO4096" ]; then
+      ZERO4096="0"
+    else
+      ZERO4096=""$ZERO4096"0"
+    fi
+    ZERO4096COUNT=$((ZERO4096COUNT+1))
+  done
+  ZERO3172=${ZERO4096: :3172}
+  ZERO2048=${ZERO4096: :2048}
+  ZERO1024=${ZERO2048: :1024}
+  ZERO512=${ZERO1024: :512}
+  ZERO256=${ZERO512: :256}
+  ZERO128=${ZERO256: :128}
+  ZERO64=${ZERO128: :64}
+  ZERO60=${ZERO64: :60}
+  ZERO32=${ZERO64: :32}
+  ZERO16=${ZERO32: :16}
+  ZERO8=${ZERO16: :8}
+  ZERO6=${ZERO8: :6}
+  ZERO4=${ZERO6: :4}
+  ZERO2=${ZERO4: :2}
+  CHEXUDIN=${CHEXUDIN//'@'/"$ZERO4096"}
+  CHEXUDIN=${CHEXUDIN//';'/"$ZERO3172"}
+  CHEXUDIN=${CHEXUDIN//'#'/"$ZERO2048"}
+  CHEXUDIN=${CHEXUDIN//'$'/"$ZERO1024"}
+  CHEXUDIN=${CHEXUDIN//'_'/"$ZERO512"}
+  CHEXUDIN=${CHEXUDIN//'&'/"$ZERO256"}
+  CHEXUDIN=${CHEXUDIN//'!'/"$ZERO128"}
+  CHEXUDIN=${CHEXUDIN//'?'/"$ZERO64"}
+  CHEXUDIN=${CHEXUDIN//':'/"$ZERO60"}
+  CHEXUDIN=${CHEXUDIN//'<'/"$ZERO32"}
+  CHEXUDIN=${CHEXUDIN//'>'/"$ZERO16"}
+  CHEXUDIN=${CHEXUDIN//')'/"$ZERO8"}
+  CHEXUDIN=${CHEXUDIN//'('/"$ZERO6"}
+  CHEXUDIN=${CHEXUDIN//'{'/"$ZERO4"}
+  CHEXUDIN=${CHEXUDIN//'}'/"$ZERO2"}
+  noglob printf '%s' "$CHEXUDIN"
+  return 0
+}

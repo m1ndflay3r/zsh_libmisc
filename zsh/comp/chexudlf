@@ -1,0 +1,94 @@
+#!/usr/bin/env zsh
+chexudlf() {
+  #load modules
+  autoload fox
+  autoload nrandom
+  autoload fox-fr
+  autoload zmkfifo
+  autoload zrm
+  #fail printout
+  chexudlf_fail() {
+    print "Usage - hexdlf /path/to/file | chexdlf | chexudlf"
+  }
+  #fetch user input
+  if [ -z "$zCHEXUDLFWAITINDEF" ] || [ "$zCHEXUDLFWAITINDEF" = 0 ]; then
+    while IFS= noglob read -k5 -t3 -d '' -u0 CHEXUDLFINTMP; do
+      CHEXUDLFIN="$CHEXUDLFINTMP"
+      break
+    done
+  else
+    while IFS= noglob read -k5 -d '' -u0 CHEXUDLFINTMP; do
+      CHEXUDLFIN="$CHEXUDLFINTMP"
+      break
+    done
+  fi
+  if [ -z "$CHEXUDLFIN" ]; then
+    chexudlf_fail
+    return 1
+  fi
+  #fifo setup
+  CHEXUDFIFO1="Ch"$(nrandom)"lF" &> /dev/null
+  CHEXUDFIFO2="Ch"$(nrandom)"lF" &> /dev/null
+  if [ -d "/tmp" ]; then
+    CHEXUDLFDIR='/tmp'
+  else
+    CHEXUDLFDIR=$HOME
+  fi
+  zmkfifo "$CHEXUDLFDIR/$CHEXUDFIFO1"
+  zmkfifo "$CHEXUDLFDIR/$CHEXUDFIFO2"
+  fox > "$CHEXUDLFDIR/$CHEXUDFIFO2" &|
+  (IFS= noglob print -rn "$CHEXUDLFIN" && fox-fr "$CHEXUDLFDIR/$CHEXUDFIFO2") > "$CHEXUDLFDIR/$CHEXUDFIFO1" &|
+  #create zero vars
+  unset ZERO4096
+  ZERO4096COUNT=0
+  until [ "$ZERO4096COUNT" -eq 4096 ]; do
+    if [ -z "$ZERO4096" ]; then
+      ZERO4096="0"
+    else
+      ZERO4096=""$ZERO4096"0"
+    fi
+    ZERO4096COUNT=$((ZERO4096COUNT+1))
+  done
+  ZERO3172=${ZERO4096: :3172}
+  ZERO2048=${ZERO4096: :2048}
+  ZERO1024=${ZERO2048: :1024}
+  ZERO512=${ZERO1024: :512}
+  ZERO256=${ZERO512: :256}
+  ZERO128=${ZERO256: :128}
+  ZERO64=${ZERO128: :64}
+  ZERO60=${ZERO64: :60}
+  ZERO32=${ZERO64: :32}
+  ZERO16=${ZERO32: :16}
+  ZERO8=${ZERO16: :8}
+  ZERO6=${ZERO8: :6}
+  ZERO4=${ZERO6: :4}
+  ZERO2=${ZERO4: :2}
+  CHEXUDLFOUTPARSE() {
+    CHEXUDLFOUT=${CHEXUDLFOUT//'@'/"$ZERO4096"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//';'/"$ZERO3172"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'#'/"$ZERO2048"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'$'/"$ZERO1024"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'_'/"$ZERO512"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'&'/"$ZERO256"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'!'/"$ZERO128"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'?'/"$ZERO64"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//':'/"$ZERO60"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'<'/"$ZERO32"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'>'/"$ZERO16"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//')'/"$ZERO8"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'('/"$ZERO6"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'{'/"$ZERO4"}
+    CHEXUDLFOUT=${CHEXUDLFOUT//'}'/"$ZERO2"}
+    noglob printf '%s' "$CHEXUDLFOUT"
+  }
+  while IFS= noglob read -r -k40960 -d '' -u0 CHEXUDLFOUT; do
+    CHEXUDLFOUTPARSE
+  done < <(fox-fr "$CHEXUDLFDIR/$CHEXUDFIFO1")
+  if [ ! -z "$CHEXUDLFOUT" ]; then
+    CHEXUDLFOUTPARSE
+  fi
+  zrm "$CHEXUDLFDIR/$CHEXUDFIFO1" &> /dev/null
+  zrm "$CHEXUDLFDIR/$CHEXUDFIFO2" &> /dev/null
+  unset CHEXUDLFOUT
+  return 0
+}

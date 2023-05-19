@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+hexudlf() {
+  #load modules
+  autoload fox
+  autoload fox-fr
+  autoload isfile
+  autoload nrandom
+  autoload zmkfifo
+  autoload zrm
+  #failure printout
+  hexudlf_fail() {
+    print "Usage: print -n <hex> | hexudlf"
+    print "       hexudlf <hex>"
+    print "       hexudlf /path/to/file"
+    print "       print -n 'file:/path/to/file' | hexudlf"
+  }
+  #fetch user input
+  if [ -z "$zHEXUDLFWAITINDEF" ] || [ "$zHEXUDLFWAITINDEF" = 0 ]; then
+    while IFS= noglob read -r -k5 -t3 -d '' -u0 HEXUDLFINREAD5; do
+      HEXUDLFIN="$HEXUDLFINREAD5"
+      break
+    done
+  else
+    while IFS= noglob read -r -k5 -d '' -u0 HEXUDLFINREAD5; do
+      HEXUDLFIN="$HEXUDLFINREAD5"
+      break
+    done
+  fi
+  if [ -z "$HEXUDLFIN" ]; then
+    if [ -z "$@" ]; then
+      hexudlf_fail
+      return 1
+    else
+      HEXUDLFIN="$@"
+      if isfile "$HEXUDLFIN"; then
+        fox-fr "$HEXUDLFIN" | hexudlf
+        return $?
+      fi
+    fi
+  elif [ "$HEXUDLFIN" = 'file:' ]; then
+    HEXUDLFIN=""$(fox)""
+    if isfile "$HEXUDLFIN"; then
+      fox-fr "$HEXUDLFIN" | hexudlf
+      return $?
+    else
+      hexudlf_fail
+      return 1
+    fi
+  fi
+  #fifo setup
+  HEXUDLFFIFO="$(nrandom)" &> /dev/null
+  HEXUDLFFIFO2="$(nrandom)" &> /dev/null
+  if [ -d "/tmp" ]; then
+    HEXUDLFDIR='/tmp'
+  else
+    HEXUDLFDIR=$HOME
+  fi
+  zmkfifo "$HEXUDLFDIR/$HEXUDLFFIFO"
+  zmkfifo "$HEXUDLFDIR/$HEXUDLFFIFO2"
+  fox > "$HEXUDLFDIR/$HEXUDLFFIFO2" &|
+  (IFS= noglob print -rn "$HEXUDLFIN" && fox-fr "$HEXUDLFDIR/$HEXUDLFFIFO2") > "$HEXUDLFDIR/$HEXUDLFFIFO" &|
+  #perform hexdump reversal
+  while IFS= noglob read -r -k2 -d '' -u0 HEXUDLFOUT; do
+    print -n "\x"$HEXUDLFOUT""
+  done < <(fox-fr "$HEXUDLFDIR/$HEXUDLFFIFO")
+  zrm "$HEXUDLFDIR/$HEXUDLFFIFO"
+  zrm "$HEXUDLFDIR/$HEXUDLFFIFO2"
+  return 0
+}

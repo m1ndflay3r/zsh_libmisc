@@ -1,0 +1,64 @@
+#!/usr/bin/env zsh
+cb64d() {
+  #load modules
+  autoload fox
+  #fail printout
+  cb64d_fail() {
+    print "Usage - b64d /path/to/file | cb64d"
+  }
+  #fetch user input
+  if [ -z "$zCB64DWAITINDEF" ] || [ "$zCB64DWAITINDEF" = 0 ]; then
+    export zFOXT=33
+  else
+    unset zFOXT
+    unset zCB64DWAITINDEF
+  fi
+  CB64DIN="$(fox)"
+  CB64DINTEST="${CB64DIN: :5}"
+  if [ "$CB64DINTEST" = "error" ]; then
+    cb64d_fail
+    return 1
+  fi
+  #create zero vars
+  unset A4096
+  A4096COUNT=0
+  until [ "$A4096COUNT" -eq 4096 ]; do
+    if [ -z "$A4096" ]; then
+      A4096="A"
+    else
+      A4096=""$A4096"A"
+    fi
+    A4096COUNT=$((A4096COUNT+1))
+  done
+  A3172=${A4096: :3172}
+  A2048=${A4096: :2048}
+  A1024=${A2048: :1024}
+  A512=${A1024: :512}
+  A256=${A512: :256}
+  A128=${A256: :128}
+  A64=${A128: :64}
+  A60=${A64: :60}
+  A32=${A64: :32}
+  A16=${A32: :16}
+  A8=${A16: :8}
+  A6=${A8: :6}
+  A4=${A6: :4}
+  A2=${A4: :2}
+  CB64DIN=${CB64DIN//"$A4096"/'@'}
+  CB64DIN=${CB64DIN//"$A3172"/';'}
+  CB64DIN=${CB64DIN//"$A2048"/'#'}
+  CB64DIN=${CB64DIN//"$A1024"/'$'}
+  CB64DIN=${CB64DIN//"$A512"/'_'}
+  CB64DIN=${CB64DIN//"$A256"/'&'}
+  CB64DIN=${CB64DIN//"$A128"/'!'}
+  CB64DIN=${CB64DIN//"$A64"/'?'}
+  CB64DIN=${CB64DIN//"$A60"/':'}
+  CB64DIN=${CB64DIN//"$A32"/'<'}
+  CB64DIN=${CB64DIN//"$A16"/'>'}
+  CB64DIN=${CB64DIN//"$A8"/')'}
+  CB64DIN=${CB64DIN//"$A6"/'('}
+  CB64DIN=${CB64DIN//"$A4"/'{'}
+  CB64DIN=${CB64DIN//"$A2"/'}'}
+  noglob printf '%s' "$CB64DIN"
+  return 0
+}

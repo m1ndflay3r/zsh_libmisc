@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+revstr() {
+  zREVSTR="$@"
+  unset zREVSTROUT
+  while IFS= read -r -k1 -d '' -u0 char; do
+    zREVSTROUT=""$char""$zREVSTROUT""
+  done < <(printf '%s'"$zREVSTR")
+  printf '%s'"$zREVSTROUT"
+  return 0
+}

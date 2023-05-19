@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+zfile() {
+  zmodload zsh/system
+  FILETARGET="$@"
+  if [ -h "$FILETARGET" ]; then
+    print ""$FILETARGET": Symbolic link"
+  elif [ -b "$FILETARGET" ]; then
+    print ""$FILETARGET": Block special"
+  elif [ -S "$FILETARGET" ]; then
+    print ""$FILETARGET": Socket"
+  elif [ -c "$FILETARGET" ]; then
+    print ""$FILETARGET": Character special"
+  elif [ -p "$FILETARGET" ]; then
+    print ""$FILETARGET": FIFO"
+  elif [ -x "$FILETARGET" ]; then
+    print ""$FILETARGET": Executable"
+  elif [ -d "$FILETARGET" ]; then
+    print ""$FILETARGET": Directory"
+  elif [ -f "$FILETARGET" ]; then
+    print ""$FILETARGET": Regular file"
+  else
+    print ""$FILETARGET": Unknown file type, or file does not exist"
+    return 1
+  fi
+}

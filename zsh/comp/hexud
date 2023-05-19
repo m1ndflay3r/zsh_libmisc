@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+hexud() {
+  #load modules
+  autoload fox
+  autoload fox-fr
+  autoload isfile
+  #failure printout
+  hexud_fail() {
+    print "Usage: print -n <hex> | hexud"
+    print "       hexud <hex>"
+    print "       hexud /path/to/file"
+    print "       print -n 'file:/path/to/file' | hexud"
+  }
+  #fetch user input
+  if [ -z "$zHEXUDWAITINDEF" ] || [ "$zHEXUDWAITINDEF" = 0 ]; then
+    export zFOXT=3
+  else
+    unset zFOXT
+    unset zHEXUDWAITINDEF
+  fi
+  HEXUDIN="$(fox)"
+  HEXUDINTEST=${HEXUDIN: 5}
+  if [ "$HEXUDINTEST" = "error" ]; then
+    if [ -z "$@" ]; then
+      hexud_fail
+      return 1
+    else
+      HEXUDIN="$@"
+      if isfile "$HEXUDIN"; then
+        HEXUDIN="$(fox-fr "$HEXUDIN")"
+      fi
+    fi
+  elif [ "$HEXUDINTEST" = 'file:' ]; then
+    HEXUDIN=${HEXUDIN:5}
+    if isfile "$HEXUDIN"; then
+      HEXUDIN="$(fox-fr "$HEXUDIN")"
+    else
+      hexud_fail
+      return 1
+    fi
+  fi
+  #perform hexdump reversal
+  while IFS= noglob read -r -k2 -d '' -u0 HEXUDOUT; do
+    print -n "\x"$HEXUDOUT""
+  done < <(noglob printf '%s' "$HEXUDIN")
+  return 0
+}

@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+nullbyte() {
+  OP="$@"
+  if [ -z "$OP" ]; then
+    OP=1
+  fi
+  NullCOUNT=0
+  until [ "$NullCOUNT" -ge "$OP" ]; do
+    printf "%s""\x00"
+    NullCOUNT=$((NullCOUNT+1))
+  done
+  return 0
+}

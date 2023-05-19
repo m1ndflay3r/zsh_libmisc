@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+nrandom() {
+  unset NRAND
+  unset NRANDVAR
+  unset NRANDWORKING
+  NRANDCOUNT=0
+  exec 5<&-
+  exec 5< /dev/random
+  while IFS= noglob read -r -k1 -u5 NRAND; do
+    NRANDWORKING=$(printf "%02x" "'$NRAND")
+    NRANDVAR="$(echo -n $((16#$NRANDWORKING)))" &> /dev/null
+    print -n "$NRANDVAR"
+    if [ "$NRANDCOUNT" = 3 ]; then
+      break
+    else
+      NRANDCOUNT=$((NRANDCOUNT+1))
+    fi
+  done
+  exec 5<&-
+  return 0
+}

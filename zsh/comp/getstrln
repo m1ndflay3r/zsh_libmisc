@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+getstrln() {
+  OP="$@"
+  OPLN=0
+  while IFS= noglob read -r -k1 -d '' -u0 character; do
+    OPLN=$((OPLN+1))
+  done < <(printf "%s""$OP")
+  printf "%s\n" $OPLN
+  return 0
+}

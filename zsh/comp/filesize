@@ -1,0 +1,54 @@
+#!/usr/bin/env zsh
+filesize() {
+  autoload isfile
+  autoload ztat
+  autoload blep
+  OPFUNC="$@[1]"
+  OP="$@[2]"
+  if [ -z "$OPFUNC" ]; then
+    return 1
+  fi
+  if [ -z "$OP" ] && [ ! -z "$OPFUNC" ]; then
+    OP="$OPFUNC"
+    OPFUNC='-b'
+  fi
+  if ! isfile "$OP"; then
+    print "$OP not found in current dir"
+    return 1
+  fi
+  SIZECOUNT="$(ztat "$OP" | zBLEPNOHIGHLIGHT=1 blep "Size")"
+  SIZECOUNT=${SIZECOUNT//"bytes"/''}
+  SIZECOUNT=${SIZECOUNT//"Size : "/''}
+  SIZECOUNT=${SIZECOUNT//' '/''}
+  zREVERSEABOVE() {
+    SIZECOUNT=""$SIZECOUNT".0"
+  }
+  if [ "$OPFUNC" = -b ]; then
+    print "$SIZECOUNT"
+  elif [ "$OPFUNC" = -k ]; then
+    zREVERSEABOVE
+    print $((SIZECOUNT/1024.0))
+  elif [ "$OPFUNC" = -m ]; then
+    zREVERSEABOVE
+    SIZECOUNT=$((SIZECOUNT/1024.0))
+    print $((SIZECOUNT/1024.0))
+  elif [ "$OPFUNC" = -g ]; then
+    zREVERSEABOVE
+    SIZECOUNT=$((SIZECOUNT/1024.0))
+    SIZECOUNT=$((SIZECOUNT/1024.0))
+    print $((SIZECOUNT/1024.0))
+  elif [ "$OPFUNC" = -h ]; then
+    SIZECOUNT=$(([#16]$SIZECOUNT))
+    SIZECOUNT=${SIZECOUNT:3}
+    print $SIZECOUNT
+  elif [ "$OPFUNC" = -o ]; then
+    SIZECOUNT=$(([#8]$SIZECOUNT))
+    SIZECOUNT=${SIZECOUNT:2}
+    print $SIZECOUNT
+  elif [ "$OPFUNC" = -B ]; then
+    SIZECOUNT=$(([#2]$SIZECOUNT))
+    SIZECOUNT=${SIZECOUNT:2}
+    print $SIZECOUNT
+  fi
+  return 0
+}

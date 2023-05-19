@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+zzsh() {
+  autoload libmiscinit
+  libmiscinit
+  autoload zstat
+  if [ -z "$USER" ]; then
+    USER=unknown
+  fi
+  if [ -z "$HOSTNAME" ]; then
+    HOSTNAME=localhost
+  fi
+  while true; do
+    print -n "["$USER"@"$HOSTNAME"] >  "
+    ZZSH=$(read -e " ")
+    print "$ZZSH"
+    if [ ! -z "ZZSH" ]; then
+      eval $ZZSH
+    fi
+  done
+  return 0
+}

@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+isyes() {
+  if [ ! -z "$1" ]; then
+    echo -n "$1  "
+    ANSWER=$(read -n dANSWER && echo $dANSWER)
+  else
+    ANSWER=$(read -n dANSWER && echo $dANSWER)
+  fi
+  if [ -z "$ANSWER" ]; then
+    if [ -z "$DEFINVERT" ] || [ "$DEFINVERT" = 0 ]; then
+      ANSWER="y"
+    else
+      ANSWER="n"
+      unset DEFINVERT
+    fi
+  fi
+  if [ $ANSWER = y ] || [ $ANSWER = Y ] || [ $ANSWER = yes ] || [ $ANSWER = Yes ] || [ $ANSWER = YES ]; then
+    yes=0  && return 0
+  else
+    yes=1  && return 1
+  fi
+}

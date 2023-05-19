@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+zzcat() {
+  set -o MULTIBYTE
+  ZZCAT="$@"
+  if [ -z "$ZZCAT" ]; then
+    read -u0 ZZCAT
+    if [ -z "$ZZCAT" ]; then
+      return 1
+    else
+      noglob printf '%s' "$ZZCAT"
+      return 0
+    fi
+  elif ! isfile $ZZCAT; then
+    noglob printf '%s' "$ZZCAT"
+    return 0
+  fi
+  exec 9<&-
+  exec 9< $ZZCAT
+  while IFS= noglob read -r -k1 -d '' -u9 ZZZCAT; do
+    noglob printf '%s' "$ZZZCAT"
+  done
+  exec 9<&-
+  return 0
+}

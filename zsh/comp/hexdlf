@@ -1,0 +1,115 @@
+#!/usr/bin/env zsh
+hexdlf() {
+  #load modules
+  autoload isfile
+  autoload fox
+  autoload fox-fr
+  autoload getstrln
+  autoload nrandom
+  autoload zmkfifo
+  autoload zrm
+  #fail printout
+  hexdlf_fail() {
+    print "Usage: hexdlf <string>"
+    print "       hexdlf /path/to/file"
+    print "       print -n <string> | hexdlf"
+    print "       print -n 'file:/path/to/file' | hexdlf"
+  }
+  #fetch user input
+  TARGGY="$@"
+  if [ -z "$TARGGY" ]; then
+    if [ -z "$zHEXDLFWAITINDEF" ] || [ "$zHEXDLFWAITINDEF" = 0 ]; then
+      while IFS= noglob read -r -k5 -t3 -d '' -u0 HEXDLFINREAD5; do
+        TARGGY="$HEXDLFINREAD5"
+        break
+      done
+    else
+      while IFS= noglob read -r -k5 -d '' -u0 HEXDLFINREAD5; do
+        TARGGY="$HEXDLFINREAD5"
+        break
+      done
+    fi
+    if [ -z "$TARGGY" ]; then
+      hexdlf_fail
+      return 1
+    elif [ "$TARGGY" = 'file:' ]; then
+      TARGGY="$(fox)"
+      if isfile "$TARGGY"; then
+        fox-fr "$TARGGY" | hexdlf
+        return $?
+      else
+        hexdlf_fail
+        return 1
+      fi
+    fi
+  elif isfile "$TARGGY"; then
+    fox-fr "$TARGGY" | hexdlf
+    return $?
+  fi
+  #fifo setup
+  HEXDLFFIFO="xx"$(nrandom)"xx" &> /dev/null
+  HEXDLFFIFO2="xx"$(nrandom)"xx" &> /dev/null
+  if [ -d "/tmp" ]; then
+    HEXDLFDIR='/tmp'
+  else
+    HEXDLFDIR=$HOME
+  fi
+  zmkfifo "$HEXDLFDIR/$HEXDLFFIFO"
+  zmkfifo "$HEXDLFDIR/$HEXDLFFIFO2"
+  fox > "$HEXDLFDIR/$HEXDLFFIFO2" &|
+  (IFS= noglob print -rn "$TARGGY" && fox-fr "$HEXDLFDIR/$HEXDLFFIFO2") > "$HEXDLFDIR/$HEXDLFFIFO" &|
+  #perform hexdump, store output to variable
+  set +o MULTIBYTE
+  HEXDLF_BASE() {
+    while IFS= noglob read -r -k1 -d '' -u0 HEXDLFWORKING; do
+      printf "%02x" "'$HEXDLFWORKING"
+    done < <(fox-fr "$HEXDLFDIR/$HEXDLFFIFO")
+  }
+  hexdlf_cleaner() {
+    zrm "$HEXDLFDIR/$HEXDLFFIFO" &> /dev/null
+    zrm "$HEXDLFDIR/$HEXDLFFIFO2" &> /dev/null
+  }
+  #if no opt flags set (except for zHEX36D), print hexdump as-is
+  if [ "$zHEXXD" = 0 ]; then
+    unset zHEXXD
+  fi
+  if [ "$zHEXDSH" = 0 ]; then
+    unset zHEXDSH
+  fi
+  if [ -z "$zHEXXD" ] && [ -z "$zHEXDSH" ]; then
+    HEXDLF_BASE
+    HEXDLFRET=$?
+    hexdlf_cleaner
+    return $HEXDLFRET
+  #if flag zHEXXD is set, format hexdump to mimic `xxd -p`
+  elif [ -z "$zHEXDSH" ]; then
+    unset HEXDLF_BASE1
+    while IFS= noglob read -r -k60 -d '' -u0 HEXDLF_BASE1; do
+      IFS= noglob print -nr "$HEXDLF_BASE1"
+      print
+    done < <(HEXDLF_BASE)
+    if [ ! -z "$HEXDLF_BASE1" ]; then
+      IFS= noglob print -nr "$HEXDLF_BASE1"
+      print
+      unset HEXDLF_BASE1
+    fi
+    unset zHEXXD
+    hexdlf_cleaner
+    return 0
+  #if flag zHEXDSH is set, print hexdump in shell format `\x00\x00...`
+  else
+    unset HEXDLF_BASE1
+    while IFS= noglob read -r -k2 -d '' -u0 HEXDLF_BASE1; do
+      print -rn '\x'
+      IFS= noglob print -rn "$HEXDLF_BASE1"
+    done < <(HEXDLF_BASE)
+    if [ ! -z "$HEXDLF_BASE1" ]; then
+      print -rn '\x'
+      IFS= noglob print -rn "$HEXDLF_BASE1"
+      unset HEXDLF_BASE1
+    fi
+    unset zHEXDLFSH
+    hexdlf_cleaner
+    return 0
+  fi
+}

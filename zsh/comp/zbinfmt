@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+zbinfmt() {
+  zmodload zsh/system
+  autoload isyes
+  echo -n "File extension: "
+  read extension
+  echo -n "Interpreter path: "
+  read interpreter
+  if isyes "Register extension "$extension" as "$interpreter"? (Y/n)"; then
+    fd=$(sys_open "/proc/sys/fs/binfmt_misc/register" O_WRONLY)
+    if (( fd >= 0 )); then
+      sys_write $fd ":$interpreter:E::${extension}:$interpreter\n"
+      echo "Successfully registered $interpreter as the interpreter for files with the $extension extension."
+    fi
+    sys_close $fd
+    return 0
+  else
+    echo "Abort"
+    return 1
+  fi
+}

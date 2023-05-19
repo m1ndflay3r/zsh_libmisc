@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+chkvldint() {
+  OP=$@
+  zVALID=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9')
+  while read -k1 -u0 character; do
+    FLAGGY=0
+    for i in $=zVALID; do
+    if printf "%s\n" $character | grep $i &> /dev/null; then
+      FLAGGY=1
+      break
+    else
+      FLAGGY=0
+    fi
+    done
+    if [ $FLAGGY = 0 ]; then
+      return 1
+    else
+      true
+    fi
+  done < <(printf "%s" $OP)
+}

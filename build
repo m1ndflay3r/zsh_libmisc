@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+BUILDOP="$@[1]"
+
+rm -rf ./*.zwc
+if ls -a libmisc &> /dev/null; then
+  rm -rf libmisc*
+fi
+
+if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
+  zcompile -MU libmisc zsh/comp/*
+elif [ "$BUILDOP" = --static ]; then
+  echo -n > libmisc
+  echo '#!/usr/bin/env zsh' >> libmisc
+  cat zsh/comp/* >> libmisc
+  zcompile -RU libmisc
+fi

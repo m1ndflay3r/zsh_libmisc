@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+hexec() {
+  zmodload zsh/system
+  autoload isfile
+  autoload hexud
+  autoload fox-fr
+  autoload fox
+  autoload zelfexec
+  if [ ! -z "$@" ]; then
+    if isfile "$@"; then
+      fox-fr $@ | hexud | zelfexec
+    else
+      fox-ec $@ | hexud | zelfexec
+    fi
+    return $?
+  else
+    if [ -z "$zHEXECWAITINDEF" ] || [ "$zHEXECWAITINDEF" = 0 ]; then
+      export zFOXT=3
+    else
+      unset zFOXT
+      unset zHEXECWAITINDEF
+    fi
+    fox | hexud | zelfexec
+    return $?
+  fi
+}

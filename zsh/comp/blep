@@ -1,0 +1,65 @@
+#!/usr/bin/env zsh
+blep() {
+  #load modules
+  autoload fox
+  autoload getstrln
+  autoload ztput
+  #fail printout
+  blep_fail() {
+    print "Usage: print \"some text\" | blep arg1"
+  }
+  #fetch user input
+  unset BLEPREADIN
+  if [ -z "$zBLEPWAITINDEF" ] || [ "$zBLEPWAITINDEF" = 0 ]; then
+    export zFOXT=3
+  else
+    unset zFOXT
+    unset zBLEPWAITINDEF
+  fi
+  BLEPREADIN="$(fox)"
+  BLEPREADINTEST=${BLEPREADIN: :5}
+  if [ "$BLEPREADINTEST" = "error" ]; then
+    blep_fail
+    return 1
+  fi
+  if [ -z "$1" ]; then
+    blep_fail
+    return 1
+  else
+    BLEPARG="$1"
+  fi
+  BLEPRET=1
+  BLEPARGLN="$(getstrln "$BLEPARG")"
+  IFS=$'\n'
+  for BLEPREADIN2 in $=BLEPREADIN; do
+    BLEPREADIN3="$BLEPREADIN2"
+    while true; do
+      MATCHFOUND=0
+      while IFS= noglob read -r -k$BLEPARGLN -d '' -u0 BLEPOUT; do
+        if [ "$BLEPARG" = "$BLEPOUT" ]; then
+          MATCHFOUND=1
+          BLEPRET=0
+          break
+        fi
+      done < <(noglob printf '%s' "$BLEPREADIN2")
+      BLEPREADIN2=${BLEPREADIN2:1}
+      if [ -z "$BLEPREADIN2" ]; then
+        break
+      fi
+      if [ "$MATCHFOUND" = 1 ]; then
+        break
+      fi
+    done
+    if [ "$MATCHFOUND" = 1 ]; then
+      if [ -z "$zBLEPNOHIGHLIGHT" ]; then
+        BLEPREADINSWAP=""$(ztput 6)""$BLEPARG""$(ztput reset)""
+        BLEPREADIN3=${BLEPREADIN3//"$BLEPARG"/"$BLEPREADINSWAP"}
+        noglob printf '%s\n' "$BLEPREADIN3"
+      else
+        noglob printf '%s\n' "$BLEPREADIN3"
+      fi
+    fi
+  done
+  unset IFS
+  return $BLEPRET
+}

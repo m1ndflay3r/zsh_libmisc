@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+load64() {
+  #load modules
+  autoload zelfexec
+  autoload fox
+  autoload b64ud
+  autoload trandom
+  #fetch user input, fail if empty
+  if [ -z "$zLOAD64WAITINDEF" ] || [ "$zLOAD64WAITINDEF" = 0 ]; then
+    export zFOXT=33
+  else
+    unset zFOXT
+    unset zLOAD64WAITINDEF
+  fi
+  zLOAD64IN="$(fox)"
+  zLOAD64INTEST=${zLOAD64IN: :5}
+  if [ "$zLOAD64INTEST" = "error" ]; then
+    print "Usage: print <b64> | load64"
+    return 1
+  fi
+  #pipe user input to b64ud, store result in random variable
+  zLOADHOLD1='export '
+  zLOADHOLD2="$(trandom)"
+  zLOADHOLD3='="$(IFS= noglob print -rn "$zLOAD64IN" | b64ud)"'
+  zLOADHOLD=""$zLOADHOLD1""$zLOADHOLD2""$zLOADHOLD3""
+  eval $zLOADHOLD || return 1
+  #print random variable name
+  print "$zLOADHOLD2"
+  return 0
+}

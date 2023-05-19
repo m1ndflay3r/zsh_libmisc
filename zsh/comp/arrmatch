@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+arrmatch() {
+  for i in ${@:2}; do
+    if [ "$1" = "$i" ]; then
+      return 0
+    else
+      false
+    fi
+  done
+}

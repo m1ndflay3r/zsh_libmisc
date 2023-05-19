@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+trandom() {
+  autoload nrandom
+  TRCHARS=('a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' 'K' 'L' 'M' 'N' 'O' 'P' 'Q' 'R' 'S' 'T' 'U' 'V' 'W' 'X' 'Y' 'Z')
+  genrandchar() {
+    TRNUM="$(nrandom)" &> /dev/null
+    TRNUM="${TRNUM: :2}"
+    if [ "$TRNUM" -gt 52 ]; then
+      until [ "$TRNUM" -le 52 ]; do
+        TRNUM=$((TRNUM/2))
+      done
+    fi
+    print -n "$TRCHARS[$TRNUM]"
+  }
+  TRCOUNT=0
+  until [ "$TRCOUNT" = 10 ]; do
+    genrandchar
+    TRCOUNT=$((TRCOUNT+1))
+  done
+  print
+  return 0
+}
