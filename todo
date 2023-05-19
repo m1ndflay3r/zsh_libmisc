@@ -1,0 +1,10 @@
+zls is a bit buggy
+add ls -l equiv (easily doable now that ztat is more or less complete)
+fox has some duplicate code
+fail printout for omnibin if called explicitly
+update template.zsh in zsh/, and create fifo version
+continue work on blep
+*b64* large file versions
+ztput background handling
+more testing on aarch64
+moar features!
