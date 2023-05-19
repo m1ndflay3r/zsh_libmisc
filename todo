@@ -6,5 +6,6 @@ update template.zsh in zsh/, and create fifo version
 continue work on blep
 *b64* large file versions
 ztput background handling
+build actual sudo implementation into zsudo
 more testing on aarch64
 moar features!
