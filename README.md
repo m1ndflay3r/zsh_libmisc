@@ -41,11 +41,13 @@ Below is a basic summary of the components of libmisc:
 =
 
 
-    - zelfexec - a very powerful elfexec implementation
-    - hexd     - a lightweight hexdumper, with some extra features
-     |-- hexdlf     - hexd, with large (infinite) filesize handling
-    - hexud    - a lightweight hexdump reversal program, with some extra features
-     |-- hexudlf    - hexud, with large (infinite) filesize handling
+    - zelfexec    - highly powerful elfexec implementation
+    - hexd        - lightweight hexdumper, with some extra features
+     |-- hexdlf        - hexd, with large (infinite) filesize handling
+    - hexud       - lightweight hexdump reversal program, with some extra features
+     |-- hexudlf       - hexud, with large (infinite) filesize handling
+    - b64d        - simple base64 dumper, with minimal extra features
+    - b64ud       - simple base64 dump reveral program, with minimal extra features
 --------------------------------------------------------------------------------------------
 ‎
 =
