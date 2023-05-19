@@ -34,10 +34,13 @@ Differences to abbats' version:
 - some misc. fixes for fringe use cases
 
 
- =
+==========
 
 
 examples:
+
+
+==========
 
 
   basic use:
