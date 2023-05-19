@@ -49,7 +49,7 @@ Below is a basic summary of the components of libmisc:
     -- hexud       - lightweight hexdump reversal program, with some extra features
      |-- hexudlf       - hexud, with large (infinite) filesize handling
      |-- chexud        - reversal program for compressed hexdumps created with chexd
-       |-- chexudlf        -- chexud, with large (infinite) filesize handling
+       |-- chexudlf        - chexud, with large (infinite) filesize handling
     -- b64d        - simple base64 dumper, with minimal extra features
     -- b64ud       - simple base64 dump reveral program, with minimal extra features
 --------------------------------------------------------------------------------------------
