@@ -35,7 +35,7 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 ‎
 =
 ## -    features    -
-Below is a basic summary of the components of libmisc:
+Below is a basic summary of the features and components of libmisc:
 
 
 
