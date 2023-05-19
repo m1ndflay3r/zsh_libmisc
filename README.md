@@ -22,7 +22,7 @@ Differences to abbats' version:
 - it's in a zsh library!
 
 
-- arg1 is no longer treated as a filepath for an executable instead of an argument (because why would it be when we can just run ./path/to/binary)
+- arg1 is no longer treated as a filepath for an executable instead of an argument (because why would it be when we can just run ./path/to/binary or even use cat (or the libmisc builtin fox-fr) like so: fox-fr /path/to/binary | zelfexec)
 
 
 - stdin of the child process can be handled separately from stdin of zelfexec (via the environment variable zSTDIN)
