@@ -77,6 +77,7 @@ Below is a basic summary of the features and components of libmisc:
     == zchgrp      : minimal chgrp clone
     == zchown      : minimal chown clone
     == zchmod      : minimal chmod clone
+    == nullbyte    : print N number of null bytes (default 1)
     == zls         : ls -a clone (wip)
     == zsudo       : sudo implementation (wip)
     == blep        : grep implementation (wip)
