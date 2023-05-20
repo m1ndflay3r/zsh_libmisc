@@ -37,7 +37,7 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 ## -    features    -
 Below is a basic summary of the features and components of libmisc:
 
-
+###utilities
 
     == libmiscinit : initialization tasks for libmisc
     == zelfexec    : highly powerful elfexec implementation
@@ -76,7 +76,7 @@ Below is a basic summary of the features and components of libmisc:
 ‎
 =
 ## -    zelfexec    -
-Arguably the star of the show (which is why it deserves its own section in README.md), zelfexec is a much more powerful implementation of abbats' elfexec (https://github.com/abbat/elfexec).
+Arguably the star of the show (which is why it gets its own section in README.md), zelfexec is a much more powerful implementation of abbats' elfexec (https://github.com/abbat/elfexec).
 
 
 Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is hilariously powerful. Many of libmisc's functions and utilities utilize this in their operation.
