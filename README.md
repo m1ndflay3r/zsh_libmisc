@@ -37,7 +37,7 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 ## -    features    -
 Below is a basic summary of the features and components of libmisc:
 
-###utilities
+### utilities
 
     == libmiscinit : initialization tasks for libmisc
     == zelfexec    : highly powerful elfexec implementation
