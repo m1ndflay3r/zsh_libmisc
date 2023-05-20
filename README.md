@@ -58,7 +58,7 @@ Below is a basic summary of the features and components of libmisc:
      |-- fox-fr        : minimal *cat* implementation (fileread)
      |-- fox-ec        : minimal *cat* implementation (args)
     == zzcat       : minimal *cat* implementation (pure zsh version)
-    == filesize    : get byte-precise size of a given file in bin, oct, dec, or hex format
+    == filesize    : byte-precise file size info in bin, oct, dec, or hex format
     == zbinfmt     : register an interpreter by file extension
     == ztput       : minimal *tput* implementation
     == ctext       : user-friendly ztput wrapper
