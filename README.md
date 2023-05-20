@@ -59,7 +59,7 @@ Below is a basic summary of the features and components of libmisc:
      |-- fox-fr        : minimal *cat* implementation (fileread)
      |-- fox-ec        : minimal *cat* implementation (args)
      |-- zzcat         : minimal *cat* implementation (pure zsh version)
-    == nrandom     : a consistently behaving version of "echo $RANDOM"
+    == nrandom     : a consistently-behaving version of "echo $RANDOM"
     == trandom     : generate a random ASCII string
     == revstr      : outputs input string, backwards
     == filesize    : byte-precise file size info in bin, oct, dec, or hex format
