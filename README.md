@@ -81,6 +81,14 @@ Below is a basic summary of the features and components of libmisc:
     == zls         : ls -a clone (wip)
     == zsudo       : sudo implementation (wip)
     == blep        : grep implementation (wip)
+### functions
+ 
+    == chkvldint   : return 0 if input is valid int, or 1 if not
+    == getstrln    : returns length of input string
+### pet-peeve solvers, and other mostly-redundant things
+    
+    == arrmatch    : lazy array matching
+    == 
 --------------------------------------------------------------------------------------------
 ‎
 =
