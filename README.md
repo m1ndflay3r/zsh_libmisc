@@ -90,7 +90,7 @@ Below is a basic summary of the features and components of libmisc:
 ### pet-peeve solvers, and other mostly-redundant things
     
     == arrmatch    : lazy array matching
-    == 
+    == isfile      : return 0 if anything whatsoever exists at given filepath
 --------------------------------------------------------------------------------------------
 ‎
 =
