@@ -60,7 +60,8 @@ Below is a basic summary of the features and components of libmisc:
     == zzcat       : minimal *cat* implementation (pure zsh version)
     == ztput       : minimal *tput* implementation
     == ztat        : minimal *stat* implementation
-    == 
+    == zrm         : file deletion
+    == zrmdir      : folder deletion
 --------------------------------------------------------------------------------------------
 ‎
 =
