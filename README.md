@@ -25,13 +25,13 @@ This will generate *libmisc.zwc* in the root of the source directory. Once this 
 
 Once done, every subsequent zsh session will have the functions of libmisc available.
 
-‎
-=
+
+
+--------------------------------------------------------------------------------------------
 *Full documentation, including documentation on each individual feature of libmisc, is included in the **man** directory.*
 
 
 
---------------------------------------------------------------------------------------------
 ‎
 =
 ## -    features    -
