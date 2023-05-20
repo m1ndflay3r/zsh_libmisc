@@ -99,7 +99,7 @@ Below is a basic summary of the features and components of libmisc:
 Arguably the star of the show (which is why it gets its own section in README.md), zelfexec is an *almost-ridiculously-useful* and *highly-versatile* implementation of elfexec by abbat (https://github.com/abbat/elfexec - *used for reference only, all code original*)
 
 
-Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is hilariously powerful. Many of libmisc's functions and utilities utilize this in their operation.
+Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is *hilariously* powerful. Many of libmisc's functions and utilities utilize this in their operation.
 
 
 
