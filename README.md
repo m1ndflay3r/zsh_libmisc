@@ -82,7 +82,7 @@ Below is a basic summary of the features and components of libmisc:
     == zsudo       : sudo implementation (wip)
     == blep        : grep implementation (wip)
     
-### pet-peeve solvers, fringe-case workarounds, and other oddities
+### pet-peeves, fringe-case workarounds, and other oddities
     
     == arrmatch    : lazy array matching
     == isfile      : return 0 if anything whatsoever exists at given filepath
