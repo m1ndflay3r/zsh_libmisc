@@ -2,7 +2,7 @@
 
 BUILDOP="$@[1]"
 
-rm -rf ./*.zwc
+rm -rf ./*.zwc &> /dev/null
 if ls -a libmisc &> /dev/null; then
   rm -rf libmisc*
 fi
