@@ -156,4 +156,7 @@ Differences to abbats' version:
 
 ‎
 =
-*requires linux > 3.17, and fexecve to be enabled and usable*
+*normal operation requires linux > 3.17, and fexecve to be enabled and usable.*
+
+
+*fallback mode requires read, write, and execute permissions within either /tmp or $HOME*
