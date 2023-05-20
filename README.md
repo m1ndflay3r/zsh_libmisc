@@ -109,7 +109,7 @@ Differences to abbats' version:
 - it's in a zsh library!
 
 
-- arg1 isn't treated as a filepath for an executable instead of an argument ( because why would it be when we can just run *./path/to/binary* or *fileread /path/to/file | zelfexec* )
+- arg1 isn't treated as a filepath for an executable ( because why would it be when we can just run *./path/to/binary* or *fileread /path/to/file | zelfexec* )
 
 
 - stdin of the child process can be handled separately from stdin of zelfexec ( via the environment variable *zSTDIN* )
