@@ -16,7 +16,7 @@ or
     ./build --static
     
     
-This will generate *libmisc.zwc* in the root of the source directory. Once this is done, add the following to your *.zshrc* :
+This will generate *libmisc.zwc* in the root of the source directory. Afterwards, add the following to your *.zshrc* :
 
     fpath=(/path/to/source/directory/libmisc.zwc $fpath)
     autoload libmiscinit
