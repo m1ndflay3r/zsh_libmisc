@@ -58,12 +58,17 @@ Below is a basic summary of the features and components of libmisc:
      |-- fox-fr        : minimal *cat* implementation (fileread)
      |-- fox-ec        : minimal *cat* implementation (args)
     == zzcat       : minimal *cat* implementation (pure zsh version)
+    == zbinfmt     : register an interpreter by file extension
     == ztput       : minimal *tput* implementation
     == ztat        : minimal *stat* implementation
     == zrm         : file deletion
     == zrmdir      : folder deletion
     == zmv         : minimal mv clone
     == zmkdir      : minimal mkdir clone
+    == zmkfifo     : minimal mkfifo clone, with some minor tweaks
+    == zchgrp      : minimal chgrp clone
+    == zchown      : minimal chown clone
+    == zchmod      : minimal chmod clone
     == zls         : ls -a clone (wip)
     == zsudo       : sudo implementation (wip)
     == blep        : grep implementation (wip)
