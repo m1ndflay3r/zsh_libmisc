@@ -61,7 +61,7 @@ Below is a basic summary of the features and components of libmisc:
      |-- zzcat         : minimal *cat* implementation (pure zsh version)
     == trandom     : generate a random ASCII string
     == revstr      : outputs input string, backwards
-    == filesize    : byte-precise file size info in bin, oct, dec, or hex format
+    == filesize    : precise file size info in bin, oct, dec, or hex format
     == zbinfmt     : register an interpreter by file extension
     == ztput       : minimal *tput* implementation
     == ctext       : user-friendly ztput wrapper
