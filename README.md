@@ -1,6 +1,6 @@
 ‎
 =
-# zsh_libmisc
+# zsh_libmisc (WIP)
 This is a collection of various utilities and functions packed into a one, neat little zsh library.
 
 
