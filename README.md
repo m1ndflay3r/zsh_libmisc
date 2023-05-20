@@ -123,6 +123,9 @@ Differences to abbats' version:
 
 - the existence of a fallback mode (omnibin)
 
+
+- probably more I'm forgetting
+
 ‎
 =
 
