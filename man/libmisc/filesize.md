@@ -6,7 +6,7 @@ output format opts:
   -k kilobytes
   -m megabytes
   -g gigabytes
-  -h bytes (hexidecimal)
+  -h hex
   -o octal
   -B binary
 

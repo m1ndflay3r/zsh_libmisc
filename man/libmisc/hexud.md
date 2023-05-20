@@ -1,4 +1,4 @@
-hexud - hexidecimal dump reversal
+hexud - hexadecimal dump reversal
 
 
 input is taken in 1 of 4 forms: 

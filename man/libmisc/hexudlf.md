@@ -1,4 +1,4 @@
-hexudlf - hexidecimal dump reversal (with large file handling)
+hexudlf - hexadecimal dump reversal (with large file handling)
 
 
 input is taken in 1 of 4 forms: 

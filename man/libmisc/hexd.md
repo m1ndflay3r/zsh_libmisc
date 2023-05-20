@@ -1,4 +1,4 @@
-hexd - a basic hexidecimal dumper
+hexd - a basic hexadecimal dumper
 
 
 input is taken in 1 of 4 forms: 

@@ -1,4 +1,4 @@
-blep - grep implementation (incomplete as of 04-06-2023)
+blep - grep implementation (wip)
 
 currently just handles basic grep stdin pattern match use cases (with highlighting support)
 

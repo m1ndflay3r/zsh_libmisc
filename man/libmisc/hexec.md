@@ -1,4 +1,4 @@
-hexec - execute hexdump directly without writing new files
+hexec - execute hex dump directly without writing new files
 
 
 takes input in 1 of 3 forms: 

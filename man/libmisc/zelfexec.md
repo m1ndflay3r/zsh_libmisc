@@ -4,9 +4,11 @@ zelfexec - A highly versatile "elfexec" implementation, written in a mixture of 
 
 
   Primary differences to abbat's "elfexec" implementation:
+    -it's in a zsh library!
     -stdin of the child process can be handled separately from stdin of zelfexec (via env var zSTDIN)
     -arg0 can be spoofed (via env var zELFSPOOF)
     -arg1 is always treated as a child-process argument and never as a file to be executed
+    -fallback mode (omnibin)
 
 
 examples:
@@ -36,3 +38,5 @@ examples:
 notes:
 
   requires linux > 3.17, and fexecve to be enabled and usable by the current user. If these conditions are unmet, zelfexec will utilize fallback mode "omnibin".
+
+  fallback mode requires read, write, and execute permissions in either /tmp or $HOME

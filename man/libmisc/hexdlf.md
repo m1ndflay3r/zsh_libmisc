@@ -1,4 +1,4 @@
-hexdlf - a basic hexidecimal dumper (with large file handling)
+hexdlf - a basic hexadecimal dumper (with large file handling)
 
 
 input is taken in 1 of 4 forms: 
