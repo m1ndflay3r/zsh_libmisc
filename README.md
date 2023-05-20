@@ -62,6 +62,11 @@ Below is a basic summary of the features and components of libmisc:
     == ztat        : minimal *stat* implementation
     == zrm         : file deletion
     == zrmdir      : folder deletion
+    == zmv         : minimal mv clone
+    == zmkdir      : minimal mkdir clone
+    == zls         : ls -a clone (wip)
+    == zsudo       : sudo implementation (wip)
+    == blep        : grep implementation (wip)
 --------------------------------------------------------------------------------------------
 ‎
 =
