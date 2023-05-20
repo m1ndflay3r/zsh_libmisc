@@ -118,7 +118,7 @@ Differences to abbats' version:
 - arg0 can be spoofed ( via the environment variable *zELFSPOOF* )
 
 
-- some misc. fixes for fringe use cases
+- misc. fixes and tweaks to account for fringe use-cases
 
 ‎
 =
