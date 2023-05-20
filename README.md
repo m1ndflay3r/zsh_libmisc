@@ -85,6 +85,8 @@ Below is a basic summary of the features and components of libmisc:
  
     == chkvldint   : return 0 if input is valid int, or 1 if not
     == getstrln    : returns length of input string
+    == isevennum   : return 0 if input is even integer, 1 if not
+    
 ### pet-peeve solvers, and other mostly-redundant things
     
     == arrmatch    : lazy array matching
