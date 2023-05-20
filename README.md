@@ -89,10 +89,11 @@ Below is a basic summary of the features and components of libmisc:
     == isyes       : for easy handling of simple Y/n input prompts
     == zreadin     : wrapper for *fox* that times out after 3 seconds 
     
-### pet-peeve solvers, and other mostly-redundant things
+### pet-peeve solvers, fringe-case workarounds, and other mostly-redundant things
     
     == arrmatch    : lazy array matching
     == isfile      : return 0 if anything whatsoever exists at given filepath
+    == zzsh        : simple wrapper for zsh-static-5.8 that bypasses the backspace issues with zle
 --------------------------------------------------------------------------------------------
 ‎
 =
