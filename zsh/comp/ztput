@@ -1,27 +1,21 @@
 #!/usr/bin/env zsh
 ztput() {
-#  jsdk=8
   autoload getstrln
   reset() {
     printf "%s""\e[0m"
-#    printf "%s""\033[${jsdk}D"
   }
   bold() {
     printf "%s""\e[1m"
-#    printf "%s""\033[${jsdk}D"
   }
   dim() {
     printf "%s""\e[2m"
-#    printf "%s""\033[${jsdk}D"
   }
   cvwoah=11
   cvvis() {
     printf "%s""\033[?25h"
-#    printf "%s""\033[${cvwoah}D"
   }
   civis() {
     printf "%s""\033[?25l"
-#    printf "%s""\033[${cvwoah}D"
   }
   if [ "$1" = "reset" ]; then
     reset
@@ -49,11 +43,6 @@ ztput() {
     fi
     return 0
   else
-#    PHG=$((getstrln printf "%s""\e[3${colour_code}m"))
-#    PHK=$((PHG+3))
-#    PHJ=$(getstrln $colour_code)
-#    PHK=$((PHK+PHJ))
     printf "%s""\e[3${colour_code}m"
-#    printf "%s""\033[${PHK}D"
   fi
 }
