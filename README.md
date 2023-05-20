@@ -120,6 +120,9 @@ Differences to abbats' version:
 
 - misc. fixes and tweaks to account for fringe use-cases
 
+
+- the existence of a fallback mode (omnibin)
+
 ‎
 =
 
