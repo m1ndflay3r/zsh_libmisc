@@ -55,27 +55,27 @@ Below is a basic summary of the features and components of libmisc:
     == b64ud       : simple base64 dump reveral, with minimal extra features
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
      |-- load64        : reverse a b64 dump, store resulting binary in random variable, print variable name
-    == fox         : minimal *cat* implementation (stdin)
-     |-- fox-fr        : minimal *cat* implementation (fileread)
-     |-- fox-ec        : minimal *cat* implementation (args)
-     |-- zzcat         : minimal *cat* implementation (pure zsh version)
+    == fox         : *cat* implementation (stdin)
+     |-- fox-fr        : *cat* implementation (fileread)
+     |-- fox-ec        : *cat* implementation (args)
+     |-- zzcat         : *cat* implementation (pure zsh version)
     == trandom     : generate a random ASCII string
     == revstr      : outputs input string, backwards
     == filesize    : precise file size info in bin, oct, dec, or hex format
     == zbinfmt     : register an interpreter by file extension
-    == ztput       : minimal *tput* implementation
+    == ztput       : *tput* implementation
     == ctext       : user-friendly ztput wrapper
     == zfile       : lightweight implementation of "file", in pure zsh
-    == ztat        : minimal *stat* implementation
+    == ztat        : *stat* implementation
     == zrm         : file deletion
     == zrmdir      : folder deletion
-    == zmv         : minimal mv clone
-    == zcp         : minimal cp -r clone
-    == zmkdir      : minimal mkdir clone
-    == zmkfifo     : minimal mkfifo clone, with some minor tweaks
-    == zchgrp      : minimal chgrp clone
-    == zchown      : minimal chown clone
-    == zchmod      : minimal chmod clone
+    == zmv         : mv clone
+    == zcp         : cp -r clone
+    == zmkdir      : mkdir clone
+    == zmkfifo     : mkfifo clone, with some minor tweaks
+    == zchgrp      : chgrp clone
+    == zchown      : chown clone
+    == zchmod      : chmod clone
     == nullbyte    : print N number of null bytes (default 1)
     == zls         : ls -a clone (wip)
     == zsudo       : sudo implementation (wip)
