@@ -58,7 +58,7 @@ Below is a basic summary of the features and components of libmisc:
     == fox         : minimal *cat* implementation (stdin)
      |-- fox-fr        : minimal *cat* implementation (fileread)
      |-- fox-ec        : minimal *cat* implementation (args)
-    == zzcat       : minimal *cat* implementation (pure zsh version)
+     |-- zzcat         : minimal *cat* implementation (pure zsh version)
     == nrandom     : a consistently behaving version of "echo $RANDOM"
     == trandom     : generate a random ASCII string
     == revstr      : outputs input string, backwards
