@@ -44,15 +44,15 @@ Below is a basic summary of the features and components of libmisc:
      |-- omnibin       : fallback mode for zelfexec
     == hexd        : lightweight hex dumper, with some extra features
      |-- hexdlf        : hexd, with large (infinite) filesize handling
-     |-- chexd         : simple deflation-based hexdump compressor
+     |-- chexd         : simple deflation-based hex dump compressor
        |-- chexdlf         : chexd, with large (infinite) filesize handling
-    == hexud       : lightweight hexdump reversal program, with some extra features
+    == hexud       : lightweight hex dump reversal, with some extra features
      |-- hexudlf       : hexud, with large (infinite) filesize handling
-     |-- chexud        : reversal program for compressed hexdumps created with chexd
+     |-- chexud        : reversal of compressed hex dumps created with chexd
        |-- chexudlf        : chexud, with large (infinite) filesize handling
     == b64d        : simple base64 dumper, with minimal extra features
      |-- cb64d         : simple deflation-based base64 dump compressor
-    == b64ud       : simple base64 dump reveral program, with minimal extra features
+    == b64ud       : simple base64 dump reveral, with minimal extra features
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
      |-- load64    : reverse a b64 dump, store resulting binary in random variable, print variable name
     == fox         : minimal *cat* implementation (stdin)
