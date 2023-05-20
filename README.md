@@ -87,7 +87,7 @@ Below is a basic summary of the features and components of libmisc:
     == getstrln    : returns length of input string
     == isevennum   : return 0 if input is even integer, 1 if not
     == isyes       : for easy handling of simple Y/n input prompts
-    == 
+    == zreadin     : wrapper for *fox* that times out after 3 seconds 
     
 ### pet-peeve solvers, and other mostly-redundant things
     
