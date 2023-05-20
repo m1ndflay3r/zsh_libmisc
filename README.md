@@ -1,7 +1,7 @@
 ‎
 =
 # zsh_libmisc (WIP)
-This is a collection of various utilities and functions packed into one, neat little zsh library.
+A collection of various utilities and functions packed into one, neat little zsh library.
 
 
 This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a linux kernel and static zsh.
