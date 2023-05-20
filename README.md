@@ -67,6 +67,7 @@ Below is a basic summary of the features and components of libmisc:
     == zrm         : file deletion
     == zrmdir      : folder deletion
     == zmv         : minimal mv clone
+    == zcp         : minimal cp -r clone
     == zmkdir      : minimal mkdir clone
     == zmkfifo     : minimal mkfifo clone, with some minor tweaks
     == zchgrp      : minimal chgrp clone
