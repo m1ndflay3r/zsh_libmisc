@@ -25,32 +25,30 @@
     
 
 
-examples:
+**examples:**
 
-  basic use:
+  *basic use:*
 
     command: fox-fr /path/to/busybox | zelfexec whoami
 
     output: $USER
 
 
-  arg0 spoofing:
+  *arg0 spoofing:*
 
     command: fox-fr /path/to/busybox | zELFSPOOF="whoami" zelfexec
 
     output: $USER
 
 
-  child-process stdin handling:
+  *child-process stdin handling:*
 
     command: fox-fr /path/to/busybox | zSTDIN="some text" zelfexec cat
 
     output: "some text"
 
 
+-------------------------------------------------------------------------------------------------
+  *requires linux > 3.17, and fexecve to be enabled and usable.*
 
-notes:
-
-  requires linux > 3.17, and fexecve to be enabled and usable by the current user. If these conditions are unmet, zelfexec will utilize fallback mode "omnibin".
-
-  fallback mode requires read, write, and execute permissions in either /tmp or $HOME
+  *fallback mode requires read, write, and execute permissions in either /tmp or $HOME*
