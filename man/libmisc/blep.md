@@ -1,7 +1,7 @@
 ‎
 =
 
-## blep - *grep implementation (wip)*
+## blep - *grep implementation*
 
 *currently just handles basic grep stdin pattern match use cases (with highlighting support)*
 
@@ -20,3 +20,4 @@
     zBLEPNOHIGHLIGHT - disable highlighting of input pattern in matched strings
 
 ---------------------------------------------------------------------
+*work-in-progress*
