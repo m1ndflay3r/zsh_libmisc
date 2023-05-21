@@ -1,9 +1,14 @@
 ‎
 =
 
-zrmdir - rm implementation (directory removal)
+## zrmdir - *rmdir implementation*
 
-ex: zrmdir /path/to/directory
+------------------------------------
 
+**example:**
 
-note: utilizes zelfexec
+    zrmdir /path/to/directory
+
+------------------------------------
+
+*utilizes zelfexec*
