@@ -1,9 +1,14 @@
 ‎
 =
 
-fox-fr - cat implementation (file read)
+## fox-fr - *cat implementation (file read)*
 
-Pretty self explanatory. When given a filepath, it reads the file and outputs its contents on stdout.
+*Reads input file and prints its contents to stdout.*
 
+------------------------------------------------------
 
-example: fox-fr /path/to/file
+**example:**
+
+    fox-fr /path/to/file
+
+------------------------------------------------------
