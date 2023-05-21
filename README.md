@@ -80,7 +80,7 @@ Below is a basic summary of the features and components of libmisc:
     == zsudo       : "sudo" implementation (wip)
     == blep        : "grep" implementation (wip)
     
-### pet-peeves, fringe-case workarounds, and other oddities
+### pet-peeves, fringe-case workarounds, toys, and other oddities
     
     == nrandom     : consistently-behaving version of "echo $RANDOM"
     == arrmatch    : lazy array matching
@@ -91,6 +91,7 @@ Below is a basic summary of the features and components of libmisc:
     == isyes       : easy handling of simple Y/n input prompts
     == zreadin     : *fox* wrapper that times out after 3 seconds
     == nullbyte    : print N number of null bytes (default 1)
+    == hexec       : execute hex dump directly without writing new files
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
 ‎
