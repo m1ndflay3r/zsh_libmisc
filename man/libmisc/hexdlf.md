@@ -1,7 +1,7 @@
 ‎
 =
 
-## hexdlf - *a basic hexadecimal dumper (with large (infinite) filesize handling)*
+## hexdlf - *a basic hexadecimal dumper, with large (infinite) filesize handling*
 
 ---------------------------------------------------------------------------
 
