@@ -1,7 +1,14 @@
 ‎
 =
 
-ztput - simple tput implementation 
+## ztput - *simple tput implementation*
 
+------------------------------------
 
-ex: ztput <reset, bold, dim, cvvis, civis, setaf, setab> <colour code>
+**example:**
+
+    ztput <reset, bold, dim, cvvis, civis, setaf, setab> <colour code>
+
+------------------------------------
+
+*background setting not currently implemented*
