@@ -5,7 +5,9 @@
 
 ------------------------------------
 
-ex: zmkdir /path/to/new/directory
+**example:**
+
+    zmkdir /path/to/new/directory
 
 ------------------------------------
 
