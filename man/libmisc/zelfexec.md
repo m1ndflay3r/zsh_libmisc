@@ -15,9 +15,9 @@
   
   - it's in a zsh library!
     
-  - stdin of the child process can be handled separately from stdin of zelfexec (via env var zSTDIN)
+  - stdin of the child process can be handled separately from stdin of zelfexec ( via env var *zSTDIN* )
     
-  - arg0 can be spoofed (via env var zELFSPOOF)
+  - arg0 can be spoofed ( via env var *zELFSPOOF* )
     
   - arg1 is always treated as a child-process argument and never as a file to be executed
     
