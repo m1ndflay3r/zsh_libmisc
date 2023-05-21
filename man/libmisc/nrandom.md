@@ -1,3 +1,6 @@
+‎
+=
+
 nrandom - generate a random number
 
 read bytes from /dev/random; hexdump those bytes, then convert those bytes to base10
