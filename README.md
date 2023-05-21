@@ -54,7 +54,7 @@ Below is a basic summary of the features and components of libmisc:
      |-- cb64d         : deflation-based base64 dump compressor
     == b64ud       : minimal base64 dump reversal
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
-     |-- load64        : reverse a b64 dump, store resulting binary in random variable, print variable name
+     |-- load64        : b64ud into a random-named variable, print variable name
     == fox         : *cat* implementation (stdin)
      |-- fox-fr        : *cat* implementation (fileread)
      |-- fox-ec        : *cat* implementation (args)
