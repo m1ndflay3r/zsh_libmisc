@@ -1,9 +1,14 @@
 ‎
 =
 
-zls - "ls -a" implementation, written in pure zsh
+## zls - *"ls -a" implementation*
 
-ex: zls /path/to/directory
+----------------------------------
 
+**example:**
 
-note: currently a little buggy, but dependable enough for most uses
+    zls /path/to/directory
+
+----------------------------------
+
+*currently a little buggy, but dependable enough for most uses*
