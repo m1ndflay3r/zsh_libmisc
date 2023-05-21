@@ -1,13 +1,14 @@
 ‎
 =
 
-trandom - generate a random text string
+## trandom - *generate a random text string*
 
-uses nrandom to select rand. chars from an array
+*uses nrandom to select rand. chars from an array*
 
+------------------------------------------------
 
-ex:
+**example:**
 
-  command: trandom
+    command: trandom
 
-  output: abcdefghijk
+    output: abcdefghijk
