@@ -11,4 +11,4 @@
 
 ------------------------------------
 
-*spawned FIFOs will have perms 755*
+*FIFOs perms hard-coded to 755*
