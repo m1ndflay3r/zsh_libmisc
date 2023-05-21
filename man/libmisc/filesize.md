@@ -5,7 +5,7 @@
 
 ---------------------------------------------
 
-**Opts:**
+**opts:**
 
     -b   bytes
     -k   kilobytes
@@ -15,7 +15,7 @@
     -o   octal
     -B   binary
 
-**Example:**
+**example:**
 
     filesize <-b, -k, -m, -g, -h, -o, -B> /path/to/file
 
