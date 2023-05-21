@@ -1,20 +1,20 @@
 ‎
 =
 
-fox - cat implementation (stdin read)
+## fox - *cat implementation (stdin read)*
 
-Pretty self-explanatory. Anything given to stdin is repeated on stdout.
+*Pretty self-explanatory. Anything given to stdin is repeated on stdout.*
 
+--------------------------------------------------------------------------
 
-example:
+**example:**
 
-  command: fox <<EOF
-some data
-EOF
+    command: fox <<EOF
+    some data
+    EOF
 
-  output: some data
+    output: some data
 
+**flags:**
 
-flags:
-
-  zFOXT - set a timeout value rather than hanging indefinitely on null stdin (ex: zFOXT=3 fox <<...)
+    zFOXT - set a timeout value rather than hanging indefinitely on null stdin (ex: zFOXT=3 fox <<...)
