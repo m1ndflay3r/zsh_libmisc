@@ -4,11 +4,17 @@ zelfexec - A highly versatile "elfexec" implementation, written in a mixture of 
 
 
   Primary differences to abbat's "elfexec" implementation:
-    -it's in a zsh library!
-    -stdin of the child process can be handled separately from stdin of zelfexec (via env var zSTDIN)
-    -arg0 can be spoofed (via env var zELFSPOOF)
-    -arg1 is always treated as a child-process argument and never as a file to be executed
-    -fallback mode (omnibin)
+  
+    - it's in a zsh library!
+    
+    - stdin of the child process can be handled separately from stdin of zelfexec (via env var zSTDIN)
+    
+    - arg0 can be spoofed (via env var zELFSPOOF)
+    
+    - arg1 is always treated as a child-process argument and never as a file to be executed
+    
+    - fallback mode (omnibin)
+    
 
 
 examples:
