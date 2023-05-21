@@ -1,13 +1,14 @@
 ‎
 =
 
-fox-ec - cat implementation (arg* read)
+## fox-ec - *cat implementation (arg* read)*
 
-Pretty self explanatory. Anything given as a command-line argument is repeated on stdout
+*Anything given as a command-line argument is printed to stdout*
 
+-------------------------------------------------
 
-example:
+**example:**
 
-  command: fox-ec "some text"
+    command: fox-ec "some text"
 
-  output: some text
+    output: some text
