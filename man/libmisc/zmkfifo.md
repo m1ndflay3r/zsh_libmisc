@@ -11,4 +11,4 @@
 
 ------------------------------------
 
-*FIFOs perms hard-coded to 755*
+*FIFOs permissions hard-coded to 755*
