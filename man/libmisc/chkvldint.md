@@ -1,6 +1,12 @@
 ‎
 =
 
-chkvldint - return 0 if input is valid integer, 1 if not
+## chkvldint - *return 0 if input is valid integer, 1 if not*
 
-ex: chkvldint "123456"
+------------------------------------------------------------
+
+**example:**
+
+    chkvldint "123456"
+
+-----------------------------------------------------------
