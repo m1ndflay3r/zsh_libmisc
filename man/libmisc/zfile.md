@@ -10,3 +10,5 @@
     zfile /path/to/file
 
 ----------------------------------
+
+*written in pure zsh*
