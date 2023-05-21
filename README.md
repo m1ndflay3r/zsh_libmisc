@@ -89,9 +89,9 @@ Below is a basic summary of the features and components of libmisc:
     == getstrln    : returns length of input string
     == isevennum   : return 0 if input is even integer, 1 if not
     == isyes       : easy handling of simple Y/n input prompts
-    == zreadin     : *fox* wrapper that times out after 3 seconds 
-    == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
+    == zreadin     : *fox* wrapper that times out after 3 seconds
     == nullbyte    : print N number of null bytes (default 1)
+    == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
 ‎
 =
