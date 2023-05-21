@@ -1,3 +1,6 @@
+‎
+=
+
 fox - cat implementation (stdin read)
 
 Pretty self-explanatory. Anything given to stdin is repeated on stdout.
