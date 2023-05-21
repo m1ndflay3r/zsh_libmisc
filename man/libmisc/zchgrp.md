@@ -1,7 +1,7 @@
 ‎
 =
 
-## zchgrp - *simple chgrp implementation*
+## zchgrp - *chgrp implementation*
 
 ---------------------------------------------
 
