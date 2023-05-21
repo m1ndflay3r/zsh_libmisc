@@ -7,13 +7,13 @@
 
 **Output opts:**
 
-- b *bytes*
-- k *kilobytes*
-- m *megabytes*
-- g *gigabytes*
-- h *hex*
-- o *octal*
-- B *binary*
+- -b *bytes*
+- -k *kilobytes*
+- -m *megabytes*
+- -g *gigabytes*
+- -h *hex*
+- -o *octal*
+- -B *binary*
 
 **Example:**
 
