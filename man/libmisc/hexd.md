@@ -5,7 +5,7 @@
 
 -------------------------------------------
 
-**Examples:**
+**examples:**
 
     hexd /path/to/file
     hexd "string"
