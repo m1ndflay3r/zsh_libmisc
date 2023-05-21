@@ -1,10 +1,14 @@
 ‎
 =
 
-zchgrp - simple chgrp implementation
+## zchgrp - *simple chgrp implementation*
 
+---------------------------------------------
 
-ex: zchgrp <group name> /path/to/file
+**example:**
 
+    zchgrp <group name> /path/to/file
 
-note: utilizes zelfexec
+---------------------------------------------
+
+*utilizes zelfexec*
