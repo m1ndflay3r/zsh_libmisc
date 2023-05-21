@@ -1,7 +1,7 @@
 ‎
 =
 
-## fox-ec - *cat implementation (arg* read)*
+## fox-ec - *cat implementation (arg*** read)*
 
 *Anything given as a command-line argument is printed to stdout*
 
