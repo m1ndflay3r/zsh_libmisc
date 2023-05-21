@@ -1,9 +1,14 @@
 ‎
 =
 
-ztat - simple 'stat' implementation
+## ztat - *stat implementation*
 
-ex: ztat /path/to/file
+------------------------------------
 
+**example:**
 
-note: utilizes zelfexec
+    ztat /path/to/file
+
+------------------------------------
+
+*utilizes zelfexec*
