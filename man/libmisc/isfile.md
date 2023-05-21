@@ -1,3 +1,6 @@
+‎
+=
+
 isfile - returns true if zfile returns 0 on any file type, or 1 otherwise
 
 
