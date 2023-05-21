@@ -1,10 +1,14 @@
 ‎
 =
 
-zcp - simple cp implementation
+## zcp - *cp implementation*
 
+---------------------------------
 
-ex - zcp /path/to/source /path/to/destination
+**example:**
 
+    zcp /path/to/source /path/to/destination
+
+---------------------------------
 
 note: utilizes zelfexec
