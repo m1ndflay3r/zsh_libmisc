@@ -64,7 +64,7 @@ Below is a basic summary of the features and components of libmisc:
     == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == zbinfmt     : register an interpreter by file extension
     == ztput       : "tput" implementation
-    == ctext       : user-friendly ztput wrapper
+     |-- ctext         : user-friendly ztput wrapper
     == zfile       : lightweight "file" implementation
     == ztat        : "stat" implementation
     == zrm         : "rm" implementation
