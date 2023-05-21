@@ -1,16 +1,16 @@
 ‎
 =
 
-hexec - execute hex dump directly without writing new files
+## hexec - *execute hex dump directly without writing new files*
 
+-------------------------------------------------
 
-takes input in 1 of 3 forms: 
+**examples:**
 
-print -rn "<hexdump>" | hexec
-hexec /path/to/hexdump
-hexec "<hexdump>"
+    print -rn "<hexdump>" | hexec
+    hexec /path/to/hexdump
+    hexec "<hexdump>"
 
+**flags:**
 
-flags:
-
-  zHEXECWAITINDEF - set to a non-(zero || empty) value to disable timeout of read from stdin (default is 3 seconds)
+    zHEXECWAITINDEF - set to a non-(zero || empty) value to disable timeout of read from stdin (default is 3 seconds)
