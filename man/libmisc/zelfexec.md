@@ -1,8 +1,11 @@
+‎
+=
+
 **zelfexec** - A highly versatile *elfexec* implementation, written in a mixture of C and zsh.
 
 ‎
 =
-  execute ELF binaries piped to stdin without writing them to disk
+  *execute ELF binaries piped to stdin without writing them to disk*
 
 ----------------------------------------------------------------------------------
 
