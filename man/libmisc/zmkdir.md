@@ -1,10 +1,13 @@
 ‎
 =
 
-zmkdir - mkdir implementation
+## zmkdir - *mkdir implementation*
+
+------------------------------------
 
 ex: zmkdir /path/to/new/directory
 
+------------------------------------
 
-note: utilizes zelfexec
-note: new directory perms hardcoded to 755
+*utilizes zelfexec*
+*new directory perms hard-coded to 755*
