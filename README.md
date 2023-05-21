@@ -55,31 +55,30 @@ Below is a basic summary of the features and components of libmisc:
     == b64ud       : minimal base64 dump reversal
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
      |-- load64        : b64ud into a random-named variable, print variable name
-    == fox         : *cat* implementation (stdin)
-     |-- fox-fr        : *cat* implementation (fileread)
-     |-- fox-ec        : *cat* implementation (args)
-     |-- zzcat         : *cat* implementation (pure zsh version)
-    == trandom     : generate a random ASCII string
-    == revstr      : outputs input string, backwards
-    == filesize    : precise file size info in bin, oct, dec, or hex format
+    == fox         : "cat" implementation (stdin)
+     |-- fox-fr        : "cat" implementation (fileread)
+     |-- fox-ec        : "cat" implementation (args)
+     |-- zzcat         : "cat" implementation (pure zsh version)
+    == trandom     : generate random ASCII string
+    == revstr      : output given input string, backwards
+    == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == zbinfmt     : register an interpreter by file extension
-    == ztput       : *tput* implementation
+    == ztput       : "tput" implementation
     == ctext       : user-friendly ztput wrapper
-    == zfile       : lightweight implementation of "file", in pure zsh
-    == ztat        : *stat* implementation
-    == zrm         : file deletion
-    == zrmdir      : folder deletion
-    == zmv         : mv clone
-    == zcp         : cp -r clone
-    == zmkdir      : mkdir clone
-    == zmkfifo     : mkfifo clone, with some minor tweaks
-    == zchgrp      : chgrp clone
-    == zchown      : chown clone
-    == zchmod      : chmod clone
-    == nullbyte    : print N number of null bytes (default 1)
-    == zls         : ls -a clone (wip)
-    == zsudo       : sudo implementation (wip)
-    == blep        : grep implementation (wip)
+    == zfile       : lightweight "file" implementation
+    == ztat        : "stat" implementation
+    == zrm         : "rm" implementation
+    == zrmdir      : "rmdir" implementation
+    == zmv         : "mv" implementation
+    == zcp         : "cp -r" implementation
+    == zmkdir      : "mkdir" implementation
+    == zmkfifo     : "mkfifo" implementation
+    == zchgrp      : "chgrp" implementation
+    == zchown      : "chown" implementation
+    == zchmod      : "chmod" implementation
+    == zls         : "ls -a" implementation (wip)
+    == zsudo       : "sudo" implementation (wip)
+    == blep        : "grep" implementation (wip)
     
 ### pet-peeves, fringe-case workarounds, and other oddities
     
@@ -92,6 +91,7 @@ Below is a basic summary of the features and components of libmisc:
     == isyes       : easy handling of simple Y/n input prompts
     == zreadin     : *fox* wrapper that times out after 3 seconds 
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
+    == nullbyte    : print N number of null bytes (default 1)
 --------------------------------------------------------------------------------------------
 ‎
 =
