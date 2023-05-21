@@ -3,7 +3,7 @@
   execute ELF binaries piped to stdin without writing them to disk
 
 
-  Primary differences to abbat's "elfexec" implementation:
+  Primary differences to abbat's *elfexec* implementation:
   
   - it's in a zsh library!
     
