@@ -10,4 +10,4 @@
 
 ------------------------------------------------------------------------
 
-note: yes, I'm aware this functionality is built into zsh. This exists because said built-in doesn't behave quite the way I'd prefer.
+*yes, I'm aware this functionality is built into zsh. This exists because said built-in doesn't behave quite the way I'd prefer.*
