@@ -1,3 +1,6 @@
+‎
+=
+
 getstrln - outputs the character length of input string, in base10
 
 
