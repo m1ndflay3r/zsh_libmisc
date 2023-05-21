@@ -42,17 +42,17 @@ Below is a basic summary of the features and components of libmisc:
     == libmiscinit : initialization tasks for libmisc
     == zelfexec    : powerful elfexec implementation
      |-- omnibin       : fallback mode for zelfexec
-    == hexd        : lightweight hex dumper, with some extra features
+    == hexd        : lightweight hex dumper
      |-- hexdlf        : hexd, with large (infinite) filesize handling
-     |-- chexd         : simple deflation-based hex dump compressor
+     |-- chexd         : deflation-based hex dump compressor
        |-- chexdlf         : chexd, with large (infinite) filesize handling
-    == hexud       : lightweight hex dump reversal, with some extra features
+    == hexud       : lightweight hex dump reversal
      |-- hexudlf       : hexud, with large (infinite) filesize handling
      |-- chexud        : reversal of compressed hex dumps created with chexd
        |-- chexudlf        : chexud, with large (infinite) filesize handling
-    == b64d        : simple base64 dumper, with minimal extra features
-     |-- cb64d         : simple deflation-based base64 dump compressor
-    == b64ud       : simple base64 dump reveral, with minimal extra features
+    == b64d        : minimal base64 dumper
+     |-- cb64d         : deflation-based base64 dump compressor
+    == b64ud       : minimal base64 dump reversal
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
      |-- load64        : reverse a b64 dump, store resulting binary in random variable, print variable name
     == fox         : *cat* implementation (stdin)
