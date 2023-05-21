@@ -11,4 +11,4 @@
 
 ------------------------------------
 
-*pawned FIFOs will have perms 755*
+*spawned FIFOs will have perms 755*
