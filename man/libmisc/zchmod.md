@@ -1,10 +1,14 @@
 ‎
 =
 
-zchmod - simple chmod implementation
+## zchmod - *chmod implementation*
 
+-------------------------------------
 
-ex - zchmod 755 /path/to/file
+**example:**
 
+    zchmod 755 /path/to/file
 
-note: utilizes zelfexec
+-----------------------------------
+
+*utilizes zelfexec*
