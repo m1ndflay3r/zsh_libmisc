@@ -80,18 +80,18 @@ Below is a basic summary of the features and components of libmisc:
     == zsudo       : "sudo" implementation (wip)
     == blep        : "grep" implementation (wip)
     
-### pet-peeves, fringe-case workarounds, toys, and other oddities
+### QOL, pet-peeves, fringe-case workarounds, toys, and other oddities
     
     == nrandom     : consistently-behaving version of "echo $RANDOM"
-    == arrmatch    : lazy array matching
-    == isfile      : return 0 if anything of any type exists at given filepath
-    == chkvldint   : return 0 if input is a valid integer, or 1 if not
-    == getstrln    : returns length of input string
-    == isevennum   : return 0 if input is even integer, 1 if not
-    == isyes       : easy handling of simple Y/n input prompts
-    == zreadin     : *fox* wrapper that times out after 3 seconds
-    == nullbyte    : print N number of null bytes (default 1)
     == hexec       : execute hex dump directly without writing new files
+    == getstrln    : returns length of input string
+    == isyes       : easy handling of simple Y/n input prompts
+    == nullbyte    : print N number of null bytes (default 1)
+    == chkvldint   : return 0 if input is a valid integer, or 1 if not
+    == isevennum   : return 0 if input is even integer, 1 if not
+    == isfile      : return 0 if anything of any type exists at given filepath
+    == zreadin     : *fox* wrapper that times out after 3 seconds
+    == arrmatch    : lazy array matching
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
 ‎
