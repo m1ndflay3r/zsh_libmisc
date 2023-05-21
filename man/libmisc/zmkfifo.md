@@ -1,10 +1,14 @@
 ‎
 =
 
-zmkfifo - simple mkfifo implementation.
+## zmkfifo - *mkfifo implementation*
 
+------------------------------------
 
-ex: zmkfifo /path/to/fifo
+**example:**
 
+    zmkfifo /path/to/fifo
+
+------------------------------------
 
 note: spawned FIFOs will have perms 755
