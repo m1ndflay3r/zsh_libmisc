@@ -96,10 +96,10 @@ Below is a basic summary of the features and components of libmisc:
 ‎
 =
 # -    zelfexec    -
-‎‎Arguably the star of the show (which is why it gets its own section in README.md), **zelfexec** is an *almost-too-useful* piece of software inspired by abbats' *elfexec* ( https://github.com/abbat/elfexec *- used for reference only, all code original* )
+Arguably the star of the show (which is why it gets its own section in README.md), **zelfexec** is an *almost-too-useful* piece of software inspired by abbats' *elfexec* ( https://github.com/abbat/elfexec *- used for reference only, all code original* )
 
 
-‎‎Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is *hilariously* powerful. A number of libmisc's functions and utilities wouldn't be possible if they didn't depend on zelfexec for their operation.
+Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is *hilariously* powerful. A number of libmisc's functions and utilities wouldn't be possible if they didn't depend on zelfexec for their operation.
 
 
 
