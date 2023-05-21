@@ -83,15 +83,15 @@ Below is a basic summary of the features and components of libmisc:
     
 ### pet-peeves, fringe-case workarounds, and other oddities
     
-    == nrandom     : a consistently-behaving version of "echo $RANDOM"
+    == nrandom     : consistently-behaving version of "echo $RANDOM"
     == arrmatch    : lazy array matching
-    == isfile      : return 0 if anything whatsoever exists at given filepath
-    == chkvldint   : return 0 if input is valid int, or 1 if not
+    == isfile      : return 0 if anything of any type exists at given filepath
+    == chkvldint   : return 0 if input is a valid integer, or 1 if not
     == getstrln    : returns length of input string
     == isevennum   : return 0 if input is even integer, 1 if not
-    == isyes       : for easy handling of simple Y/n input prompts
-    == zreadin     : wrapper for *fox* that times out after 3 seconds 
-    == zzsh        : simple wrapper for zsh-static-5.8 that bypasses the backspace issues with zle (wip)
+    == isyes       : easy handling of simple Y/n input prompts
+    == zreadin     : *fox* wrapper that times out after 3 seconds 
+    == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
 ‎
 =
