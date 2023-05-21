@@ -4,7 +4,7 @@
 ## hexudlf - *hexadecimal dump reversal (with large file handling)*
 
 
-**example:** 
+**examples:** 
 
     hexudlf /path/to/file
     hexudlf "string"
