@@ -15,7 +15,7 @@
 - o octal
 - B binary
 
-**Example**
+**Example:**
 
     filesize <-b, -k, -m, -g, -h, -o, -B> /path/to/file
 
