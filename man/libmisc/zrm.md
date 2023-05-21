@@ -1,9 +1,14 @@
 ‎
 =
 
-zrm - rm implementation
+## zrm - *rm implementation*
 
-ex: zrm /path/to/file
+------------------------------------
 
+**example:**
 
-note: utilizes zelfexec
+    zrm /path/to/file
+
+------------------------------------
+
+*utilizes zelfexec*
