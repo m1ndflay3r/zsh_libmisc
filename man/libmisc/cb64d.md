@@ -20,4 +20,4 @@
     zCB64DWAITINDEF - set to a non-(empty || zero) value to disable stdin read timeout (default is 33 seconds)
 
 ------------------------------------------------------------------------------------------------
-*note: takes input only from stdin*
+*takes input only from stdin*
