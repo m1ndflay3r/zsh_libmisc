@@ -1,3 +1,6 @@
+‎
+=
+
 zmkdir - mkdir implementation
 
 ex: zmkdir /path/to/new/directory
