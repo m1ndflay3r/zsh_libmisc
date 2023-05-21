@@ -5,9 +5,12 @@
 
 ‎
 =
-  *execute ELF binaries piped to stdin without writing them to disk*
+  
 
 ----------------------------------------------------------------------------------
+
+execute ELF binaries piped to stdin without writing them to disk. Inspired by abbats' *elfexec* ( https://github.com/abbat/elfexec *- used for reference only, all code original* )
+
 
   Primary differences to abbat's *elfexec* implementation:
   
