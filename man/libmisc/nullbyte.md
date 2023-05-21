@@ -1,6 +1,14 @@
 ‎
 =
 
-nullbyte - prints x amount of null bytes, where x is an integer value contained in arg1
+## nullbyte - *prints x amount of null bytes, where x is an integer value contained in arg1*
 
-defaults on 1 if arg1 is empty or a non-integer
+---------------------------------------------------------------------------------------
+
+**example:**
+
+    nullbyte 3
+    
+---------------------------------------------------------------------------------------
+
+*defaults on 1 if arg1 is empty or a non-integer*
