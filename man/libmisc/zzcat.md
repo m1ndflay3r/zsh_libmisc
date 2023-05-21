@@ -1,3 +1,6 @@
+‎
+=
+
 zzcat - simple cat implementation, written in 100% pure zsh. Contains functionality of fox, fox-ec, and fox-fr.
 
 
