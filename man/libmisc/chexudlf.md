@@ -1,3 +1,6 @@
+‎
+=
+
 chexudlf - compressed hexadecimal dump reversal (with large file handling)
 
 swaps representative chars from chexd or chexdlf for their 0 values, and outputs the original hexdump
