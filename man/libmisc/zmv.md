@@ -1,9 +1,14 @@
 ‎
 =
 
-zmv - mv implementation
+## zmv - *mv implementation*
 
-ex: zmv /path/to/origin /path/to/destination
+------------------------------------
 
+**example:**
 
-note: utilizes zelfexec
+    zmv /path/to/origin /path/to/destination
+
+------------------------------------
+
+*utilizes zelfexec*
