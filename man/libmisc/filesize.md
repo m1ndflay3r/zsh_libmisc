@@ -1,3 +1,6 @@
+‎
+=
+
 filesize - show size of file in various formats
 
 output format opts:
