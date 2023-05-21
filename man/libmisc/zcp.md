@@ -11,4 +11,4 @@
 
 ---------------------------------
 
-note: utilizes zelfexec
+utilizes zelfexec
