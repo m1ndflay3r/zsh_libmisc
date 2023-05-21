@@ -1,6 +1,14 @@
 ‎
 =
 
-zbinfmt - register an executable interpreter by file extension
+## zbinfmt - *register an executable interpreter by file extension*
 
-promps the user for input
+----------------------------------------------------------------
+**example:**
+
+    command: zbinfmt
+    input: .foo /path/to/interpreter
+    
+----------------------------------------------------------------
+
+*promps the user for input*
