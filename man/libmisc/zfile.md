@@ -1,7 +1,12 @@
 ‎
 =
 
-zfile: simple, lightweight "file" command implementation 
+## zfile: *simple, lightweight "file" implementation*
 
+----------------------------------
 
-ex: zfile /path/to/file
+**example:**
+
+    zfile /path/to/file
+
+----------------------------------
