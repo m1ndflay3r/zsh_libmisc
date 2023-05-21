@@ -1,3 +1,6 @@
+‎
+=
+
 zrm - rm implementation
 
 ex: zrm /path/to/file
