@@ -1,7 +1,20 @@
 ‎
 =
 
-zzcat - simple cat implementation, written in 100% pure zsh. Contains functionality of fox, fox-ec, and fox-fr.
+## zzcat - *simple cat implementation, written in 100% pure zsh.*
+
+contains functionality of fox, fox-ec, and fox-fr.
 
 
-note: very, very slow in comparison to fox, though much more lightweight. Use only where small amounts of data need to be handled.
+------------------------------------
+
+**examples:**
+
+    zzcat /path/to/file
+    echo "myaah" | zzcat
+    zzcat <<EOF
+    some text
+    EOF
+
+------------------------------------
+*very, very slow in comparison to fox, though much more lightweight. Use only where small amounts of data need to be handled.*
