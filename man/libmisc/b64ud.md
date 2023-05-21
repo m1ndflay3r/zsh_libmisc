@@ -7,7 +7,7 @@
 
 ---------------------------------------------------------------------
 
-**input is taken in 1 of 4 forms:**
+**examples:**
 
     b64ud /path/to/file
     b64ud "string"
