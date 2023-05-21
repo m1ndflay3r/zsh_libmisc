@@ -3,6 +3,8 @@
 
 ## b64ud - *simple base64 dump reverser.*
 
+*takes base64 values as input, and outputs binary data*
+
 ---------------------------------------------------------------------
 
 **input is taken in 1 of 4 forms:**
