@@ -1,11 +1,15 @@
 ‎
 =
 
-zchown - simple chown implementation
+## zchown - *chown implementation*
 
+----------------------------------
 
-ex - zchown <user> /path/to/file
+**example:**
 
+    zchown <user> /path/to/file
 
-note: utilizes zelfexec
-note: does not handle groups (so "zchown user:group" won't work)
+----------------------------------
+
+*utilizes zelfexec*
+*does not handle groups (so "zchown user:group" won't work)*
