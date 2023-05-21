@@ -3,10 +3,11 @@
 
 ## **zelfexec** - A highly versatile *elfexec* implementation, written in a mixture of C and zsh.
   
+*Inspired by abbats' elfexec ( https://github.com/abbat/elfexec - used for reference only, all code original )*
 
 ----------------------------------------------------------------------------------
 
-execute ELF binaries piped to stdin without writing them to disk. Inspired by abbats' *elfexec* ( https://github.com/abbat/elfexec *- used for reference only, all code original* )
+execute ELF binaries piped to stdin without writing them to disk. 
 
 
   Primary differences to abbat's *elfexec* implementation:
