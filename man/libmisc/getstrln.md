@@ -1,10 +1,12 @@
 ‎
 =
 
-getstrln - outputs the character length of input string, in base10
+## getstrln - *outputs the character length of input string, in base10*
 
+--------------------------------------------------------
 
-ex:
-  command: getstrln "myaah"
+**example:**
 
-  output: 5
+    command: getstrln "myaah"
+
+    output: 5
