@@ -94,6 +94,9 @@ Below is a basic summary of the features and components of libmisc:
     == arrmatch    : lazy array matching
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
+
+*this feature list is very incomplete, and will have significant additions and changes as development of libmisc progresses*
+
 ‎
 =
 # -    zelfexec    -
