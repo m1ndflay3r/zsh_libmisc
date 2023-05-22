@@ -55,11 +55,11 @@ Below is a basic summary of the features and components of libmisc:
     == b64ud       : minimal base64 dump reversal
      |-- cb64ud        : reversal of compressed base64 dumps created with cb64d
      |-- load64        : b64ud into a random-named variable, print variable name
+    == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == fox         : "cat" implementation (stdin)
      |-- fox-fr        : "cat" implementation (fileread)
      |-- fox-ec        : "cat" implementation (args)
      |-- zzcat         : "cat" implementation (pure zsh version)
-    == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == ztput       : "tput" implementation
      |-- ctext         : user-friendly ztput wrapper
     == zfile       : "file" implementation
