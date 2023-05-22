@@ -62,7 +62,7 @@ Below is a basic summary of the features and components of libmisc:
     == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == ztput       : "tput" implementation
      |-- ctext         : user-friendly ztput wrapper
-    == zfile       : lightweight "file" implementation
+    == zfile       : "file" implementation
     == ztat        : "stat" implementation
     == zrm         : "rm" implementation
     == zrmdir      : "rmdir" implementation
