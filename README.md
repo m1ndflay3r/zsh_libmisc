@@ -73,7 +73,7 @@ Below is a basic summary of the features and components of libmisc:
     == zchgrp      : "chgrp" implementation
     == zchown      : "chown" implementation
     == zchmod      : "chmod" implementation
-    == zls         : "ls -a" implementation (wip)
+    == zls         : "ls" implementation (wip)
     == zsudo       : "sudo" implementation (wip)
     == blep        : "grep" implementation (wip)
     
