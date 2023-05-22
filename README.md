@@ -60,7 +60,6 @@ Below is a basic summary of the features and components of libmisc:
      |-- fox-ec        : "cat" implementation (args)
      |-- zzcat         : "cat" implementation (pure zsh version)
     == trandom     : generate random ASCII string
-    == revstr      : output given input string, backwards
     == filesize    : filesize info in binary, octal, decimal, or hexadecimal formats
     == zbinfmt     : register an interpreter by file extension
     == ztput       : "tput" implementation
@@ -83,6 +82,7 @@ Below is a basic summary of the features and components of libmisc:
 ### QOL, pet-peeves, fringe-case workarounds, toys, and other oddities
     
     == nrandom     : consistently-behaving version of "echo $RANDOM"
+    == revstr      : output given input string, backwards
     == hexec       : execute hex dump directly without writing new files
     == getstrln    : returns length of input string
     == isyes       : easy handling of simple Y/n input prompts
