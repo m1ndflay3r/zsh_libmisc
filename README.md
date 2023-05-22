@@ -40,7 +40,7 @@ Below is a basic summary of the features and components of libmisc:
 ### utilities
 
     == libmiscinit : initialization tasks for libmisc
-    == zelfexec    : powerful elfexec implementation
+    == zelfexec    : "elfexec" implementation
      |-- omnibin       : fallback mode for zelfexec
     == hexd        : lightweight hex dumper
      |-- hexdlf        : hexd, with large (infinite) filesize handling
