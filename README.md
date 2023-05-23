@@ -5,7 +5,7 @@ A collection of various utilities and functions packed into a single, unified **
 
 
 This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a *Linux kernel and static zsh.*
-
+If you're thinking *"that sounds a lot like busybox"*, you're on the right track! This project was, in part, inspired by busybox, and intends to be a viable alternative to it.
 
 To use libmisc, run the included build script like so:
 
