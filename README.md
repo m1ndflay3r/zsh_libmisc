@@ -4,7 +4,7 @@
 A collection of various utilities and functions packed into one, neat little zsh library.
 
 
-This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a linux kernel and static zsh.
+This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a Linux kernel and static zsh.
 
 
 To use libmisc, run the included build script like so:
