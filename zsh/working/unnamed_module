@@ -20,7 +20,7 @@ unnamed_module() {
     done
   }
   # write $zomgdelwrite to FIFO & unset, if not empty
-  zdelomgprompt() {
+  zdelomgwriter() {
     zdelomgprompt_target="$@[1]"
     zomgdel=0
     unset zomgdelwrite
@@ -37,11 +37,14 @@ unnamed_module() {
   # Command execution daemon
   zlmexec() {
     zlmexec_target="$@[1]"
+    zlmexec_output="$@[2]"
     zlmexec_term=0
     while true; do
+      (
       zsh <<EOF
 $(fox-fr $zlmexec_target)
 EOF
+      ) &> "$zlmexec_output"
       if [ $zlmexec_term != 0 ]; then
         break
       fi
@@ -68,10 +71,17 @@ EOF
     zmkfifo ""$zdelomg_io"/zdelomg/"$omgdel_fifo""
     zmkfifo ""$zdelomg_io"/zdelomg/"$delomg_fifo""
     if [ "$zomgdel_verbose" = 1 ]; then
+      print "Starting daemons..."
+    fi
+    zdelomgwriter "$omgdel_fifo" &
+    zkreen "$delomg_fifo" &
+    zlm_exec "$omgdel_fifo" "$delomg_fifo"
+    if [ "$zomgdel_verbose" = 1 ]; then
     fi
   }
   # Prompt handler (login shell)
   zlmprompt() {
+    
   }
   # Oneshot handler (single command escallation)
   zomgdel_oneshot() {
