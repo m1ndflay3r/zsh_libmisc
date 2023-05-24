@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-unnamed() {
+unnamed_module() {
   autoload fox-fr
   zkreen() {
     zkreen_terminate=0
