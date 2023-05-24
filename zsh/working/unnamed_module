@@ -36,7 +36,12 @@ unnamed_module() {
     zlmexec_target="$@[1]"
     zlmexec_term=0
     while true; do
-      
+      zsh <<EOF
+$(fox-fr $zlmexec_target)
+EOF
+      if [ $zlmexec_term != 0 ]; then
+        break
+      fi
     done
   }
   # Prompt handler
