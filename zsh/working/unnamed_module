@@ -2,6 +2,8 @@
 unnamed_module() {
   # load modules
   autoload fox-fr
+  autoload zmkfifo
+  autoload zrm
   # continuous read from output FIFO
   zkreen() {
     zkreen_terminate=0
@@ -29,11 +31,16 @@ unnamed_module() {
       fi
     done
   }
+  # Command execution daemon
+  zlmexec() {
+    zlmexec_target="$@[1]"
+    zlmexec_term=0
+    while true; do
+      
+    done
+  }
   # Prompt handler
   zlmprompt() {
   }
-  # Command execution daemon
-  zlmexec() {
-  }
-  # Glue
+  # Setup I/O
 }
