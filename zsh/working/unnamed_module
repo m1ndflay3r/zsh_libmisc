@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 unnamed_module() {
+  # load modules
   autoload fox-fr
+  # continuous read from output FIFO
   zkreen() {
     zkreen_terminate=0
     zkreen_target="$@[1]"
@@ -12,6 +14,7 @@ unnamed_module() {
       fi
     done
   }
+  # write $zomgdelwrite to FIFO & unset, if not empty
   zdelomgprompt() {
     zdelomgprompt_target="$@[1]"
     zomgdel=0
@@ -26,6 +29,10 @@ unnamed_module() {
       fi
     done
   }
+  # Prompt handler
   zlmprompt() {
+  }
+  # Command execution daemon
+  zlmexec() {
   }
 }
