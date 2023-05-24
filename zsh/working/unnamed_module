@@ -73,9 +73,9 @@ EOF
     if [ "$zomgdel_verbose" = 1 ]; then
       print "Starting daemons..."
     fi
-    zdelomgwriter "$omgdel_fifo" &
-    zkreen "$delomg_fifo" &
-    zlm_exec "$omgdel_fifo" "$delomg_fifo"
+    zdelomgwriter ""$zdelomg_io"/zdelomg/"$omgdel_fifo"" &
+    zkreen ""$zdelomg_io"/zdelomg/"$delomg_fifo"" &
+    zlm_exec ""$zdelomg_io"/zdelomg/"$omgdel_fifo"" ""$zdelomg_io"/zdelomg/"$delomg_fifo""
     if [ "$zomgdel_verbose" = 1 ]; then
       print "I/O running"
     fi
