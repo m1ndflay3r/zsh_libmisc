@@ -44,8 +44,10 @@ EOF
       fi
     done
   }
+  # Setup I/O
+  zomgdel_io() {
+  }
   # Prompt handler
   zlmprompt() {
   }
-  # Setup I/O
 }
