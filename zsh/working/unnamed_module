@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+unnamed() {
+  autoload fox-fr
+  zkreen() {
+    zkreen_terminate=0
+    zkreen_target="$@[1]"
+    while true; do
+      fox-fr $zkreen_target
+      sleep 0.1
+      if [ $zkreen_terminate = 1 ]; then
+        break
+      fi
+    done
+  }
+  zdelomgprompt() {
+    zdelomgprompt_target="$@[1]"
+    zomgdel=0
+    unset zomgdelwrite
+    while true; do
+      if [ ! -z "$zomgdelwrite" ]; then
+        printf "%s""$zomgdelwrite" > "$zdelomgprompt_target"
+        unset zomgdelwrite
+      fi
+      if [ $zomgdel != 0 ]; then
+        break
+      fi
+    done
+  }
+  zlmprompt() {
+  }
+}
