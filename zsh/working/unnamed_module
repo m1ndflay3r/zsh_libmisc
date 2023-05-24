@@ -46,11 +46,15 @@ EOF
   }
   # Setup I/O
   zomgdel_io() {
+    
   }
   # Prompt handler (login shell)
   zlmprompt() {
   }
   # Oneshot handler (single command escallation)
   zomgdel_oneshot() {
+  }
+  # Cleanup steps
+  zomgdel_cleanup() {
   }
 }
