@@ -89,8 +89,11 @@ EOF
   }
   # Oneshot handler (single command escallation)
   zomgdel_oneshot() {
+    
   }
   # Cleanup steps
   zomgdel_cleanup() {
+    
   }
+  # User input handler
 }
