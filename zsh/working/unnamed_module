@@ -85,7 +85,12 @@ EOF
   }
   # Prompt handler (login shell)
   zlmprompt() {
-    
+    zlmprompt_terminate=0
+    while true; do
+      if [ "$zlmprompt_terminate" != 0 ]; then
+        break
+      fi
+    done
   }
   # Oneshot handler (single command escallation)
   zomgdel_oneshot() {
