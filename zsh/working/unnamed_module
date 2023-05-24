@@ -4,6 +4,9 @@ unnamed_module() {
   autoload fox-fr
   autoload zmkfifo
   autoload zrm
+  autoload zmkdir
+  autoload zrmdir
+  autoload nrandom
   # continuous read from output FIFO
   zkreen() {
     zkreen_terminate=0
@@ -46,7 +49,26 @@ EOF
   }
   # Setup I/O
   zomgdel_io() {
-    
+    if [ "$zomgdel_verbose" = 1 ]; then
+      print "Setup working directory..."
+    fi
+    if [ -d "/tmp" ]; then
+      zdelomg_io='/tmp'
+    else
+      zdelomg_io=$HOME
+    fi
+    if [ ! -d ""$zdelomg_io"/zdelomg" ]; then
+      zmkdir ""$zdelomg_io"/zdelomg"
+    fi
+    if [ "$zomgdel_verbose" = 1 ]; then
+      print "Create I/O FIFOs..."
+    fi
+    omgdel_fifo="omgdel_input_"$(nrandom)"" &> /dev/null
+    delomg_fifo="omgdel_output_"$(nrandom)"" &> /dev/null
+    zmkfifo ""$zdelomg_io"/zdelomg/"$omgdel_fifo""
+    zmkfifo ""$zdelomg_io"/zdelomg/"$delomg_fifo""
+    if [ "$zomgdel_verbose" = 1 ]; then
+    fi
   }
   # Prompt handler (login shell)
   zlmprompt() {
