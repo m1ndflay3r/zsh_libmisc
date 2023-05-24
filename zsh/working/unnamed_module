@@ -55,6 +55,7 @@ EOF
     if [ "$zomgdel_verbose" = 1 ]; then
       print "Setup working directory..."
     fi
+    # working dir setup
     if [ -d "/tmp" ]; then
       zdelomg_io='/tmp'
     else
@@ -63,6 +64,7 @@ EOF
     if [ ! -d ""$zdelomg_io"/zdelomg" ]; then
       zmkdir ""$zdelomg_io"/zdelomg"
     fi
+    # create FIFOs
     if [ "$zomgdel_verbose" = 1 ]; then
       print "Create I/O FIFOs..."
     fi
@@ -70,6 +72,7 @@ EOF
     delomg_fifo="omgdel_output_"$(nrandom)"" &> /dev/null
     zmkfifo ""$zdelomg_io"/zdelomg/"$omgdel_fifo""
     zmkfifo ""$zdelomg_io"/zdelomg/"$delomg_fifo""
+    # start daemons
     if [ "$zomgdel_verbose" = 1 ]; then
       print "Starting daemons..."
     fi
