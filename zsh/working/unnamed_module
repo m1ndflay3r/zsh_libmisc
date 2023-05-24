@@ -87,6 +87,7 @@ EOF
   zlmprompt() {
     zlmprompt_terminate=0
     while true; do
+      
       if [ "$zlmprompt_terminate" != 0 ]; then
         break
       fi
