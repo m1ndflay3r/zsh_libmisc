@@ -1,0 +1,117 @@
+#!/usr/bin/env zsh
+zudo() {
+  # load modules
+  autoload fox-fr
+  autoload zmkfifo
+  autoload zrm
+  autoload zmkdir
+  autoload zrmdir
+  autoload nrandom
+  # continuous read from output FIFO
+  zudo_screen() {
+    zudo_screen_terminate=0
+    zudo_screen_target="$@[1]"
+    while true; do
+      fox-fr $zudo_screen_target
+      sleep 0.1
+      if [ $zudo_screen_terminate = 1 ]; then
+        break
+      fi
+    done
+  }
+  # write $zudo_writer_command to FIFO & unset, if not empty
+  zudo_writer() {
+    zudo_writer_target="$@[1]"
+    zudo_writer_terminate=0
+    unset zudo_writer_command
+    while true; do
+      if [ ! -z "$zudo_writer_command" ]; then
+        printf "%s""$zudo_writer_command" &> "$zudo_writer_target"
+        unset zudo_writer_command
+      fi
+      if [ $zudo_writer_terminate != 0 ]; then
+        break
+      fi
+    done
+  }
+  # Command execution daemon
+  zudo_exec() {
+    zudo_exec_target="$@[1]"
+    zudo_exec_output="$@[2]"
+    zudo_exec_term=0
+    zudo_exec_complete=0
+    zudo_exec_return=0
+    while true; do
+      (eval $(fox-fr $zudo_exec_target)) &> "$zudo_exec_output"
+      zudo_exec_return="$?"
+      zudo_exec_complete=1
+      if [ $zudo_exec_term != 0 ]; then
+        break
+      fi
+    done
+  }
+  # Setup I/O
+  zudo_io() {
+    if [ "$zudo_verbose" = 1 ]; then
+      print "Setup working directory..."
+    fi
+    # working dir setup
+    if [ -d "/tmp" ]; then
+      zudo_io_dir='/tmp'
+    else
+      zudo_io_dir=$HOME
+    fi
+    if [ ! -d ""$zudo_io_dir"/zudo" ]; then
+      zmkdir ""$zudo_io_dir"/zudo"
+    fi
+    # create FIFOs
+    if [ "$zudo_verbose" = 1 ]; then
+      print "Create I/O FIFOs..."
+    fi
+    zudo_fifo_one="zudo_input_"$(nrandom)"" &> /dev/null
+    zudo_fifo_two="zudo_output_"$(nrandom)"" &> /dev/null
+    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_one""
+    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_two""
+    # start daemons
+    if [ "$zudo_verbose" = 1 ]; then
+      print "Starting daemons..."
+    fi
+    zudo_writer ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &
+    zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
+    zlm_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" ""$zudo_io_dir"/zudo/"$zudo_fifo_two""
+    if [ "$zudo_verbose" = 1 ]; then
+      print "I/O running"
+    fi
+  }
+  # login shell
+  zudo_shell() {
+    zudo_shell_terminate=0
+    while true; do
+      if [ "$zudo_exec_complete" = 1 ]; then
+        print
+        if [ -z "$HOSTNAME" ]; then
+          if ! which hostname &> /dev/null; then
+            HOSTNAME="localhost"
+          else
+            HOSTNAME="$(hostname)"
+          fi
+        fi
+        print -n ""$USER"@"$HOSTNAME" "$(pwd)" > "
+        vared -c zudo_writer_command
+        zudo_exec_complete=0
+      fi
+      if [ "$zudo_shell_terminate" != 0 ]; then
+        break
+      fi
+    done
+  }
+  # Oneshot handler (single command escallation)
+  zudo_oneshot() {
+    
+  }
+  # Cleanup steps
+  zudo_cleanup() {
+    
+  }
+  # User input handler
+}
