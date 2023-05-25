@@ -42,7 +42,15 @@ zudo() {
     zudo_exec_complete=0
     zudo_exec_return=0
     while true; do
-      (eval $(fox-fr $zudo_exec_target)) &> "$zudo_exec_output"
+      unset zudo_exec_readin
+      zudo_exec_readin=$(fox-fr $zudo_exec_target)
+      zudo_exec_testy=${zudo_exec_readin: :3}
+      if [ "$zudo_exec_testy" = "cd " ]; then
+        zudo_exec_readin=${zudo_exec_readin:3}
+        cd "$zudo_exec_readin" &> "$zudo_exec_output"
+      else
+        (eval $(fox-fr $zudo_exec_target)) &> "$zudo_exec_output"
+      fi
       zudo_exec_return="$?"
       zudo_exec_complete=1
       if [ $zudo_exec_term != 0 ]; then
