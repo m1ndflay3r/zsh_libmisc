@@ -86,17 +86,20 @@ zudo() {
   # login shell
   zudo_shell() {
     zudo_shell_terminate=0
+    if [ -z "$HOSTNAME" ]; then
+      if ! which hostname &> /dev/null; then
+        HOSTNAME="localhost"
+      else
+        HOSTNAME="$(hostname)"
+      fi
+    fi
+    print
+    print -n ""$USER"@"$HOSTNAME" "$(pwd)" > "
+    vared -c zudo_writer_command
     while true; do
       if [ "$zudo_exec_complete" = 1 ]; then
         print
-        if [ -z "$HOSTNAME" ]; then
-          if ! which hostname &> /dev/null; then
-            HOSTNAME="localhost"
-          else
-            HOSTNAME="$(hostname)"
-          fi
-        fi
-        print -n ""$USER"@"$HOSTNAME" "$(pwd)" > "
+        print -n ""$zudo_exec_return" "$USER"@"$HOSTNAME" "$(pwd)" > "
         vared -c zudo_writer_command
         zudo_exec_complete=0
       fi
