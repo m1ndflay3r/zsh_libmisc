@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 zudo() {
+  fpath=(/home/v1ru5/testing/zsh_libmisc/libmisc.zwc $fpath)
   # load modules
   autoload fox-fr
   autoload zmkfifo
@@ -87,7 +88,7 @@ zudo() {
     fi
     zudo_writer ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &
     zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
-    zlm_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" ""$zudo_io_dir"/zudo/"$zudo_fifo_two""
+    zudo_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
     if [ "$zudo_verbose" = 1 ]; then
       print "I/O running"
     fi
@@ -162,4 +163,5 @@ zudo() {
       (*) (zudo_oneshot ""$zudo_ui_input""$zudo_ui_command"") && return $? ;;
     esac
   }
+  $@
 }
