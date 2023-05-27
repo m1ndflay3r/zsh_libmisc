@@ -87,7 +87,6 @@ zudo() {
       print "Starting daemons..."
     fi
     zudo_writer ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &
-    zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
     zudo_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
     if [ "$zudo_verbose" = 1 ]; then
       print "I/O running"
@@ -123,7 +122,19 @@ zudo() {
   # Oneshot handler (single command escallation)
   zudo_oneshot() {
     zudo_io
+    zudo_oneshot_loop() {
+      while true; do
+        if [ ! -z "$zudo_exec_complete" ]; then
+          if [ "$zudo_exec_complete" = 1 ]; then
+            zudo_screen_terminate=1
+            break
+          fi
+        fi
+      done
+    }
+    zudo_oneshot_loop &
     zudo_writer_command=$@
+    zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_two""
     zudo_cleanup
   }
   # Cleanup steps
