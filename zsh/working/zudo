@@ -38,7 +38,7 @@ zudo() {
   zudo_exec() {
     zudo_exec_target="$@[1]"
     zudo_exec_output="$@[2]"
-    zudo_exec_term=0
+    zudo_exec_terminate=0
     zudo_exec_complete=0
     zudo_exec_return=0
     while true; do
@@ -94,6 +94,7 @@ zudo() {
   }
   # login shell
   zudo_shell() {
+    zudo_io
     zudo_shell_terminate=0
     if [ -z "$HOSTNAME" ]; then
       if ! which hostname &> /dev/null; then
@@ -116,14 +117,28 @@ zudo() {
         break
       fi
     done
+    zudo_cleanup
   }
   # Oneshot handler (single command escallation)
   zudo_oneshot() {
-    
+    zudo_io
+    zudo_writer_command="$@"
+    zudo_cleanup
   }
   # Cleanup steps
   zudo_cleanup() {
-    
+    zudo_screen_terminate=1
+    zudo_writer_terminate=1
+    zudo_exec_terminate=1
+    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_one""; do
+      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &> /dev/null
+    done
+    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_two""; do
+      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &> /dev/null
+    done
+    until ! isfile ""$zudo_io_dir"/zudo"; do
+      zrmdir ""$zudo_io_dir"/zudo" &> /dev/null
+    done
   }
   # User input handler
 }
