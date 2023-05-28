@@ -78,22 +78,22 @@ zudo() {
     if [ "$zudo_verbose" = 1 ]; then
       print "Create I/O FIFOs..."
     fi
-    zudo_fifo_one="zudo_input_"$(nrandom)"" &> /dev/null
-    zudo_fifo_two="zudo_output_"$(nrandom)"" &> /dev/null
-    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_one""
-    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_two""
+    zudo_fifo_input="zudo_input_"$(nrandom)"" &> /dev/null
+    zudo_fifo_output="zudo_output_"$(nrandom)"" &> /dev/null
+    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_input""
+    zmkfifo ""$zudo_io_dir"/zudo/"$zudo_fifo_output""
     # start daemons
     if [ "$zudo_verbose" = 1 ]; then
       print "Starting daemons..."
     fi
-    zudo_writer ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &
-    zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
-    zudo_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &
+    zudo_writer ""$zudo_io_dir"/zudo/"$zudo_fifo_input"" &
+    zudo_screen ""$zudo_io_dir"/zudo/"$zudo_fifo_output"" &
+    zudo_exec ""$zudo_io_dir"/zudo/"$zudo_fifo_input"" ""$zudo_io_dir"/zudo/"$zudo_fifo_output"" &
     if [ "$zudo_verbose" = 1 ]; then
       print "I/O running"
     fi
   }
-  # login shell
+  # Login shell
   zudo_shell() {
     zudo_io
     zudo_shell_terminate=0
@@ -131,11 +131,11 @@ zudo() {
     zudo_screen_terminate=1
     zudo_writer_terminate=1
     zudo_exec_terminate=1
-    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_one""; do
-      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_one"" &> /dev/null
+    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_input""; do
+      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_input"" &> /dev/null
     done
-    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_two""; do
-      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_two"" &> /dev/null
+    until ! isfile ""$zudo_io_dir"/zudo/"$zudo_fifo_output""; do
+      zrm ""$zudo_io_dir"/zudo/"$zudo_fifo_output"" &> /dev/null
     done
     until ! isfile ""$zudo_io_dir"/zudo"; do
       zrmdir ""$zudo_io_dir"/zudo" &> /dev/null
