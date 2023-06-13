@@ -69,6 +69,7 @@ clocky() {
       clocky_colourprint "$clocky_tobeprinted_m"
     done
   }
+  #oneshot vs continuous display toggle
   if [ "$clocky_loop" = 1 ]; then
     while true; do
       clocky_main
