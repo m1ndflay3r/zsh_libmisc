@@ -1,0 +1,83 @@
+#!/usr/bin/env zsh
+
+clocky() {
+  #load modules
+  autoload nrandom
+  autoload ztput
+  autoload ctext
+  autoload revstr
+  autoload zdate
+  #env setup, set cursor to invisible
+  COLOURCOUNT=0
+  if [ -z "$clocky_loop" ]; then
+    clocky_loop=0
+  fi
+  ztput civis
+  #query system clock, remove date information
+  clocky_gettime() {
+    clocky_gettime_in="$(zdate)"
+    clocky_gettime_count=0
+    IFS=' '
+    for i in $=clocky_gettime_in; do
+      clocky_gettime_count=$((clocky_gettime_count+1))
+      if [ "$clocky_gettime_count" = 4 ]; then
+        print -rn "$i"
+      fi
+    done
+    unset IFS
+  }
+  #outputs input string in a random colour
+  clocky_colourprint() {
+    #fetch input
+    clocky_colourprint_input="$@"
+    #random number generation
+    COLOURCOUNT=$(nrandom) &> /dev/null
+    if [ "$COLOURCOUNT" = 0 ]; then
+      until [ ! "$COLOURCOUNT" = 0 ]; do
+        COLOURCOUNT=$(nrandom) &> /dev/null
+      done
+    fi
+    if [ "$COLOURCOUNT" -gt 7 ]; then
+      until [ ! "$COLOURCOUNT" -gt 7 ]; do
+        COLOURCOUNT=$((COLOURCOUNT/3))
+      done
+    fi
+    #output input based on random number generated
+    case $COLOURCOUNT in
+      (1) ztput bold && ctext white nnl "$clocky_colourprint_input" && ztput reset ;;
+      (2) ztput bold && ctext green nnl "$clocky_colourprint_input" && ztput reset  ;;
+      (3) ztput bold && ctext blue nnl "$clocky_colourprint_input" && ztput reset  ;;
+      (4) ztput bold && ctext yellow nnl "$clocky_colourprint_input" && ztput reset  ;;
+      (5) ztput bold && ctext magenta nnl "$clocky_colourprint_input" && ztput reset  ;;
+      (6) ztput bold && ctext cyan nnl "$clocky_colourprint_input" && ztput reset  ;;
+      (7) ztput bold && ctext red nnl "$clocky_colourprint_input"  && ztput reset;;
+    esac
+  }
+  #main function
+  clocky_main() {
+    #return cursor to beginning of line
+    printf "\r"
+    #fetch system time in 24h format
+    clocky_tobeprinted="$(clocky_gettime)"
+    #feed numerical time to clocky_colourprint, one character at a time
+    while true; do
+      clocky_tobeprinted_m=${clocky_tobeprinted: :1}
+      clocky_tobeprinted=${clocky_tobeprinted:1}
+      if [ -z "$clocky_tobeprinted_m" ]; then
+        break
+      fi
+      clocky_colourprint "$clocky_tobeprinted_m"
+    done
+  }
+  if [ "$clocky_loop" = 1 ]; then
+    while true; do
+      clocky_main
+      #refresh delay
+      sleep 0.3
+    done
+  else
+    clocky_main
+  fi
+  #set cursor to visible
+  ztput cvvis
+}
