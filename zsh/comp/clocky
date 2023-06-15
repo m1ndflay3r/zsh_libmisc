@@ -34,6 +34,19 @@ clocky() {
     #fetch input
     clocky_colourprint_input="$@"
     #random number generation
+    cl_col_div() {
+      cl_col_div_var=$(nrandom) &> /dev/null
+      until [ ! "$cl_col_div_var" -ge 10 ]; do
+        cl_col_div_var=$((cl_col_div_var/3))
+      done
+      print -n "$cl_col_div_var"
+    }
+    clocky_colour_div=$(cl_col_div)
+    if [ "$clocky_colour_div" = 0 ] || [ "$clocky_colour_div" = 1 ]; then
+      until [ ! "$clocky_colour_div" = 0 ] && [ ! "$clocky_colour_div" = 1 ]; do
+        clocky_colour_div=$(cl_col_div)
+      done
+    fi
     COLOURCOUNT=$(nrandom) &> /dev/null
     if [ "$COLOURCOUNT" = 0 ]; then
       until [ ! "$COLOURCOUNT" = 0 ]; do
@@ -42,7 +55,7 @@ clocky() {
     fi
     if [ "$COLOURCOUNT" -gt 7 ]; then
       until [ ! "$COLOURCOUNT" -gt 7 ]; do
-        COLOURCOUNT=$((COLOURCOUNT/3))
+        COLOURCOUNT=$((COLOURCOUNT/clocky_colour_div))
       done
     fi
     #output input based on random number generated
