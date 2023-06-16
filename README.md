@@ -62,6 +62,7 @@ Below is a basic summary of the features and components of libmisc:
      |-- zzcat         : "cat" implementation (pure zsh version)
     == ztput       : "tput" implementation
      |-- ctext         : user-friendly ztput wrapper
+    == zdate       : "date" implementation
     == zfile       : "file" implementation
     == ztat        : "stat" implementation
     == zrm         : "rm" implementation
@@ -92,6 +93,7 @@ Below is a basic summary of the features and components of libmisc:
     == isfile      : return 0 if anything of any type exists at given filepath
     == zreadin     : *fox* wrapper that times out after 3 seconds
     == arrmatch    : lazy array matching
+    == clocky      : fun rainbow clock printout, for use with zsh prompt
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 --------------------------------------------------------------------------------------------
 
