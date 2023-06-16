@@ -18,3 +18,7 @@
 **flags:**
 
     zFOXT - set a timeout value rather than hanging indefinitely on null stdin (ex: zFOXT=3 fox <<...)
+
+--------------------------------------------------------------------------
+
+*utilizes zelfexec*
