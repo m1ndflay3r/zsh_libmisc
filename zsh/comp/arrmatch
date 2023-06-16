@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 arrmatch() {
+  #match $1 against $2+n. return 0 if match found, 1 if not
   for i in ${@:2}; do
     if [ "$1" = "$i" ]; then
       return 0

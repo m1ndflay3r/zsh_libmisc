@@ -44,6 +44,7 @@ cb64d() {
   A6=${A8: :6}
   A4=${A6: :4}
   A2=${A4: :2}
+  # swap zeros for symbolic representations
   CB64DIN=${CB64DIN//"$A4096"/'@'}
   CB64DIN=${CB64DIN//"$A3172"/';'}
   CB64DIN=${CB64DIN//"$A2048"/'#'}
@@ -59,6 +60,7 @@ cb64d() {
   CB64DIN=${CB64DIN//"$A6"/'('}
   CB64DIN=${CB64DIN//"$A4"/'{'}
   CB64DIN=${CB64DIN//"$A2"/'}'}
+  #print modified dump
   noglob printf '%s' "$CB64DIN"
   return 0
 }

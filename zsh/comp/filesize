@@ -1,54 +1,59 @@
 #!/usr/bin/env zsh
 filesize() {
+  # load modules
   autoload isfile
   autoload ztat
   autoload blep
-  OPFUNC="$@[1]"
-  OP="$@[2]"
-  if [ -z "$OPFUNC" ]; then
+  # fetch user input
+  filesize_function="$@[1]"
+  filesize_target="$@[2]"
+  if [ -z "$filesize_function" ]; then
     return 1
   fi
-  if [ -z "$OP" ] && [ ! -z "$OPFUNC" ]; then
-    OP="$OPFUNC"
-    OPFUNC='-b'
+  if [ -z "$filesize_target" ] && [ ! -z "$filesize_function" ]; then
+    filesize_target="$filesize_function"
+    filesize_function='-b'
   fi
-  if ! isfile "$OP"; then
-    print "$OP not found in current dir"
+  if ! isfile "$filesize_target"; then
+    print "$filesize_target not found in current dir"
     return 1
   fi
-  SIZECOUNT="$(ztat "$OP" | zBLEPNOHIGHLIGHT=1 blep "Size")"
-  SIZECOUNT=${SIZECOUNT//"bytes"/''}
-  SIZECOUNT=${SIZECOUNT//"Size : "/''}
-  SIZECOUNT=${SIZECOUNT//' '/''}
-  zREVERSEABOVE() {
-    SIZECOUNT=""$SIZECOUNT".0"
+  # calculate filesize
+  filesize_count="$(ztat "$filesize_target" | zBLEPNOHIGHLIGHT=1 blep "Size")"
+  filesize_count=${filesize_count//"bytes"/''}
+  filesize_count=${filesize_count//"Size : "/''}
+  filesize_count=${filesize_count//' '/''}
+  # conv to float
+  filesize_conv_float() {
+    filesize_count=""$filesize_count".0"
   }
-  if [ "$OPFUNC" = -b ]; then
-    print "$SIZECOUNT"
-  elif [ "$OPFUNC" = -k ]; then
-    zREVERSEABOVE
-    print $((SIZECOUNT/1024.0))
-  elif [ "$OPFUNC" = -m ]; then
-    zREVERSEABOVE
-    SIZECOUNT=$((SIZECOUNT/1024.0))
-    print $((SIZECOUNT/1024.0))
-  elif [ "$OPFUNC" = -g ]; then
-    zREVERSEABOVE
-    SIZECOUNT=$((SIZECOUNT/1024.0))
-    SIZECOUNT=$((SIZECOUNT/1024.0))
-    print $((SIZECOUNT/1024.0))
-  elif [ "$OPFUNC" = -h ]; then
-    SIZECOUNT=$(([#16]$SIZECOUNT))
-    SIZECOUNT=${SIZECOUNT:3}
-    print $SIZECOUNT
-  elif [ "$OPFUNC" = -o ]; then
-    SIZECOUNT=$(([#8]$SIZECOUNT))
-    SIZECOUNT=${SIZECOUNT:2}
-    print $SIZECOUNT
-  elif [ "$OPFUNC" = -B ]; then
-    SIZECOUNT=$(([#2]$SIZECOUNT))
-    SIZECOUNT=${SIZECOUNT:2}
-    print $SIZECOUNT
+  # output format opts
+  if [ "$filesize_function" = -b ]; then
+    print "$filesize_count"
+  elif [ "$filesize_function" = -k ]; then
+    filesize_conv_float
+    print $((filesize_count/1024.0))
+  elif [ "$filesize_function" = -m ]; then
+    filesize_conv_float
+    filesize_count=$((filesize_count/1024.0))
+    print $((filesize_count/1024.0))
+  elif [ "$filesize_function" = -g ]; then
+    filesize_conv_float
+    filesize_count=$((filesize_count/1024.0))
+    filesize_count=$((filesize_count/1024.0))
+    print $((filesize_count/1024.0))
+  elif [ "$filesize_function" = -h ]; then
+    filesize_count=$(([#16]$filesize_count))
+    filesize_count=${filesize_count:3}
+    print $filesize_count
+  elif [ "$filesize_function" = -o ]; then
+    filesize_count=$(([#8]$filesize_count))
+    filesize_count=${filesize_count:2}
+    print $filesize_count
+  elif [ "$filesize_function" = -B ]; then
+    filesize_count=$(([#2]$filesize_count))
+    filesize_count=${filesize_count:2}
+    print $filesize_count
   fi
   return 0
 }

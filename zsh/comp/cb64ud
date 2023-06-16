@@ -44,6 +44,7 @@ cb64ud() {
   A6=${A8: :6}
   A4=${A6: :4}
   A2=${A4: :2}
+  # swap symbolic representations for zeros
   CB64UDIN=${CB64UDIN//'@'/"$A4096"}
   CB64UDIN=${CB64UDIN//';'/"$A3172"}
   CB64UDIN=${CB64UDIN//'#'/"$A2048"}
@@ -59,6 +60,7 @@ cb64ud() {
   CB64UDIN=${CB64UDIN//'('/"$A6"}
   CB64UDIN=${CB64UDIN//'{'/"$A4"}
   CB64UDIN=${CB64UDIN//'}'/"$A2"}
+  # print modified dump
   noglob printf '%s' "$CB64UDIN"
   return 0
 }

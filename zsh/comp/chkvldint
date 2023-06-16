@@ -1,17 +1,22 @@
 #!/usr/bin/env zsh
 chkvldint() {
+  # fetch user input
   OP=$@
+  # define valid integers
   zVALID=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9')
+  # read user input 1 character at a time
   while read -k1 -u0 character; do
     FLAGGY=0
+    # check read character against valid int array. Set match flag if found
     for i in $=zVALID; do
-    if printf "%s\n" $character | grep $i &> /dev/null; then
-      FLAGGY=1
-      break
-    else
-      FLAGGY=0
-    fi
+      if printf "%s\n" $character | grep $i &> /dev/null; then
+        FLAGGY=1
+        break
+      else
+        FLAGGY=0
+      fi
     done
+    # return 1 if no match, or 0 if match. Doesn't break loop if matched.
     if [ $FLAGGY = 0 ]; then
       return 1
     else

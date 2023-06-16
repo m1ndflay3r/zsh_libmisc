@@ -53,13 +53,13 @@ b64ud() {
   #format input
   b64UDINTMPH=${b64UDINTMPH//$'\n'/''}
   unset b64UDIN
-  unset ASLKG
+  unset b64UDIN_tmp
   declare -a b64UDIN
-  while IFS= noglob read -r -k40 -d '' -u0 ASLKG; do
-    b64UDIN+=("$ASLKG")
+  while IFS= noglob read -r -k40 -d '' -u0 b64UDIN_tmp; do
+    b64UDIN+=("$b64UDIN_tmp")
   done < <(noglob printf '%s' "$b64UDINTMPH")
-  if [ ! -z "$ASLKG" ]; then
-    b64UDIN+=("$ASLKG")
+  if [ ! -z "$b64UDIN_tmp" ]; then
+    b64UDIN+=("$b64UDIN_tmp")
   fi
   #env setup
   if [ ! -d "/tmp" ]; then

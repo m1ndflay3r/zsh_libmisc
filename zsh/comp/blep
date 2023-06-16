@@ -28,21 +28,27 @@ blep() {
   else
     BLEPARG="$1"
   fi
+  # default return value to 1
   BLEPRET=1
+  # fetch length of user input
   BLEPARGLN="$(getstrln "$BLEPARG")"
+  # read user input one line at a time
   IFS=$'\n'
   for BLEPREADIN2 in $=BLEPREADIN; do
     BLEPREADIN3="$BLEPREADIN2"
+    # check input against given pattern match
     while true; do
       MATCHFOUND=0
       while IFS= noglob read -r -k$BLEPARGLN -d '' -u0 BLEPOUT; do
         if [ "$BLEPARG" = "$BLEPOUT" ]; then
           MATCHFOUND=1
+          #set return value to 0 if match found
           BLEPRET=0
           break
         fi
       done < <(noglob printf '%s' "$BLEPREADIN2")
       BLEPREADIN2=${BLEPREADIN2:1}
+      # break loop if match found, or if no remaining lines to check
       if [ -z "$BLEPREADIN2" ]; then
         break
       fi
@@ -50,6 +56,7 @@ blep() {
         break
       fi
     done
+    # if match found, highlight
     if [ "$MATCHFOUND" = 1 ]; then
       if [ -z "$zBLEPNOHIGHLIGHT" ]; then
         BLEPREADINSWAP=""$(ztput 6)""$BLEPARG""$(ztput reset)""
@@ -61,5 +68,6 @@ blep() {
     fi
   done
   unset IFS
+  # return
   return $BLEPRET
 }

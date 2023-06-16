@@ -44,6 +44,7 @@ chexud() {
   ZERO6=${ZERO8: :6}
   ZERO4=${ZERO6: :4}
   ZERO2=${ZERO4: :2}
+  # swap symbolic representations for zeros
   CHEXUDIN=${CHEXUDIN//'@'/"$ZERO4096"}
   CHEXUDIN=${CHEXUDIN//';'/"$ZERO3172"}
   CHEXUDIN=${CHEXUDIN//'#'/"$ZERO2048"}
@@ -59,6 +60,7 @@ chexud() {
   CHEXUDIN=${CHEXUDIN//'('/"$ZERO6"}
   CHEXUDIN=${CHEXUDIN//'{'/"$ZERO4"}
   CHEXUDIN=${CHEXUDIN//'}'/"$ZERO2"}
+  # print modified dump
   noglob printf '%s' "$CHEXUDIN"
   return 0
 }

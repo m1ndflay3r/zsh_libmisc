@@ -63,6 +63,7 @@ chexudlf() {
   ZERO6=${ZERO8: :6}
   ZERO4=${ZERO6: :4}
   ZERO2=${ZERO4: :2}
+  # swap symbolic representations for zeros
   CHEXUDLFOUTPARSE() {
     CHEXUDLFOUT=${CHEXUDLFOUT//'@'/"$ZERO4096"}
     CHEXUDLFOUT=${CHEXUDLFOUT//';'/"$ZERO3172"}
@@ -79,8 +80,10 @@ chexudlf() {
     CHEXUDLFOUT=${CHEXUDLFOUT//'('/"$ZERO6"}
     CHEXUDLFOUT=${CHEXUDLFOUT//'{'/"$ZERO4"}
     CHEXUDLFOUT=${CHEXUDLFOUT//'}'/"$ZERO2"}
+    # print modified dump
     noglob printf '%s' "$CHEXUDLFOUT"
   }
+  # read input 40960 bytes at a time
   while IFS= noglob read -r -k40960 -d '' -u0 CHEXUDLFOUT; do
     CHEXUDLFOUTPARSE
   done < <(fox-fr "$CHEXUDLFDIR/$CHEXUDFIFO1")

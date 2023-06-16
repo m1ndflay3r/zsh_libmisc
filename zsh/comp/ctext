@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 ctext() {
+  # set text colour
   if [ "$1" = black ]; then
     ztput 0
   fi
@@ -24,6 +25,7 @@ ctext() {
   if [ "$1" = white ]; then
     ztput 7
   fi
+  # set background colour
   if [ "$1" = dblack ]; then
     ztput setab 0
   fi
@@ -48,59 +50,73 @@ ctext() {
   if [ "$1" = dwhite ]; then
     ztput setab 7
   fi
+  # reset to default colours
   if [ "$1" = reset ]; then
     ztput reset
   fi
+  # print with newline
   if [ "$2" = std ]; then
     echo "${@:3}"
     ztput reset
   fi
+  # print without newline
   if [ "$2" = nnl ]; then
     echo -n "${@:3}"
     ztput reset
   fi
+  # print bold, with newline
   if [ "$2" = std,bold ]; then
     ztput bold
     echo "${@:3}"
     ztput reset
   fi
+  # print bold, without newline
   if [ "$2" = nnl,bold ]; then
     ztput bold
     echo -n "${@:3}"
     ztput reset
   fi
+  # print dim, with newline
   if [ "$2" = std,dim ]; then
     ztput dim
     echo "${@:3}"
     ztput reset
   fi
+  # print dim, without newline
   if [ "$2" = nnl,dim ]; then
     ztput dim
     echo -n "${@:3}"
     ztput reset
   fi
+  # print with newline, do not reset colours after print
   if [ "$2" = std,nres ]; then
     echo "${@:3}"
   fi
+  # print without newline, do not reset colours after print
   if [ "$2" = nnl,nres ]; then
     echo -n "${@:3}"
   fi
+  # print bold, with newline, do not reset colours after print
   if [ "$2" = std,bold,nres ]; then
     ztput bold
     echo "${@:3}"
   fi
+  # print bold, without newline, do not reset colours after print
   if [ "$2" = nnl,bold,nres ]; then
     ztput bold
     echo -n "${@:3}"
   fi
+  # print dim, with newline, do not reset colours after print
   if [ "$2" = std,dim,nres ]; then
     ztput dim
     echo "${@:3}"
   fi
+  # print dim, without newline, do not reset colours after print
   if [ "$2" = nnl,dim,nres ]; then
     ztput dim
     echo -n "${@:3}"
   fi
+  # extras (symbols, emojis)
   if [ "$2" = chkmrk ]; then
     ztput bold
     echo -e "\xE2\x9C\x94"
@@ -141,5 +157,6 @@ ctext() {
     echo "☠"
     ztput reset
   fi
+  # return 0
   return 0
 }
