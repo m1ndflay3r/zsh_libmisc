@@ -13,7 +13,7 @@ clocky() {
     clocky_loop=0
   fi
   if [ -z "$clocky_tz" ]; then
-    clocky_tz=0
+    clocky_tz='+0'
   fi
   ztput civis
   #query system clock, remove date information
@@ -78,7 +78,18 @@ clocky() {
     #adjust for tz
     clocky_hour=${clocky_tobeprinted: :2}
     clocky_tobeprinted=${clocky_tobeprinted:2}
-    clocky_hour=$((clocky_hour+clocky_tz))
+    clocky_tz_operator=${clocky_tz: :1}
+    clocky_tz=${clocky_tz:1}
+    if [ "$clocky_tz_operator" = '-' ]; then
+      clocky_hour=$((clocky_hour-clocky_tz))
+    else
+      clocky_hour=$((clocky_hour+clocky_tz))
+    fi
+    if [ "$clocky_hour" -gt 23 ]; then
+      until [ ! "$clocky_hour" -gt 23 ]; do
+        clocky_hour=$((clocky_hour-24))
+      done
+    fi
     clocky_tobeprinted=""$clocky_hour""$clocky_tobeprinted""
     #feed numerical time to clocky_colourprint, one character at a time
     while true; do

@@ -34,8 +34,8 @@ blep() {
   BLEPARGLN="$(getstrln "$BLEPARG")"
   # read user input one line at a time
   IFS=$'\n'
-  for BLEPREADIN2 in $=BLEPREADIN; do
-    BLEPREADIN3="$BLEPREADIN2"
+  for blep_readin_divided in $=BLEPREADIN; do
+    blep_readin_preserve="$blep_readin_divided"
     # check input against given pattern match
     while true; do
       MATCHFOUND=0
@@ -46,10 +46,10 @@ blep() {
           BLEPRET=0
           break
         fi
-      done < <(noglob printf '%s' "$BLEPREADIN2")
-      BLEPREADIN2=${BLEPREADIN2:1}
+      done < <(noglob printf '%s' "$blep_readin_divided")
+      blep_readin_divided=${blep_readin_divided:1}
       # break loop if match found, or if no remaining lines to check
-      if [ -z "$BLEPREADIN2" ]; then
+      if [ -z "$blep_readin_divided" ]; then
         break
       fi
       if [ "$MATCHFOUND" = 1 ]; then
@@ -60,10 +60,10 @@ blep() {
     if [ "$MATCHFOUND" = 1 ]; then
       if [ -z "$zBLEPNOHIGHLIGHT" ]; then
         BLEPREADINSWAP=""$(ztput 6)""$BLEPARG""$(ztput reset)""
-        BLEPREADIN3=${BLEPREADIN3//"$BLEPARG"/"$BLEPREADINSWAP"}
-        noglob printf '%s\n' "$BLEPREADIN3"
+        blep_readin_preserve=${blep_readin_preserve//"$BLEPARG"/"$BLEPREADINSWAP"}
+        noglob printf '%s\n' "$blep_readin_preserve"
       else
-        noglob printf '%s\n' "$BLEPREADIN3"
+        noglob printf '%s\n' "$blep_readin_preserve"
       fi
     fi
   done
