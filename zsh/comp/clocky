@@ -81,7 +81,12 @@ clocky() {
     clocky_tz_operator=${clocky_tz: :1}
     clocky_tz=${clocky_tz:1}
     if [ "$clocky_tz_operator" = '-' ]; then
-      clocky_hour=$((clocky_hour-clocky_tz))
+      if [ "$clocky_tz" -gt "$clocky_hour" ]; then
+        clocky_hour_hold=$((clocky_hour+clocky_tz))
+        clocky_hour=$((24-clocky_hour_hold))
+      else
+        clocky_hour=$((clocky_hour-clocky_tz))
+      fi
     else
       clocky_hour=$((clocky_hour+clocky_tz))
     fi
