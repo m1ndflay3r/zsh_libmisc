@@ -95,6 +95,9 @@ clocky() {
         clocky_hour=$((clocky_hour-24))
       done
     fi
+    if [ "$clocky_hour" -le 9 ]; then
+      clocky_hour="0"$clocky_hour""
+    fi
     clocky_tobeprinted=""$clocky_hour""$clocky_tobeprinted""
     #feed numerical time to clocky_colourprint, one character at a time
     while true; do
