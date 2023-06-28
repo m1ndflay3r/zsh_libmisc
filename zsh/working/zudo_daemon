@@ -41,7 +41,7 @@ zudo_daemon() {
   zmkfifo "$zudo_daemon_working"/zudo_in
   zmkfifo "$zudo_daemon_working"/zudo_out
   zchmod 622 "$zudo_daemon_working"/zudo_in
-  zchmod 644 "$zudo_daemon_working"/zudo_out # note: not secure, as anyone could read the output of anyone's command. Key-as-salt encryption needed.
+  zchmod 644 "$zudo_daemon_working"/zudo_out # note: not secure, as it is possible to intercept the output of anyone's command. Key-as-salt encryption needed.
   # main loop - continuous read from in, execute what is read, output to out. Terminate if in reads TERMINATE
   while true; do
     #read input from in fifo
