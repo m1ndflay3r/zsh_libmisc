@@ -75,7 +75,7 @@ zudo_daemon() {
       break
     fi
     #execution
-    (eval "$zudo_daemon_command" > "$zudo_daemon_working"/zudo_out)
+    (eval "$zudo_daemon_command" > "$zudo_daemon_working"/zudo_out) # note: needs interactive handling
   done
 }
 zudo_daemon
