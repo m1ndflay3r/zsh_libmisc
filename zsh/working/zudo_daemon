@@ -44,7 +44,7 @@ zudo_daemon() {
   zchmod 644 "$zudo_daemon_working"/zudo_out # note: not secure, as it is possible to intercept the output of anyone's command. Key-as-salt encryption needed.
   # main loop - continuous read from in, execute what is read, output to out. Terminate if in reads TERMINATE
   while true; do
-    #read input from in fifo
+    #read from input fifo
     zudo_daemon_command="$(fox-fr "$zudo_daemon_working"/zudo_in)"
     [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_daemon_command" (raw)"
     #trim auth key from command
