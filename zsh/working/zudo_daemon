@@ -1,0 +1,81 @@
+#!/usr/bin/env zsh
+
+fpath=(/home/v1ru5/zsh_misc/libmisc.zwc $fpath)
+
+zudo_daemon() {
+  # ensure UID = 0 (root)
+  [ "$UID" = 0 ] || (echo "must be root to run zudo_daemon" && return 1)
+  # load modules
+  autoload zmkfifo
+  autoload zchmod
+  autoload zmkdir
+  autoload zrm
+  autoload zrmdir
+  autoload isfile
+  [ -z "$zudo_debug" ] && zudo_debug=0
+  # cleanup steps
+  zudo_cleanup() {
+    zudo_current_dir="$(pwd)"
+    cd "$zudo_daemon_working" &> /dev/null
+    until ! isfile zudo_in &> /dev/null; do
+      zrm zudo_in &> /dev/null
+    done
+    until ! isfile zudo_out &> /dev/null; do
+      zrm zudo_out &> /dev/null
+    done
+    cd "$zudo_current_dir" &> /dev/null
+    zrmdir "$zudo_daemon_working" &> /dev/null
+  }
+  zudo_cleanup
+  # setup working directory
+  if [ -d "/tmp" ]; then
+    zudo_daemon_working="/tmp"
+  else
+    zudo_daemon_working="$HOME"
+  fi
+  if [ ! -d "$zudo_daemon_working"/zudo ]; then
+    zmkdir "$zudo_daemon_working"/zudo
+  fi
+  zudo_daemon_working=""$zudo_daemon_working"/zudo"
+  # I/O setup
+  zmkfifo "$zudo_daemon_working"/zudo_in
+  zmkfifo "$zudo_daemon_working"/zudo_out
+  zchmod 622 "$zudo_daemon_working"/zudo_in
+  zchmod 644 "$zudo_daemon_working"/zudo_out
+  # main loop - continuous read from in, execute what is read, output to out. Terminate if in reads TERMINATE
+  while true; do
+    #read input from in fifo
+    zudo_daemon_command="$(fox-fr "$zudo_daemon_working"/zudo_in)"
+    [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_daemon_command" (raw)"
+    #trim auth key from command
+    zudo_auth_key=${zudo_daemon_command: :20}
+    zudo_auth_key=${zudo_auth_key//' '/''}
+    zudo_auth_key=${zudo_auth_key:9}
+    zudo_daemon_command=${zudo_daemon_command:20}
+    [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_daemon_command" (post-trim)"
+    [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_auth_key" (auth key)"
+    #create zudo.keys if not exist
+    (isfile ./zudo.keys &> /dev/null) || touch zudo.keys
+    #read zudo.keys to variable
+    zudo_valid_keys="$(fox-fr ./zudo.keys)"
+    #check for matching authorized key
+    zudo_key_match=0
+    IFS=$'\n'
+    for zudo_key in $=zudo_valid_keys; do
+      [ "$zudo_key" = "$zudo_auth_key" ] && zudo_key_match=1
+    done
+    unset IFS
+    [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_key_match" (key matched)"
+    #change command to unauth printout if no key match found
+    [ "$zudo_key_match" = 0 ] && zudo_daemon_command='echo "unauthorized user"'
+    [ "$zudo_debug" = 1 ] && echo "DEBUG: "$zudo_daemon_command" (post-key-match)"
+    #terminate daemon upon TERMINATE received
+    if [ "$zudo_daemon_command" = TERMINATE ]; then
+      zudo_cleanup
+      break
+    fi
+    #execution
+    (eval "$zudo_daemon_command" > "$zudo_daemon_working"/zudo_out)
+  done
+}
+zudo_daemon

@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+fpath=(/home/v1ru5/zsh_misc/libmisc.zwc $fpath)
+zudo_client() {
+  #load modules
+  autoload fox-fr
+  print -rn "zudo_key=zzvalidkey $@" > /tmp/zudo/zudo_in
+  [ "$@" = "TERMINATE" ] || fox-fr /tmp/zudo/zudo_out
+}
+zudo_client "$@"
