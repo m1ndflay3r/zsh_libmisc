@@ -3,14 +3,22 @@ zzsh() {
   autoload libmiscinit
   libmiscinit
   autoload zstat
+  autoload ctext
+  autoload ztput
+  autoload isfile
+  autoload fox-fr
   if [ -z "$USER" ]; then
     USER=unknown
   fi
   if [ -z "$HOSTNAME" ]; then
-    HOSTNAME=localhost
+    if isfile /etc/hostname &> /dev/null; then
+      HOSTNAME="$(fox-fr /etc/hostname)"
+    else
+      HOSTNAME=localhost
+    fi
   fi
   while true; do
-    print -n "["$USER"@"$HOSTNAME"] >  "
+    print -n ""$(ztput bold)""$(ctext blue)""$USER""$(ztput dim)""$(ctext magenta)"@""$(ctext reset)"$(ztput bold)""$(ctext blue)""$HOSTNAME" "$(ctext reset)""$(ztput dim)""$(ctext cyan)""$(print -n "$(pwd)")" "$(ctext magenta)"> "$(ctext reset)""
     ZZSH=$(read -e " ")
     print "$ZZSH"
     if [ ! -z "ZZSH" ]; then
