@@ -17,6 +17,9 @@ zzsh() {
       HOSTNAME=localhost
     fi
   fi
+  zzsh_newlines() {
+    print; print; print; print; print; print; print; print; print; print
+  }
   while true; do
     [ -z "$zzsh_return_val" ] && zzsh_return_val=0
     print -n ""$(ztput bold)""$(ctext blue)""$USER""$(ztput dim)""$(ctext magenta)"@""$(ctext reset)"$(ztput bold)""$(ctext blue)""$HOSTNAME" "$(ctext reset)""$(ztput dim)""$(ctext cyan)""$(print -n "$(pwd)")" "$(if [ $zzsh_return_val = 0 ]; then ctext green; else ctext reset; ctext red; fi)"> "$(ctext reset)""
@@ -25,7 +28,7 @@ zzsh() {
       if [ "$ZZSH" = 'clear' ]; then
         zzsh_newline_spammer=150
         until [ "$zzsh_newline_spammer" = 0 ]; do
-          print; print; print; print; print; print; print; print; print; print
+          zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines; zzsh_newlines
           zzsh_newline_spammer=$((zzsh_newline_spammer-10))
         done
         zzsh_return_val=0
