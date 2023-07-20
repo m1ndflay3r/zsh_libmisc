@@ -21,9 +21,17 @@ zzsh() {
     [ -z "$zzsh_return_val" ] && zzsh_return_val=0
     print -n ""$(ztput bold)""$(ctext blue)""$USER""$(ztput dim)""$(ctext magenta)"@""$(ctext reset)"$(ztput bold)""$(ctext blue)""$HOSTNAME" "$(ctext reset)""$(ztput dim)""$(ctext cyan)""$(print -n "$(pwd)")" "$(if [ $zzsh_return_val = 0 ]; then ctext green; else ctext reset; ctext red; fi)"> "$(ctext reset)""
     ZZSH=$(read -e " ")
-#    print "$ZZSH"
-    if [ ! -z "ZZSH" ]; then
-      eval $ZZSH; zzsh_return_val=$?
+    if [ ! -z "$ZZSH" ]; then
+      if [ "$ZZSH" = 'clear' ]; then
+        zzsh_newline_spammer=150
+        until [ "$zzsh_newline_spammer" = 0 ]; do
+          print; print; print; print; print; print; print; print; print; print
+          zzsh_newline_spammer=$((zzsh_newline_spammer-10))
+        done
+        zzsh_return_val=0
+      else
+        eval $ZZSH; zzsh_return_val=$?
+      fi
     fi
   done
   return 0
