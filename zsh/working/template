@@ -9,6 +9,7 @@ template() {
   autoload zmkdir
   autoload nrandom
   autoload trandom
+  autoload zmkfifo
 #  autoload libmiscinit           #
 #  libmiscinit                    # this loads literally every libmisc module. Replace with needed functions via autoload
   ## failure printout
