@@ -7,8 +7,10 @@ template() {
   autoload zelfexec
   autoload isfile
   autoload zmkdir
-  autoload libmiscinit           #
-  libmiscinit                    # this loads literally every libmisc module. Replace with needed functions via autoload
+  autoload nrandom
+  autoload trandom
+#  autoload libmiscinit           #
+#  libmiscinit                    # this loads literally every libmisc module. Replace with needed functions via autoload
   ## failure printout
   template_fail() {
     print 'Usage: <usage information>'
@@ -59,13 +61,18 @@ template() {
     unset zSTDIN
   fi
   ## env setup
-  if [ ! -d "/tmp" ]; then
-    template_working_dir=""$HOME"/template"
-  else
-    template_working_dir='/tmp/template'
-  fi
-  #create working directory if not exist
-  [ ! -d "$template_working_dir" ] && zmkdir -p "$template_working_dir" &> /dev/null
+
+#  if [ ! -d "/tmp" ]; then                            #uncomment for FIFO setup
+#    template_working_dir=""$HOME"/template"
+#  else
+#    template_working_dir='/tmp/template'
+#  fi
+#  #create working directory if not exist
+#  [ ! -d "$template_working_dir" ] && zmkdir -p "$template_working_dir" &> /dev/null
+#  #define random-name fifo path as variable
+#  template_fifo_path=""$template_working_dir"/template_fifo_"$(nrandom)"" &> /dev/null
+#  zmkfifo "$template_fifo_path"
+
   #set process name for template binary
   export zELFSPOOF="template"
   ## define template binary as function
