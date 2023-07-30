@@ -2,6 +2,11 @@
 
 template() {
   ## load modules
+  autoload fox
+  autoload fox-fr
+  autoload zelfexec
+  autoload isfile
+  autoload zmkdir
   autoload libmiscinit           #
   libmiscinit                    # this loads literally every libmisc module. Replace with needed functions via autoload
   ## failure printout
@@ -28,7 +33,7 @@ template() {
   ztemplate_stdin_read_return="${ztemplate_stdin: :5}"
   if [ "$ztemplate_stdin_read_return" = "error" ]; then
     # error out if both stdin and command line args are empty
-    if [ -z "$@" ]; then
+    if [ -z "$1" ]; then
       template_fail
       return 1
     else
@@ -60,7 +65,7 @@ template() {
     template_working_dir='/tmp/template'
   fi
   #create working directory if not exist
-  [ ! -d "$template_working_dir" ] && zmkdir -p "$template_working_dir"
+  [ ! -d "$template_working_dir" ] && zmkdir -p "$template_working_dir" &> /dev/null
   #set process name for template binary
   export zELFSPOOF="template"
   ## define template binary as function
