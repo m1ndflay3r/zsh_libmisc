@@ -95,6 +95,9 @@ Below is a basic summary of the features and components of libmisc:
     == arrmatch    : lazy array matching
     == clocky      : fun rainbow clock printout, for use with zsh prompt
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
+
+### extra
+    == busybox     : the classic multi-call binary (https://busybox.net, v1.36.0, x86_64 + armv7h) - in a zsh library!
 --------------------------------------------------------------------------------------------
 
 *this feature list is very incomplete, and will have significant additions and changes as development of libmisc progresses*
