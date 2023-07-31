@@ -50,7 +50,7 @@ libmiscinit() {
   autoload zmv
   autoload fox
   autoload hexec
-  autoload find_libmisc
+  autoload findlibmisc
   rm -rf $HOME/.zlsfirstrun
   if [ -d "/tmp" ]; then
     if ! which zsudo &> /dev/null; then
@@ -75,3 +75,4 @@ libmiscinit() {
     fi
   fi
 }
+autoload busybox
