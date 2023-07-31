@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 libmiscinit() {
-#  autoload busybox
   autoload clocky
   autoload zdate
   autoload zreadin
