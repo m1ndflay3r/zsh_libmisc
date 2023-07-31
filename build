@@ -7,9 +7,31 @@ if ls -a libmisc &> /dev/null; then
   rm -rf libmisc*
 fi
 
+func_incl_busybox() {
+  mv zsh/extra/busybox zsh/comp/busybox
+  echo "autoload busybox" >> zsh/comp/libmiscinit
+}
+
+extra_module_handle() {
+  IFS=$' '
+  for zlibmisc_extra_opts in $=zlibmisc_incl_extra; do
+    case $zlibmisc_extra_opts in
+      (busybox) func_incl_busybox ;;
+      (*) echo "extra module $zlibmisc_extra_opts does not exist"
+    esac
+  done
+  unset IFS
+}
+
 if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
+  if [ ! -z "$zlibmisc_incl_extra" ]; then
+    extra_module_handle
+  fi
   zcompile -MU libmisc zsh/comp/*
 elif [ "$BUILDOP" = --static ]; then
+  if [ ! -z "$zlibmisc_incl_extra" ]; then
+    extra_module_handle
+  fi
   echo -n > libmisc
   echo '#!/usr/bin/env zsh' >> libmisc
   cat zsh/comp/* >> libmisc
