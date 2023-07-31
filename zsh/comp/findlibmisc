@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-find_libmisc() {
+findlibmisc() {
   autoload blep
   find_libmisc_fpath_read="$(echo -n "$fpath")"
   libmisc_found=0
@@ -12,5 +12,6 @@ find_libmisc() {
       break
     fi
   done
-  return $libmisc_found
+  unset IFS
+  return "$libmisc_found"
 }
