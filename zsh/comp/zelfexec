@@ -78,7 +78,9 @@ zelfexec() {
     set -o MULTIBYTE
     zelfexecfifowrite
     fox-ec "$zELFTHEELF" | $zELFEXECXY/.zelf$zELFEXECINST $=zELFARGS
+    zERETCODE=$?
     unset zELFSPOOF
+    return $zERETCODE
   }
   #define write amd64 zelfexec binary as function
   amdymcprintface() {
