@@ -74,4 +74,3 @@ libmiscinit() {
       fi
     fi
   fi
-}

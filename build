@@ -27,6 +27,7 @@ if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
   if [ ! -z "$zlibmisc_incl_extra" ]; then
     extra_module_handle
   fi
+  print '}' >> zsh/comp/libmiscinit
   zcompile -MU libmisc zsh/comp/*
 elif [ "$BUILDOP" = --static ]; then
   if [ ! -z "$zlibmisc_incl_extra" ]; then
@@ -34,6 +35,7 @@ elif [ "$BUILDOP" = --static ]; then
   fi
   echo -n > libmisc
   echo '#!/usr/bin/env zsh' >> libmisc
+  print '}' >> zsh/comp/libmiscinit
   cat zsh/comp/* >> libmisc
   zcompile -RU libmisc
 fi
