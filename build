@@ -23,13 +23,23 @@ extra_module_handle() {
   unset IFS
 }
 
+libmiscinit_backup_handle() {
+  if ! ls -a zsh/.libmiscinit.bak &> /dev/null; then
+    cat zsh/comp/libmiscinit > zsh/.libmiscinit.bak
+  else
+    cat zsh/.libmiscinit.bak > zsh/comp/libmiscinit
+  fi
+}
+
 if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
+  libmiscinit_backup_handle
   if [ ! -z "$zlibmisc_incl_extra" ]; then
     extra_module_handle
   fi
   print '}' >> zsh/comp/libmiscinit
   zcompile -MU libmisc zsh/comp/*
 elif [ "$BUILDOP" = --static ]; then
+  libmiscinit_backup_handle
   if [ ! -z "$zlibmisc_incl_extra" ]; then
     extra_module_handle
   fi
