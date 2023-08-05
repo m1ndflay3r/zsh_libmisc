@@ -2,16 +2,29 @@
 
 BUILDOP="$@[1]"
 
-rm -rf ./*.zwc &> /dev/null
+# cleanup old builds
+if ls -a *.zwc &> /dev/null; then
+  rm -rf ./*.zwc &> /dev/null
+fi
 if ls -a libmisc &> /dev/null; then
   rm -rf libmisc*
 fi
 
+# print dummy busybox module
+print '#!/usr/bin/env zsh' > zsh/comp/busybox
+print 'busybox() {' > zsh/comp/busybox
+print '  print "Error: libmisc compiled without busybox"' >> zsh/comp/busybox
+print '  print "To use the included busybox module, recompile libmisc with zlibmisc_incl_extra=busybox ./build (--dynamic; --static)"' >> zsh/comp/busybox
+print '  return 1' >> zsh/comp/busybox
+print '}' >> zsh/comp/busybox
+
+# include extra module functions go here
 func_incl_busybox() {
   cat zsh/extra/busybox > zsh/comp/busybox
   echo "autoload busybox" >> zsh/comp/libmiscinit
 }
 
+# as per name, handler for extra module inclusion in builds
 extra_module_handle() {
   IFS=$' '
   for zlibmisc_extra_opts in $=zlibmisc_incl_extra; do
@@ -23,6 +36,7 @@ extra_module_handle() {
   unset IFS
 }
 
+# backs up and restores libmiscinit; ensuring it doesn't get scrambled by rebuilds
 libmiscinit_backup_handle() {
   if ! ls -a zsh/.libmiscinit.bak &> /dev/null; then
     cat zsh/comp/libmiscinit > zsh/.libmiscinit.bak
@@ -31,6 +45,7 @@ libmiscinit_backup_handle() {
   fi
 }
 
+# dynamic compile
 if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
   libmiscinit_backup_handle
   if [ ! -z "$zlibmisc_incl_extra" ]; then
@@ -38,6 +53,7 @@ if [ -z "$BUILDOP" ] || [ "$BUILDOP" = --dynamic ]; then
   fi
   print '}' >> zsh/comp/libmiscinit
   zcompile -MU libmisc zsh/comp/*
+# static compile
 elif [ "$BUILDOP" = --static ]; then
   libmiscinit_backup_handle
   if [ ! -z "$zlibmisc_incl_extra" ]; then
