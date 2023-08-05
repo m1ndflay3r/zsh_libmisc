@@ -38,6 +38,7 @@ zzsh() {
         zzsh_return_val=0
       elif [ "$ZZSH" = 'exit' ] || [ "$ZZSH" = 'logout' ]; then
         break
+      # busybox hook
       elif [ "$zzsh_use_busybox" = 1 ]; then
         autoload busybox
         busybox sh <<EOF
