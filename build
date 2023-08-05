@@ -8,7 +8,7 @@ if ls -a libmisc &> /dev/null; then
 fi
 
 func_incl_busybox() {
-  mv zsh/extra/busybox zsh/comp/busybox
+  cat zsh/extra/busybox > zsh/comp/busybox
   echo "autoload busybox" >> zsh/comp/libmiscinit
 }
 
