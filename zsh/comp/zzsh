@@ -7,6 +7,10 @@ zzsh() {
   autoload ztput
   autoload isfile
   autoload fox-fr
+  # busybox hook
+  if [ -z "$zzsh_use_busybox" ]; then
+    zzsh_use_busybox=0
+  fi
   if [ -z "$USER" ]; then
     USER=unknown
   fi
@@ -34,6 +38,11 @@ zzsh() {
         zzsh_return_val=0
       elif [ "$ZZSH" = 'exit' ] || [ "$ZZSH" = 'logout' ]; then
         break
+      elif [ "$zzsh_use_busybox" = 1 ]; then
+        autoload busybox
+        busybox sh <<EOF
+$ZZSH
+EOF
       else
         eval $ZZSH; zzsh_return_val=$?
       fi
