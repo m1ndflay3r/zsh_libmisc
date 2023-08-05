@@ -49,16 +49,31 @@ zzsh() {
         break
       elif [ "$zzsh_use_busybox" = 1 ]; then
         autoload busybox
-        zzsh_fifo="$zzsh_working_dir/zzsh_"$(nrandom)"" &> /dev/null
-        zmkfifo "$zzsh_fifo"
-        fox-ec "$ZZSH" > "$zzsh_fifo" &|
-        unset busybox_first_arg
-        unset busybox_second_arg
-        unset busybox_arg_array
-        (busybox sh "$zzsh_fifo"); zzsh_return_val=$?
-        until ! isfile "$zzsh_fifo" &> /dev/null; do
-          zrm "$zzsh_fifo" &> /dev/null
+        zzsh_busybox_test="$ZZSH"
+        IFS=$' '
+        for zzsh_busybox_test_args in $=zzsh_busybox_test; do
+          if [ "$zzsh_busybox_test_args" = "cd" ]; then
+            zzsh_busybox_is_cd=1
+          else
+            zzsh_busybox_is_cd=0
+          fi
+          break
         done
+        unset IFS
+        if [ "$zzsh_busybox_is_cd" = 1 ]; then
+          eval $ZZSH; zzsh_return_val=$?
+        else
+          zzsh_fifo="$zzsh_working_dir/zzsh_"$(nrandom)"" &> /dev/null
+          zmkfifo "$zzsh_fifo"
+          fox-ec "$ZZSH" > "$zzsh_fifo" &|
+          unset busybox_first_arg
+          unset busybox_second_arg
+          unset busybox_arg_array
+          (busybox sh "$zzsh_fifo"); zzsh_return_val=$?
+          until ! isfile "$zzsh_fifo" &> /dev/null; do
+            zrm "$zzsh_fifo" &> /dev/null
+          done
+        fi
       else
         eval $ZZSH; zzsh_return_val=$?
       fi
