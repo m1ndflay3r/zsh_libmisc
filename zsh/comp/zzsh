@@ -7,6 +7,15 @@ zzsh() {
   autoload ztput
   autoload isfile
   autoload fox-fr
+  autoload zmkfifo
+  autoload zrm
+  autoload nrandom
+  ## env setup
+  if [ -d "/tmp" ]; then
+    zzsh_working_dir="/tmp"
+  else
+    zzsh_working_dir="$HOME"
+  fi
   # busybox hook
   if [ -z "$zzsh_use_busybox" ]; then
     zzsh_use_busybox=0
@@ -38,12 +47,12 @@ zzsh() {
         zzsh_return_val=0
       elif [ "$ZZSH" = 'exit' ] || [ "$ZZSH" = 'logout' ]; then
         break
-      # busybox hook
       elif [ "$zzsh_use_busybox" = 1 ]; then
         autoload busybox
-        busybox sh <<EOF
-$ZZSH
-EOF
+        zzsh_fifo="$zzsh_working_dir/zzsh_"$(nrandom)"" &> /dev/null
+        zmkfifo "$zzsh_fifo"
+        fox-ec "$ZZSH" > "$zzsh_fifo" &|
+        busybox sh "$zzsh_fifo"; zzsh_return_val=$?
       else
         eval $ZZSH; zzsh_return_val=$?
       fi
