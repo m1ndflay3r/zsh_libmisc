@@ -52,7 +52,13 @@ zzsh() {
         zzsh_fifo="$zzsh_working_dir/zzsh_"$(nrandom)"" &> /dev/null
         zmkfifo "$zzsh_fifo"
         fox-ec "$ZZSH" > "$zzsh_fifo" &|
-        busybox sh "$zzsh_fifo"; zzsh_return_val=$?
+        unset busybox_first_arg
+        unset busybox_second_arg
+        unset busybox_arg_array
+        (busybox sh "$zzsh_fifo"); zzsh_return_val=$?
+        until ! isfile "$zzsh_fifo" &> /dev/null; do
+          zrm "$zzsh_fifo" &> /dev/null
+        done
       else
         eval $ZZSH; zzsh_return_val=$?
       fi
