@@ -1,0 +1,5 @@
+busybox() {
+  print "Error: libmisc compiled without busybox"
+  print "To use the included busybox module, recompile libmisc with zlibmisc_incl_extra=busybox ./build (--dynamic; --static)"
+  return 1
+}

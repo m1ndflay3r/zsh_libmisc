@@ -12,10 +12,10 @@ zfile() {
     print ""$FILETARGET": Character special"
   elif [ -p "$FILETARGET" ]; then
     print ""$FILETARGET": FIFO"
-  elif [ -x "$FILETARGET" ]; then
-    print ""$FILETARGET": Executable"
   elif [ -d "$FILETARGET" ]; then
     print ""$FILETARGET": Directory"
+  elif [ -x "$FILETARGET" ]; then
+    print ""$FILETARGET": Executable"
   elif [ -f "$FILETARGET" ]; then
     print ""$FILETARGET": Regular file"
   else
