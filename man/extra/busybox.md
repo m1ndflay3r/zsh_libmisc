@@ -8,11 +8,9 @@
 --------------------------------------------------------------------------
 **enabling:**
 
-    step 1 - copy busybox module from folder "zsh/extra" to "zsh/comp"
+    compile libmisc with the following command:
 
-    step 2 - add line "autoload busybox" to zsh/comp/libmiscinit, at beginning of autoload section
-
-    step 3 - recompile libmisc with either "./build --dynamic" or "./build --static"
+        zlibmisc_incl_extra=busybox ./build (--dynamic || --static)
 
 **example:**
 
