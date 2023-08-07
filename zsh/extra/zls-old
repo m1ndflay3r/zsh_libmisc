@@ -1,0 +1,176 @@
+#!/usr/bin/env zsh
+zls() {
+  autoload isfile
+  autoload ztput
+  if [ -d "/tmp" ]; then
+    if ! isfile /tmp/.zlsfirstrun; then
+      touch /tmp/.zlsfirstrun
+      NULL=$(zls)
+      unset NULL
+    fi
+  else
+    if ! isfile $HOME/.zlsfirstrun; then
+      touch $HOME/.zlsfirstrun
+      NULL=$(zls)
+      unset NULL
+    fi
+  fi
+  ZLSINP="$@"
+  ZLSBASEDIR=$(pwd)
+  ztput civis
+  ZLS_BASE() {
+    print '.'
+    if [ ! $(pwd) = '/' ]; then
+      print '..'
+    fi
+    if (print -n * &> /dev/null) &> /dev/null; then
+      for i in *; do
+        print $i
+      done
+    fi
+    printf '\n'
+    if (print -n .* &> /dev/null) &> /dev/null; then
+      for i in .*; do
+        print $i
+      done
+    fi
+  }
+  ZLS_ADDCOLOUR() {
+    ZLSCINPUT="$@"
+    zCCOLUMNS=$COLUMNS
+    IFS=$'\n'
+    unset ZLSEQSTRLN
+    ZLSEQLN=0
+    for ZLSEQ in $=ZLSCINPUT; do
+      if [ -z "$ZLSEQSTRLN" ]; then
+        ZLSEQSTRLN=$(getstrln $ZLSEQ)
+        ZLSEQLN=$ZLSEQSTRLN
+      else
+        ZLSEQSTRLN=$(getstrln $ZLSEQ)
+      fi
+      if [ $ZLSEQSTRLN -gt $ZLSEQLN ]; then
+        ZLSEQLN=$ZLSEQSTRLN
+      fi
+    done
+    for COLOUR in $=ZLSCINPUT; do
+      CQAL() {
+        if [ "$COLOUR" = '.*' ]; then
+          COLOUR='  '
+        fi
+        if [ "$COLOUR" = '*' ]; then
+          COLOUR=' '
+        fi
+        ZZTECTZL=${COLOUR//' '/''}
+        if [ "$ZZTECTZL" != "$COLOUR" ] && [ ! -z "$ZZTECTZL" ]; then
+          COLOUR=""$(print -n \')""$COLOUR""$(print -n \')""
+        fi
+        ZZTESTZL1=${COLOUR: :2}
+        if [ "$ZZTESTZL1" = "'." ]; then
+          if [ ! -z "$ZLSINP" ]; then
+            zls $ZLSINP
+          else
+            zls
+          fi
+          return 0
+        fi
+        CEQLN=$(getstrln $COLOUR)
+        if [ $CEQLN -lt $ZLSEQLN ]; then
+          until [ $CEQLN -ge $ZLSEQLN ]; do
+            COLOUR=""$COLOUR" "
+            CEQLN=$((CEQLN+1))
+          done
+        fi
+        unset zCCLN
+        zCCLN=$(getstrln $COLOUR)
+        zCCLN=$((zCCLN+2))
+        if [ $zCCLN -lt $zCCOLUMNS ]; then
+          zCCOLUMNS=$((zCCOLUMNS-zCCLN))
+        else
+          printf '\n'
+          zCCOLUMNS=$COLUMNS
+          zCCOLUMNS=$((zCCOLUMNS-zCCLN))
+        fi
+      }
+      if [ -d "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
+        CQAL
+        ztput bold
+        ctext blue nnl "$COLOUR"
+        print -n '  '
+      elif [ -p "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
+        CQAL
+        ztput dim
+        ctext magenta nnl "$COLOUR"
+        print -n '  '
+      elif [ -x "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
+        CQAL
+        ztput bold
+        ctext green nnl "$COLOUR"
+        print -n '  '
+      elif [ -h "$COLOUR" ]; then
+        ztput bold
+        if (cd $COLOUR &> /dev/null) &> /dev/null; then
+          CQAL
+          ctext cyan nnl "$COLOUR"
+        elif [ -s "$COLOUR" ]; then
+          CQAL
+          ctext cyan nnl "$COLOUR"
+        else
+          CQAL
+          ctext red nnl "$COLOUR"
+        fi
+        print -n '  '
+      else
+        ZLSBASEPRINT() {
+          CQAL
+          print -n "$COLOUR"
+          print -n '  '
+        }
+        ZLSARCPRINT() {
+          CQAL
+          ctext red nnl "$COLOUR"
+          print -n '  '
+        }
+        ZLSIMGPRINT() {
+          ztput bright
+          CQAL
+          ctext yellow nnl "$COLOUR"
+          print -n '  '
+        }
+        case $COLOUR in
+          (*.tar) ZLSARCPRINT ;;
+          (*.zst) ZLSARCPRINT ;;
+          (*.zip) ZLSARCPRINT ;;
+          (*.rar) ZLSARCPRINT ;;
+          (*.7z) ZLSARCPRINT ;;
+          (*.xz) ZLSARCPRINT ;;
+          (*.cpio) ZLSARCPRINT ;;
+          (*.arj) ZLSARCPRINT ;;
+          (*.gz) ZLSARCPRINT ;;
+          (*.jar) ZLSARCPRINT ;;
+          (*.img) ZLSIMGPRINT ;;
+          (*.IMG) ZLSIMGPRINT ;;
+          (*.iso) ZLSIMGPRINT ;;
+          (*.ISO) ZLSIMGPRINT ;;
+          (*.raw) ZLSIMGPRINT ;;
+          (*.RAW) ZLSIMGPRINT ;;
+          (*) ZLSBASEPRINT ;;
+        esac
+      fi
+    done
+    print
+  }
+  if [ -z "$ZLSINP" ]; then
+    ZLS_ADDCOLOUR $(ZLS_BASE)
+  elif [ -d "$ZLSINP" ]; then
+    ZLSWORKINGDIR=$(pwd)
+    cd $ZLSINP
+    zls
+    cd $ZLSWORKINGDIR
+  elif isfile $ZLSINP; then
+    ZLS_ADDCOLOUR "$ZLSINP "
+  else
+    print "$ZLSINP - No such file or directory"
+  fi
+  ztput cvvis
+  return 0
+}

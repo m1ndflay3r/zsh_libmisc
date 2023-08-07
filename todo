@@ -1,6 +1,5 @@
 create function to convert a given C binary into a libmisc module
 libmisc should create its own folder in /tmp/
-zls is a bit buggy
 add ls -l equiv (easily doable now that ztat is more or less complete)
 continue work on blep
 *b64* large file versions

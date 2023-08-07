@@ -1,176 +1,162 @@
 #!/usr/bin/env zsh
+
 zls() {
+  ## load modules
   autoload isfile
+  autoload ctext
   autoload ztput
-  if [ -d "/tmp" ]; then
-    if ! isfile /tmp/.zlsfirstrun; then
-      touch /tmp/.zlsfirstrun
-      NULL=$(zls)
-      unset NULL
-    fi
-  else
-    if ! isfile $HOME/.zlsfirstrun; then
-      touch $HOME/.zlsfirstrun
-      NULL=$(zls)
-      unset NULL
-    fi
+
+  ## fetch args
+  unset zls_arg_array
+  declare -a zls_arg_array
+  for zls_args in $=@; do
+    zls_arg_array+=("$zls_args")
+  done
+
+  ## use current dir for arg if none given
+  if [ -z "$1" ]; then
+    zls_arg_array+=("$(pwd)")
   fi
-  ZLSINP="$@"
-  ZLSBASEDIR=$(pwd)
-  ztput civis
-  ZLS_BASE() {
-    print '.'
-    if [ ! $(pwd) = '/' ]; then
-      print '..'
-    fi
-    if (print -n * &> /dev/null) &> /dev/null; then
-      for i in *; do
-        print $i
-      done
-    fi
-    printf '\n'
-    if (print -n .* &> /dev/null) &> /dev/null; then
-      for i in .*; do
-        print $i
-      done
-    fi
-  }
-  ZLS_ADDCOLOUR() {
-    ZLSCINPUT="$@"
-    zCCOLUMNS=$COLUMNS
-    IFS=$'\n'
-    unset ZLSEQSTRLN
-    ZLSEQLN=0
-    for ZLSEQ in $=ZLSCINPUT; do
-      if [ -z "$ZLSEQSTRLN" ]; then
-        ZLSEQSTRLN=$(getstrln $ZLSEQ)
-        ZLSEQLN=$ZLSEQSTRLN
-      else
-        ZLSEQSTRLN=$(getstrln $ZLSEQ)
-      fi
-      if [ $ZLSEQSTRLN -gt $ZLSEQLN ]; then
-        ZLSEQLN=$ZLSEQSTRLN
-      fi
+
+  ## starting directory
+  zls_preserve_dir=$(pwd)
+
+  unset zls_folder_contents_var
+
+  ## check for known archive extensions
+  zls_is_archive() {
+    for zls_working_arg in $=@; do
+      case $zls_working_arg in
+         (*.ar) return 0 ;;
+          (*.a) return 0 ;;
+         (*.7z) return 0 ;;
+         (*.xz) return 0 ;;
+         (*.gz) return 0 ;;
+        (*.zip) return 0 ;;
+        (*.zst) return 0 ;;
+        (*.tar) return 0 ;;
+        (*.deb) return 0 ;;
+        (*.rar) return 0 ;;
+        (*.arj) return 0 ;;
+        (*.LBR) return 0 ;;
+       (*.cpio) return 0 ;;
+       (*.shar) return 0 ;;
+        (*.iso) return 0 ;;
+        (*.lbr) return 0 ;;
+        (*.mar) return 0 ;;
+        (*.sbx) return 0 ;;
+        (*.bz2) return 0 ;;
+         (*.br) return 0 ;;
+    (*.genozip) return 0 ;;
+         (*.lz) return 0 ;;
+        (*.s7z) return 0 ;;
+        (*.lz4) return 0 ;;
+       (*.lzma) return 0 ;;
+        (*.lzo) return 0 ;;
+         (*.sz) return 0 ;;
+        (*.img) return 0 ;;
+        (*.IMG) return 0 ;;
+        (*.apk) return 0 ;;
+        (*.ace) return 0 ;;
+            (*) return 1 ;;
+      esac
     done
-    for COLOUR in $=ZLSCINPUT; do
-      CQAL() {
-        if [ "$COLOUR" = '.*' ]; then
-          COLOUR='  '
-        fi
-        if [ "$COLOUR" = '*' ]; then
-          COLOUR=' '
-        fi
-        ZZTECTZL=${COLOUR//' '/''}
-        if [ "$ZZTECTZL" != "$COLOUR" ] && [ ! -z "$ZZTECTZL" ]; then
-          COLOUR=""$(print -n \')""$COLOUR""$(print -n \')""
-        fi
-        ZZTESTZL1=${COLOUR: :2}
-        if [ "$ZZTESTZL1" = "'." ]; then
-          if [ ! -z "$ZLSINP" ]; then
-            zls $ZLSINP
-          else
-            zls
-          fi
-          return 0
-        fi
-        CEQLN=$(getstrln $COLOUR)
-        if [ $CEQLN -lt $ZLSEQLN ]; then
-          until [ $CEQLN -ge $ZLSEQLN ]; do
-            COLOUR=""$COLOUR" "
-            CEQLN=$((CEQLN+1))
-          done
-        fi
-        unset zCCLN
-        zCCLN=$(getstrln $COLOUR)
-        zCCLN=$((zCCLN+2))
-        if [ $zCCLN -lt $zCCOLUMNS ]; then
-          zCCOLUMNS=$((zCCOLUMNS-zCCLN))
-        else
-          printf '\n'
-          zCCOLUMNS=$COLUMNS
-          zCCOLUMNS=$((zCCOLUMNS-zCCLN))
-        fi
-      }
-      if [ -d "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
-        CQAL
+  }
+
+  ## fill item contents array - perform on each operation given
+  for zls_ops in $=zls_arg_array; do
+    #folder contents array
+    unset zls_contains_items
+    declare -a zls_contains_items
+    #directory
+    if [ -d "$zls_ops" ]; then
+      #error out if fail to cd
+      cd "$zls_ops" || return 1
+      #include current dir
+      zls_contains_items+=(".")
+      #check if we're at /
+      zls_chkcurrentdir=$(pwd)
+      if [ ! "$zls_chkcurrentdir" = '/' ]; then
+        zls_contains_items+=("..")
+      fi
+      #if folder contains items
+      if (print *) &> /dev/null; then
+        #save folder contents to var
+        zls_folder_contents_var=$(print *)
+        #divide folder content var by space, add each item to contents var
+        IFS=$' '
+        for zls_indiv_items in $=zls_folder_contents_var; do
+          zls_contains_items+=("$zls_indiv_items")
+        done
+        unset IFS
+      fi
+      unset zls_folder_contents_var
+      unset zls_indiv_items
+      #if folder contains hidden items
+      if (print .*) &> /dev/null; then
+        #save folder contents to var
+        zls_folder_contents_var=$(print .*)
+        #divide folder content var by space, add each item to contents var
+        IFS=$' '
+        for zls_indiv_items in $=zls_folder_contents_var; do
+          zls_contains_items+=("$zls_indiv_items")
+        done
+        unset IFS
+      fi
+    else
+      #file
+      if isfile "$zls_ops" &> /dev/null; then
+        zls_contains_items+=("$zls_ops")
+      else
+        return 1
+      fi
+    fi
+    ## colourize output
+    for zls_output in $=zls_contains_items; do
+      # symlink
+      if [ -L "$zls_output" ]; then
         ztput bold
-        ctext blue nnl "$COLOUR"
-        print -n '  '
-      elif [ -p "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
-        CQAL
+        ctext cyan std "$zls_output"
+      # block special
+      elif [ -b "$zls_output" ]; then
+        ztput bold
+        ctext yellow std "$zls_output"
+      # socket
+      elif [ -S "$zls_output" ]; then
+        ztput bold
+        ctext magenta std "$zls_output"
+      # character special
+      elif [ -c "$zls_output" ]; then
+        ctext blue std "$zls_output"
+      # fifo
+      elif [ -p "$zls_output" ]; then
+        ctext yellow std "$zls_output"
+      # directory
+      elif [ -d "$zls_output" ]; then
+        ztput bold
+        ctext blue std "$zls_output"
+      # executable
+      elif [ -x "$zls_output" ]; then
+        ztput bold
+        ctext green std "$zls_output"
+      # archive
+      elif zls_is_archive "$zls_output"; then
+        ztput bold
+        ctext red std "$zls_output"
+      # regular file
+      elif [ -f "$zls_output" ]; then
+        ctext white std "$zls_output"
+      # anything else
+      else
         ztput dim
-        ctext magenta nnl "$COLOUR"
-        print -n '  '
-      elif [ -x "$COLOUR" ] && [ ! -h "$COLOUR" ]; then
-        CQAL
-        ztput bold
-        ctext green nnl "$COLOUR"
-        print -n '  '
-      elif [ -h "$COLOUR" ]; then
-        ztput bold
-        if (cd $COLOUR &> /dev/null) &> /dev/null; then
-          CQAL
-          ctext cyan nnl "$COLOUR"
-        elif [ -s "$COLOUR" ]; then
-          CQAL
-          ctext cyan nnl "$COLOUR"
-        else
-          CQAL
-          ctext red nnl "$COLOUR"
-        fi
-        print -n '  '
-      else
-        ZLSBASEPRINT() {
-          CQAL
-          print -n "$COLOUR"
-          print -n '  '
-        }
-        ZLSARCPRINT() {
-          CQAL
-          ctext red nnl "$COLOUR"
-          print -n '  '
-        }
-        ZLSIMGPRINT() {
-          ztput bright
-          CQAL
-          ctext yellow nnl "$COLOUR"
-          print -n '  '
-        }
-        case $COLOUR in
-          (*.tar) ZLSARCPRINT ;;
-          (*.zst) ZLSARCPRINT ;;
-          (*.zip) ZLSARCPRINT ;;
-          (*.rar) ZLSARCPRINT ;;
-          (*.7z) ZLSARCPRINT ;;
-          (*.xz) ZLSARCPRINT ;;
-          (*.cpio) ZLSARCPRINT ;;
-          (*.arj) ZLSARCPRINT ;;
-          (*.gz) ZLSARCPRINT ;;
-          (*.jar) ZLSARCPRINT ;;
-          (*.img) ZLSIMGPRINT ;;
-          (*.IMG) ZLSIMGPRINT ;;
-          (*.iso) ZLSIMGPRINT ;;
-          (*.ISO) ZLSIMGPRINT ;;
-          (*.raw) ZLSIMGPRINT ;;
-          (*.RAW) ZLSIMGPRINT ;;
-          (*) ZLSBASEPRINT ;;
-        esac
+        ctext white std "$zls_output"
       fi
     done
-    print
-  }
-  if [ -z "$ZLSINP" ]; then
-    ZLS_ADDCOLOUR $(ZLS_BASE)
-  elif [ -d "$ZLSINP" ]; then
-    ZLSWORKINGDIR=$(pwd)
-    cd $ZLSINP
-    zls
-    cd $ZLSWORKINGDIR
-  elif isfile $ZLSINP; then
-    ZLS_ADDCOLOUR "$ZLSINP "
-  else
-    print "$ZLSINP - No such file or directory"
-  fi
-  ztput cvvis
+  done
+
+  ## return to base dir
+  cd "$zls_preserve_dir"
+
+  ## return
   return 0
 }
