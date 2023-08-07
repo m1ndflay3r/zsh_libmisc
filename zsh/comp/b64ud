@@ -27,52 +27,52 @@ b64ud() {
     unset zFOXT
     unset zB64UDWAITINDEF
   fi
-  b64UDINTMPH="$(fox)"
+  zb64ud_readin_data="$(fox)"
   unset zFOXT
-  B64UTEST="${b64UDINTMPH: :5}"
-  if [ "$B64UTEST" = "error" ]; then
+  zb64ud_test_readin_data="${zb64ud_readin_data: :5}"
+  if [ "$zb64ud_test_readin_data" = "error" ]; then
     if [ -z "$@" ]; then
       b64ud_fail
       return 1
     else
-      unset b64UDINTMPH
-      b64UDINTMPH="$@"
+      unset zb64ud_readin_data
+      zb64ud_readin_data="$@"
     fi
     if isfile "$@"; then
-      b64UDINTMPH="$(fox-fr "$b64UDINTMPH")"
+      zb64ud_readin_data="$(fox-fr "$zb64ud_readin_data")"
     fi
-  elif [ "$B64UTEST" = 'file:' ]; then
-    b64UDINTMPH="${b64UDINTMPH:5}"
-    if isfile "$b64UDINTMPH"; then
-      b64UDINTMPH="$(fox-fr "$b64UDINTMPH")"
+  elif [ "$zb64ud_test_readin_data" = 'file:' ]; then
+    zb64ud_readin_data="${zb64ud_readin_data:5}"
+    if isfile "$zb64ud_readin_data"; then
+      zb64ud_readin_data="$(fox-fr "$zb64ud_readin_data")"
     else
       b64ud_fail
       return 1
     fi
   fi
   #format input
-  b64UDINTMPH=${b64UDINTMPH//$'\n'/''}
-  unset b64UDIN
-  unset b64UDIN_tmp
-  declare -a b64UDIN
-  while IFS= noglob read -r -k40 -d '' -u0 b64UDIN_tmp; do
-    b64UDIN+=("$b64UDIN_tmp")
-  done < <(noglob printf '%s' "$b64UDINTMPH")
-  if [ ! -z "$b64UDIN_tmp" ]; then
-    b64UDIN+=("$b64UDIN_tmp")
+  zb64ud_readin_data=${zb64ud_readin_data//$'\n'/''}
+  unset b64ud_readin_data_array
+  unset b64ud_loop_var
+  declare -a b64ud_readin_data_array
+  while IFS= noglob read -r -k40 -d '' -u0 b64ud_loop_var; do
+    b64ud_readin_data_array+=("$b64ud_loop_var")
+  done < <(noglob printf '%s' "$zb64ud_readin_data")
+  if [ ! -z "$b64ud_loop_var" ]; then
+    b64ud_readin_data_array+=("$b64ud_loop_var")
   fi
   #env setup
   if [ ! -d "/tmp" ]; then
-    B64UDWDIR=$HOME
+    b64ud_working_dir=$HOME
   else
-    B64UDWDIR='/tmp'
+    b64ud_working_dir='/tmp'
   fi
   #define b64 to hex as function
   zzb64tohex() {
-    for k in $=b64UDIN; do
+    for k in $=b64ud_readin_data_array; do
       zELFSPOOF="b64ud"
       OOPSFLAG=0
-      if isfile $B64UDWDIR/.zLIBMISCISAMD; then
+      if isfile $b64ud_working_dir/.zLIBMISCISAMD; then
         b64udamd | zelfexec $k || OOPSFLAG=1
       else
         b64udarm | zelfexec $k || OOPSFLAG=1
