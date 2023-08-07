@@ -147,9 +147,9 @@ zls() {
       elif [ -f "$zls_output" ]; then
         ctext white std "$zls_output"
       # anything else
-      else
-        ztput dim
-        ctext white std "$zls_output"
+#      else
+#        ztput dim
+#        ctext white std "$zls_output"
       fi
     done
   done
