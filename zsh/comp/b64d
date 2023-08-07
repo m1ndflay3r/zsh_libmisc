@@ -22,8 +22,8 @@ b64d() {
   fi
   zB64D_stdin="$(fox)"
   unset zFOXT
-  zB64TESTWX="${zB64D_stdin: :5}"
-  if [ "$zB64TESTWX" = "error" ]; then
+  zb64d_test_input="${zB64D_stdin: :5}"
+  if [ "$zb64d_test_input" = "error" ]; then
     if [ -z "$@" ]; then
       b64d_fail
       return 1
@@ -33,7 +33,7 @@ b64d() {
         zB64D_stdin="$(fox-fr "$zB64D_stdin")"
       fi
     fi
-  elif [ "$zB64TESTWX" = 'file:' ]; then
+  elif [ "$zb64d_test_input" = 'file:' ]; then
     zB64D_stdin="${zB64D_stdin:5}"
     if isfile "$zB64D_stdin"; then
       zB64D_stdin="$(fox-fr "$zB64D_stdin")"
@@ -59,8 +59,9 @@ b64d() {
     fi
   }
   #hexdump user input, read hexdump 60 chars at a time, conv to b64 with b64d binary
-  while IFS= noglob read -r -k60 -d '' -u0 zB64D_stdin_2; do
-    export zSTDIN="$zB64D_stdin_2"
+  while IFS= noglob read -r -k60 -d '' -u0 zB64D_stdin_loop; do
+    export zSTDIN="$zB64D_stdin_loop"
+    # trim newlines from output if flag zXXB64 is 0 or empty
     if [ -z "$zXXB64" ] || [ "$zXXB64" = 0 ]; then
       unset zB64HOLD
       zB64HOLD="$(b64d_binary)"
@@ -72,8 +73,9 @@ b64d() {
     unset zSTDIN
   done < <(hexd "$zB64D_stdin")
   #don't trim final line if less than 60 chars
-  if [ ! -z "$zB64D_stdin_2" ]; then
-    export zSTDIN="$zB64D_stdin_2"
+  if [ ! -z "$zB64D_stdin_loop" ]; then
+    export zSTDIN="$zB64D_stdin_loop"
+    # trim newlines from output if flag zXXB64 is 0 or empty
     if [ -z "$zXXB64" ] || [ "$zXXB64" = 0 ]; then
       unset zB64HOLD
       zB64HOLD="$(b64d_binary)"
