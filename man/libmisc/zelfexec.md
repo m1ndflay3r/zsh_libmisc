@@ -47,6 +47,13 @@
 
     output: "some text"
 
+-------------------------------------------------------------------------------------------------
+
+  *flags:*
+
+    zELFWAITINDEF - set to a non-(zero || empty) value to wait indefinitely for stdin pipe (default is 33 seconds)
+
+    zWAITFORSTDIN - set to a non-empty value to wait for a second stdin pipe, to use for stdin of the new process
 
 -------------------------------------------------------------------------------------------------
   *requires linux > 3.17, and fexecve to be enabled and usable.*
