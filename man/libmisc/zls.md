@@ -11,4 +11,3 @@
 
 ----------------------------------
 
-*currently a little buggy, but dependable enough for most uses*
