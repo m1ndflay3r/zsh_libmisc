@@ -1,0 +1,5 @@
+ztmux() {
+  print "Error: libmisc compiled without ztmux"
+  print "To use the included tmux module, recompile libmisc with zlibmisc_incl_extra=ztmux ./build (--dynamic; --static)"
+  return 1
+}
