@@ -76,6 +76,7 @@ zterm() {
         break
       fi
     done
+    print ""
     ctext green std "Detached from "$zterm_att_name""
     return 0
   }
