@@ -73,11 +73,13 @@ zterm() {
     #bindkey CTRL + H to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
     zterm_att_session_num="$(nrandom)" &> /dev/null
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "rm -rf ~/.zterm_session_"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
-    zpty -w $zterm_att_name "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }"
-    zpty -w $zterm_att_name "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }"
-    zpty -w $zterm_att_name "zle -N zterm_run_detach"
-    zpty -w $zterm_att_name "bindkey \"^H\" "zterm_run_detach""
+    print "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }" > ~/.zterm_session_"$zterm_att_session_num"
+    print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
+    print "zle -N zterm_run_detach" >> ~/.zterm_session_"$zterm_att_session_num"
+    print "bindkey \"^H\" "zterm_run_detach"" >> ~/.zterm_session_"$zterm_att_session_num"
+    zpty -w $zterm_att_name "source ~/.zterm_session_"$zterm_att_session_num""
     #attached U.I printout
     print
     ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
