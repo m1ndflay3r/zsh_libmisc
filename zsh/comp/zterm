@@ -58,10 +58,6 @@ zterm() {
     }
     trap "zterm_trap_write" SIGINT
     zterm_att_session_num="$(nrandom)" &> /dev/null
-    zterm_session_keepalive=""$HOME"/.zterm_session_"$zterm_att_session_num""
-    print -n "" > $zterm_session_keepalive
-    zterm_kill_comm="rm -rf "$zterm_session_keepalive""
-    print "$zterm_kill_comm" > ""$HOME"/.kill"$zterm_att_session_num""
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
     zpty -w $zterm_att_name "bindkey -s \"^H\" "~/.kill"$zterm_att_session_num"""
@@ -73,7 +69,7 @@ zterm() {
         zpty -w -n $zterm_att_name "$zterm_input_test"
         unset zterm_input_test
       fi
-      if ! isfile "$zterm_session_keepalive" &> /dev/null; then
+      if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
         break
       fi
       if ! zpty -t $zterm_att_name; then
