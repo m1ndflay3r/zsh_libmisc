@@ -77,8 +77,6 @@ zterm() {
     zpty -w $zterm_att_name "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }"
     zpty -w $zterm_att_name "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }"
     zpty -w $zterm_att_name "zle -N zterm_run_detach"
-#    zpty -w $zterm_att_name "alias zterm_detach_session="~/.kill"$zterm_att_session_num"""
-#    zpty -w $zterm_att_name "bindkey -s \"^H\" "zterm_detach_session""
     zpty -w $zterm_att_name "bindkey \"^H\" "zterm_run_detach""
     #attached U.I printout
     print
