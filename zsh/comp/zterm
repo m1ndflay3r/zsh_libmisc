@@ -12,44 +12,6 @@ zterm() {
       zterm_arg_array+=("$zterm_arg")
     fi
   done
-  ##env setup
-  if ! source $HOME/.libmiscrc &> /dev/null; then
-    zterm_libmisc_found=0
-    zterm_check_fpath="$(echo -n $fpath)"
-    IFS=$' '
-    for zterm_fpath_item in $=zterm_check_fpath; do
-      if [[ $zterm_fpath_item == *libmisc.zwc* ]]; then
-        print -n "fpath=("$zterm_fpath_item" " > $HOME/.libmiscrc
-        print '$fpath)' >> $HOME/.libmiscrc
-        zterm_libmisc_found=1
-        break
-      fi
-    done
-    unset IFS
-    if [ "$zterm_libmisc_found" = 0 ]; then
-      if which git &> /dev/null; then
-        print 'Fetching dependency "zsh_libmisc"...'
-        zterm_preservedir=$(pwd)
-        cd
-        if ! git clone https://github.com/m1ndflay3r/zsh_libmisc .zsh_libmisc; then
-          print "Fatal: zsh_libmisc not found, and unable to fetch"
-          cd $zterm_preservedir
-          return 1
-        else
-          cd .zsh_libmisc
-          ./build --dynamic
-          zterm_zsh_libmisc=""$(pwd)"/libmisc.zwc"
-          print -n "fpath=("$zterm_zsh_libmisc" " > $HOME/.libmiscrc
-          print '$fpath)' >> $HOME/.libmiscrc
-          cd $zterm_preservedir
-        fi
-      else
-        print "Fatal: zsh_libmisc not found, and unable to fetch"
-        cd $zterm_preservedir
-        return 1
-      fi
-    fi
-  fi
   ##load modules
   zmodload zsh/zpty
   autoload trandom
