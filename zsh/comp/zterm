@@ -44,7 +44,7 @@ zterm() {
   }
   #attach term to pty
   zterm_attach_pty() {
-    zterm_att_name="$1"
+    eval "export zterm_att_name=$"$1""
     if [ -z "$zterm_att_name" ]; then
       print "zterm: need argument"
       return 1
