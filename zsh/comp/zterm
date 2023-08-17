@@ -19,6 +19,7 @@ zterm() {
   autoload isfile
   autoload zchmod
   autoload ctext
+  autoload zrm
   ##define functions
   #create pty with random name, save random name to human-readable name as variable
   zterm_create_pty() {
@@ -48,6 +49,7 @@ zterm() {
     #start zsh login session in pty
     zpty -b "$zterm_name" "zsh --login -i"
   }
+
   #attach term to pty
   zterm_attach_pty() {
     #expect arg1 to be a variable name containing a pty ID
@@ -89,6 +91,9 @@ zterm() {
         break
       fi
       if ! zpty -t $zterm_att_name; then
+        until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
+          zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
+        done
         break
       fi
     done
