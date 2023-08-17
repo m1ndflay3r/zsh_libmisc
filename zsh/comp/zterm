@@ -74,9 +74,12 @@ zterm() {
     zterm_att_session_num="$(nrandom)" &> /dev/null
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
-    zpty -w $zterm_att_name "bindkey -s \"^H\" "~/.kill"$zterm_att_session_num"""
+    zpty -w $zterm_att_name "alias zterm_detach_session="~/.kill"$zterm_att_session_num"""
+    zpty -w $zterm_att_name "bindkey -s \"^H\" "zterm_detach_session""
     #attached U.I printout
-    ctext green std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
+    print
+    ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
+    print
     #main loop
     while true; do
       #read from pty, check stdin for characters waiting and write if present
@@ -99,7 +102,9 @@ zterm() {
     done
     #detach U.I printout
     print ""
-    ctext green std "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
+    print
+    ctext cyan std "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
+    print
     #return
     return 0
   }
