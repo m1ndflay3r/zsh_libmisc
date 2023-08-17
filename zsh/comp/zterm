@@ -15,6 +15,9 @@ zterm() {
   ##load modules
   zmodload zsh/zpty
   autoload trandom
+  autoload nrandom
+  autoload isfile
+  autoload zchmod
   autoload ctext
   ##define functions
   #create pty with random name, save random name to human-readable name as variable
@@ -54,6 +57,14 @@ zterm() {
       zpty -w $zterm_att_name "$(print -n "\x03")"
     }
     trap "zterm_trap_write" SIGINT
+    zterm_att_session_num="$(nrandom)" &> /dev/null
+    zterm_session_keepalive=""$HOME"/.zterm_session_"$zterm_att_session_num""
+    print -n "" > $zterm_session_keepalive
+    zterm_kill_comm="rm -rf "$zterm_session_keepalive""
+    print "$zterm_kill_comm" > ""$HOME"/.kill"$zterm_att_session_num""
+    print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
+    zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
+    zpty -w $zterm_att_name "bindkey -s \"^H\" "~/.kill"$zterm_att_session_num"""
     ctext green std "Attached to "$zterm_att_name""
     while true; do
       zpty -r $zterm_att_name
@@ -61,6 +72,9 @@ zterm() {
       if [ ! -z "$zterm_input_test" ]; then
         zpty -w -n $zterm_att_name "$zterm_input_test"
         unset zterm_input_test
+      fi
+      if ! isfile "$zterm_session_keepalive" &> /dev/null; then
+        break
       fi
       if ! zpty -t $zterm_att_name; then
         break
