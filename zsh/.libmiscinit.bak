@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 libmiscinit() {
+  autoload zterm
   autoload zln
   autoload zwhich
   autoload clocky
