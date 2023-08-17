@@ -115,15 +115,15 @@ zterm() {
     ctext blue std '---------------------------------------------------------'
     ctext blue std "- "$(ctext green)"         zterm: tmux-like zpty module wrapper  "$(ctext blue)"       -"
     ctext blue std '---------------------------------------------------------'
-    ctext cyan std "  usage: "$(ctext reset)"- new <pty name>      "
+    ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
     echo '             create new pty under $<pty name>            '
-    echo '         - att $<pty name>                               '
+    ctext yellow std '          att $<pty name>                               '
     echo '             attach running pty under $<pty name>        '
-    echo '         - sen $<pty name> arg1 arg2 ...                 '
+    ctext yellow std '          sen $<pty name> arg1 arg2 ...                 '
     echo '             send args after $<pty-name> to $<pty_name>  '
-    echo '         - clo $<pty name>                               '
+    ctext yellow std '          clo $<pty name>                               '
     echo '             close running pty under $<pty-name>         '
-    echo '         - help || --help                                '
+    ctext yellow std '          help || --help                                '
     echo '             print this help text                        '
     print ""
   }
