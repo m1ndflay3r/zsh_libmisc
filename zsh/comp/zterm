@@ -32,7 +32,7 @@ zterm() {
     eval "export zterm_test=$"$zterm_hr_name""
     if [ ! -z "$zterm_test" ]; then
       if zpty -t "$zterm_test" &> /dev/null; then
-        print "zterm: "$zterm_hr_name" not empty"
+        print "zterm: "$zterm_hr_name" already running"
         return 3
       else
         eval "unset $"$zterm_hr_name""
@@ -45,12 +45,13 @@ zterm() {
   #attach term to pty
   zterm_attach_pty() {
     eval "export zterm_att_name=$"$1""
+    zterm_att_hr_name="$1"
     if [ -z "$zterm_att_name" ]; then
       print "zterm: need argument"
       return 1
     fi
     if ! zpty -t "$zterm_att_name"; then
-      print "zterm: no pty exists at "$zterm_att_name""
+      print "zterm: no pty exists at "$zterm_att_hr_name" ("$zterm_att_name")"
       return 2
     fi
     zterm_trap_write() {
@@ -61,7 +62,7 @@ zterm() {
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
     zpty -w $zterm_att_name "bindkey -s \"^H\" "~/.kill"$zterm_att_session_num"""
-    ctext green std "Attached to "$zterm_att_name""
+    ctext green std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
     while true; do
       zpty -r $zterm_att_name
       IFS= noglob read -r -k1 -t0.01 -d'' -u0 -s zterm_input_test
@@ -77,7 +78,7 @@ zterm() {
       fi
     done
     print ""
-    ctext green std "Detached from "$zterm_att_name""
+    ctext green std "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
     return 0
   }
   #send keystrokes
@@ -97,11 +98,12 @@ zterm() {
   #close pty
   zterm_close_pty() {
     eval "export zterm_close=$"$1""
+    zterm_close_hr="$1"
     if zpty -t "$zterm_close" &> /dev/null; then
       zpty -d "$zterm_close"
       return 0
     else
-      print "pty "$zterm_close" does not exist"
+      print "pty "$zterm_close_hr" does not exist"
       return 1
     fi
   }
