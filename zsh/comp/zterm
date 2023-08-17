@@ -112,10 +112,10 @@ zterm() {
   }
   #help
   zterm_help() {
-    echo '---------------------------------------------------------'
-    echo '-          zterm: tmux-like zpty module wrapper         -'
-    echo '---------------------------------------------------------'
-    echo '  usage: - new <pty name>                                '
+    ctext blue std '---------------------------------------------------------'
+    ctext blue std "- "$(ctext green)"         zterm: tmux-like zpty module wrapper  "$(ctext blue)"       -"
+    ctext blue std '---------------------------------------------------------'
+    ctext cyan std "  usage: "$(ctext reset)"- new <pty name>      "
     echo '             create new pty under $<pty name>            '
     echo '         - att $<pty name>                               '
     echo '             attach running pty under $<pty name>        '
