@@ -40,14 +40,19 @@ zterm() {
         return 3
       else
         #if pty not found, ensure $"$arg1" is empty
-        eval "unset $"$zterm_hr_name""
+        eval unset "$"$zterm_hr_name""
+        eval unset "$"$zterm_hr_name"_detach"
       fi
     fi
     #generate random pty ID, make human-readable name a variable containing pty ID
     zterm_name="$(trandom)"
+    zterm_detach_name=""$zterm_name"_detach"
     eval export "$zterm_hr_name"="$zterm_name"
+    eval export ""$zterm_hr_name"_detach"="$zterm_detach_name"
     #start zsh login session in pty
     zpty -b "$zterm_name" "zsh --login -i"
+    #start detachment handler in second pty
+    zpty -b "$zterm_detach_name" "zsh --login -i"
   }
 
   #attach term to pty
@@ -60,17 +65,24 @@ zterm() {
       print "zterm: need argument"
       return 1
     fi
+    zterm_att_detach_hr_name=""$1"_detach"
+    eval "export zterm_att_detach_name=$"$1"_detach"
     #error out if no pty running under pty ID
     if ! zpty -t "$zterm_att_name"; then
       print "zterm: no pty exists at "$zterm_att_hr_name" ("$zterm_att_name")"
       return 2
     fi
     #trap SIGINT so CTRL + C is sent to attached session and not the parent shell
-    zterm_trap_write() {
+    zterm_att_trap_write() {
       zpty -w $zterm_att_name "$(print -n "\x03")"
     }
-    trap "zterm_trap_write" SIGINT
-    #bindkey CTRL + H to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
+    trap "zterm_att_trap_write" SIGINT
+    #trap QUIT so CTRL+\ sends detach command
+    zterm_att_detach_write() {
+      zpty -w $zterm_att_detach_name "$(print -n "\x08")"
+    }
+    trap "zterm_att_detach_write" QUIT
+    #bindkey CTRL + H in detach pty to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
     zterm_att_session_num="$(nrandom)" &> /dev/null
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     print "rm -rf ~/.zterm_session_"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
@@ -79,7 +91,7 @@ zterm() {
     print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
     print "zle -N zterm_run_detach" >> ~/.zterm_session_"$zterm_att_session_num"
     print "bindkey \"^H\" "zterm_run_detach"" >> ~/.zterm_session_"$zterm_att_session_num"
-    zpty -w $zterm_att_name "source ~/.zterm_session_"$zterm_att_session_num""
+    zpty -w $zterm_att_detach_name "source ~/.zterm_session_"$zterm_att_session_num""
     #attached U.I printout
     print
     ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
@@ -93,7 +105,7 @@ zterm() {
         zpty -w -n $zterm_att_name "$zterm_input_test"
         unset zterm_input_test
       fi
-      #break if exit or ctrl + H used
+      #break if exit or CTRL+\ used
       if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
         break
       fi
@@ -101,6 +113,7 @@ zterm() {
         until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
           zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
         done
+        zpty -d ""$zterm_att_name"_detach"
         break
       fi
     done
@@ -133,9 +146,12 @@ zterm() {
     #expect arg1 to be the name of a variable
     eval "export zterm_close=$"$1""
     zterm_close_hr="$1"
+    eval "export zterm_detach_close=$"$1"_detach"
+    zterm_close_detach_hr=""$1"_detach"
     #if pty found, close and return 0
     if zpty -t "$zterm_close" &> /dev/null; then
       zpty -d "$zterm_close"
+      zpty -d "$zterm_detach_close"
       return 0
     else
       #failure printout if no pty found and return 1
