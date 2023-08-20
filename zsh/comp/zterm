@@ -154,8 +154,9 @@ zterm() {
         zterm_send_arr+=("$zterm_send_args")
       fi
     done
+    eval export zterm_send_realname=$"$zterm_send_firstarg"
     #return 0 if write array to first arg succeeds, return 1 if fail
-    if zpty -w $zterm_send_firstarg "$=zterm_send_arr"; then return 0; else return 1; fi
+    if zpty -w $zterm_send_realname "$=zterm_send_arr"; then return 0; else return 1; fi
   }
   #close pty
   zterm_close_pty() {
