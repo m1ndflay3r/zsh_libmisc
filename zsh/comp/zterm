@@ -84,8 +84,21 @@ zterm() {
     trap "zterm_att_detach_write" QUIT
     #bindkey CTRL + H in detach pty to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
     zterm_att_session_num="$(nrandom)" &> /dev/null
-    print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "rm -rf "$HOME"/.zterm_session_"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
+    zterm_att_libmisc_filepath=$(findlibmisc)
+    print -n '#!' > ""$HOME"/.kill"$zterm_att_session_num""
+    print "$(which zsh)" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print -n 'fpath=(' >> ""$HOME"/.kill"$zterm_att_session_num""
+    print -n "$zterm_att_libmisc_filepath" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print ' $fpath)' >> ""$HOME"/.kill"$zterm_att_session_num""
+    print 'autoload zrm' >> ""$HOME"/.kill"$zterm_att_session_num""
+    print 'autoload isfile' >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "  zrm "$HOME"/.kill"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "  zrm "$HOME"/.zterm_session_"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "return 0" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
     print "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }" > ~/.zterm_session_"$zterm_att_session_num"
     print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
