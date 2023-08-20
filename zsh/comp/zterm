@@ -85,7 +85,7 @@ zterm() {
     #bindkey CTRL + H in detach pty to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
     zterm_att_session_num="$(nrandom)" &> /dev/null
     print "rm -rf "$HOME"/.kill"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "rm -rf ~/.zterm_session_"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
+    print "rm -rf "$HOME"/.zterm_session_"$zterm_att_session_num"" >> ""$HOME"/.kill"$zterm_att_session_num""
     zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
     print "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }" > ~/.zterm_session_"$zterm_att_session_num"
     print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
