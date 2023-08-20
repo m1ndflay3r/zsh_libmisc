@@ -113,6 +113,9 @@ zterm() {
         until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
           zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
         done
+        until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do
+          zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
+        done
         zpty -d ""$zterm_att_name"_detach"
         break
       fi
