@@ -168,18 +168,8 @@ zterm() {
   }
   #read pty
   zterm_read_pty() {
-    unset zterm_read_firstarg
-    unset zterm_read_arr
-    declare -a zterm_read_arr
-    for zterm_read_arg in $=@; do
-      if [ -z "$zterm_read_firstarg" ]; then
-        zterm_read_firstarg="$zterm_read_arg"
-      else
-        zterm_read_arr+=("$zterm_send_arg")
-      fi
-    done
-    eval export zterm_read_realname=$"$zterm_read_firstarg"
-    if zpty -r $zterm_read_realname "$=zterm_read_arr"; then return 0; else return 1; fi
+    eval "export zterm_read_realname=$"$1""
+    if zpty -r $zterm_read_realname; then return 0; else return 1; fi
   }
   #start single command in detached pty
   zterm_single_comm() {
