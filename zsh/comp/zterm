@@ -158,6 +158,26 @@ zterm() {
     #return 0 if write array to first arg succeeds, return 1 if fail
     if zpty -w $zterm_send_realname "$=zterm_send_arr"; then return 0; else return 1; fi
   }
+  #read pty
+  zterm_read_pty() {
+    unset zterm_read_firstarg
+    unset zterm_read_arr
+    declare -a zterm_read_arr
+    for zterm_read_arg in $=@; do
+      if [ -z "$zterm_read_firstarg" ]; then
+        zterm_read_firstarg="$zterm_read_arg"
+      else
+        zterm_read_arr+=("$zterm_send_arg")
+      fi
+    done
+    eval export zterm_read_realname=$"$zterm_read_firstarg"
+    if zpty -r $zterm_read_realname "$=zterm_read_arr"; then return 0; else return 1; fi
+  }
+  #start single command in detached pty
+  zterm_single_comm() {
+    print "Stub!"
+    return 1
+  }
   #close pty
   zterm_close_pty() {
     #expect arg1 to be the name of a variable
@@ -199,13 +219,15 @@ zterm() {
     ctext blue std "- "$(ctext green)"         zterm: tmux-like zpty module wrapper  "$(ctext blue)"       -"
     ctext blue std '---------------------------------------------------------'
     ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
-    echo '             create new pty under $<pty name>            '
-    ctext yellow std '          att $<pty name>                               '
-    echo '             attach running pty under $<pty name>        '
-    ctext yellow std '          sen $<pty name> arg1 arg2 ...                 '
-    echo '             send args after $<pty-name> to $<pty_name>  '
-    ctext yellow std '          clo $<pty name>                               '
-    echo '             close running pty under $<pty-name>         '
+    echo '             create new pty under <pty name>            '
+    ctext yellow std '          att <pty name>                               '
+    echo '             attach running pty under <pty name>        '
+    ctext yellow std '          sen <pty name> arg1 arg2 ...                 '
+    echo '             send args after <pty-name> to <pty_name>  '
+    ctext yellow std '          rec <pty-name> arg1 arg2 ...    '
+    echo '             read data from <pty-name> without attach'
+    ctext yellow std '          clo <pty name>                               '
+    echo '             close running pty under <pty-name>         '
     ctext yellow std '          help || --help                                '
     echo '             print this help text                        '
     print ""
@@ -221,11 +243,14 @@ zterm() {
   [ "$zterm_op" = '--help' ] && zterm_op="help"
   [ "$zterm_op" = "create" ] && zterm_op="new"
   [ "$zterm_op" = "creategl" ] && zterm_op="newgl"
+  [ "$zterm_op" = "receive" ] && zterm_op="rec"
+  [ "$zterm_op" = "recv" ] && zterm_op="rec"
   #check arg1 for function name, execute function with arg>1
   case $zterm_op in
        (new) zterm_create_pty $=zterm_arg_array ;;
        (att) zterm_attach_pty $=zterm_arg_array ;;
        (sen) zterm_send_pty $=zterm_arg_array ;;
+       (rec) zterm_read_pty $=zterm_arg_array ;;
        (clo) zterm_close_pty $=zterm_arg_array ;;
      (newgl) zterm_create_global $=zterm_arg_array ;;
      (attgl) zterm_attach_global $=zterm_arg_array ;;
