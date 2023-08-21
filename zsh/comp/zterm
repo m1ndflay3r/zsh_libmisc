@@ -245,6 +245,7 @@ zterm() {
   [ "$zterm_op" = "creategl" ] && zterm_op="newgl"
   [ "$zterm_op" = "receive" ] && zterm_op="rec"
   [ "$zterm_op" = "recv" ] && zterm_op="rec"
+  [ "$zterm_op" = "read" ] && zterm_op="rec"
   #check arg1 for function name, execute function with arg>1
   case $zterm_op in
        (new) zterm_create_pty $=zterm_arg_array ;;
