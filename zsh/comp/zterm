@@ -57,6 +57,7 @@ zterm() {
 
   #attach term to pty
   zterm_attach_pty() {
+    #env setup
     #expect arg1 to be a variable name containing a pty ID
     eval "export zterm_att_name=$"$1""
     zterm_att_hr_name="$1"
@@ -67,6 +68,7 @@ zterm() {
     fi
     zterm_att_detach_hr_name=""$1"_detach"
     eval "export zterm_att_detach_name=$"$1"_detach"
+    zterm_detach_is_exit=0
     #error out if no pty running under pty ID
     if ! zpty -t "$zterm_att_name"; then
       print "zterm: no pty exists at "$zterm_att_hr_name" ("$zterm_att_name")"
@@ -130,13 +132,19 @@ zterm() {
           zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
         done
         zpty -d ""$zterm_att_name"_detach"
+        zterm_detach_is_exit=1
         break
       fi
     done
     #detach U.I printout
     print ""
     print
-    ctext cyan std "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
+    ctext cyan nnl "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
+    if [ "$zterm_detach_is_exit" = 1 ]; then
+      ctext yellow std " (exited)"
+    else
+      print
+    fi
     print
     #return
     return 0
