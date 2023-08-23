@@ -12,6 +12,7 @@ zterm() {
       zterm_arg_array+=("$zterm_arg")
     fi
   done
+
   ##load modules
   zmodload zsh/zpty
   autoload trandom
@@ -20,6 +21,7 @@ zterm() {
   autoload zchmod
   autoload ctext
   autoload zrm
+
   ##define functions
   #create pty with random name, save random name to human-readable name as variable
   zterm_create_pty() {
@@ -153,6 +155,7 @@ zterm() {
     #return
     return 0
   }
+
   #send keystrokes
   zterm_send_pty() {
     #fetch args, separating first arg into var and placing the rest in an array
@@ -170,16 +173,19 @@ zterm() {
     #return 0 if write array to first arg succeeds, return 1 if fail
     if zpty -w $zterm_send_realname "$=zterm_send_arr"; then return 0; else return 1; fi
   }
+
   #read pty
   zterm_read_pty() {
     eval "export zterm_read_realname=$"$1""
     if zpty -r $zterm_read_realname; then return 0; else return 1; fi
   }
+
   #start single command in detached pty
   zterm_single_comm() {
     print "Stub!"
     return 1
   }
+
   #close pty
   zterm_close_pty() {
     #expect arg1 to be the name of a variable
@@ -198,23 +204,28 @@ zterm() {
       return 1
     fi
   }
+
   # stub functions - coming later
   zterm_create_global() {
     print "Stub: not implemented"
     return 1
   }
+
   zterm_attach_global() {
     print "Stub: not implemented"
     return 1
   }
+
   zterm_send_global() {
     print "Stub: not implemented"
     return 1
   }
+
   zterm_close_global() {
     print "Stub: not implemented"
     return 1
   }
+
   #help printout
   zterm_help() {
     ctext blue std '---------------------------------------------------------'
@@ -223,7 +234,7 @@ zterm() {
     ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
     echo '             create new pty under <pty name>            '
     ctext yellow std '          att <pty name>                               '
-    echo '             attach running pty under <pty name>        '
+    echo '             attach running pty under <pty name>  (detach with ^\)'
     ctext yellow std '          sen <pty name> arg1 arg2 ...                 '
     echo '             send args after <pty-name> to <pty_name>  '
     ctext yellow std '          rec <pty-name> arg1 arg2 ...    '
@@ -234,6 +245,7 @@ zterm() {
     echo '             print this help text                        '
     print ""
   }
+
   ##execution
   #map common mistype function names to their actual names
   [ "$zterm_op" = "attach" ] && zterm_op="att"
@@ -248,6 +260,7 @@ zterm() {
   [ "$zterm_op" = "receive" ] && zterm_op="rec"
   [ "$zterm_op" = "recv" ] && zterm_op="rec"
   [ "$zterm_op" = "read" ] && zterm_op="rec"
+
   #check arg1 for function name, execute function with arg>1
   case $zterm_op in
        (new) zterm_create_pty $=zterm_arg_array ;;
