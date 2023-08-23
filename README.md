@@ -5,9 +5,9 @@ A collection of various utilities and functions packed into a single, unified **
 
 
 This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a *Linux kernel and static zsh.*
-If you're thinking *"that sounds a lot like busybox"*, you're on the right track! This project was, in part, inspired by busybox, and intends to be a viable alternative to it.
+If you're thinking *"that sounds a lot like busybox"*, you're on the right track! This project was, in part, inspired by busybox.
 
-Note that many of the decisions made in creating libmisc were done for "coolness factor" rather than "best practices". Do with that what you will.
+Many of the decisions made in creating libmisc were done for "coolness factor". Do with that what you will.
 
 To use libmisc, run the included build script like so:
 
@@ -34,6 +34,18 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 
 
 
+--------------------------------------------------------------------------------------------
+
+### - latest feature -
+
+    == zterm       : tmux-like <zsh/zpty> wrapper, including attach / detach functionality
+
+
+
+--------------------------------------------------------------------------------------------
+
+
+
 ‎
 =
 ## -    features    -
@@ -44,6 +56,7 @@ Below is a basic summary of the features and components of libmisc:
     == libmiscinit : initialization tasks for libmisc
     == zelfexec    : "elfexec" implementation
      |-- omnibin       : fallback mode for zelfexec
+    == zterm       : tmux-like <zsh/zpty> wrapper, including attach / detach functionality
     == hexd        : lightweight hex dumper
      |-- hexdlf        : hexd, with large (infinite) filesize handling
      |-- chexd         : deflation-based hex dump compressor
