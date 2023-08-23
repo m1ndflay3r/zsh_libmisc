@@ -1,278 +1,320 @@
 #!/usr/bin/env zsh
 
 zterm() {
-  ##fetch args
-  unset zterm_op
-  unset zterm_arg_array
-  declare -a zterm_arg_array
-  for zterm_arg in $=@; do
-    if [ -z "$zterm_op" ]; then
-      zterm_op="$zterm_arg"
-    else
-      zterm_arg_array+=("$zterm_arg")
-    fi
-  done
+  ### fetch args
+    # unset zterm_op(arg1) and zterm_arg_array(arg# > arg1); declare zterm_arg_array
+      unset zterm_op
+      unset zterm_arg_array
+      declare -a zterm_arg_array
+    # parse command line opts one by one; save arg1 to $zterm_op and arg#>1 to $=zterm_arg_array
+      for zterm_arg in $=@; do
+        if [ -z "$zterm_op" ]; then
+          zterm_op="$zterm_arg"
+        else
+          zterm_arg_array+=("$zterm_arg")
+        fi
+      done
 
-  ##load modules
-  zmodload zsh/zpty
-  autoload trandom
-  autoload nrandom
-  autoload isfile
-  autoload zchmod
-  autoload ctext
-  autoload zrm
+  ### load modules
+    zmodload zsh/zpty
+    autoload trandom
+    autoload nrandom
+    autoload isfile
+    autoload zchmod
+    autoload ctext
+    autoload zrm
 
-  ##define functions
-  #create pty with random name, save random name to human-readable name as variable
-  zterm_create_pty() {
-    unset zterm_test
-    unset zterm_hr_name
-    zterm_hr_name="$1"
-    #error out if no arg given
-    if [ -z "$zterm_hr_name" ]; then
-      print "zterm: first arg cannot be empty"
-      return 1
-    fi
-    #check if arg1 is a named variable containing a running pty
-    eval "export zterm_test=$"$zterm_hr_name""
-    if [ ! -z "$zterm_test" ]; then
-      #if pty found, error out
-      if zpty -t "$zterm_test" &> /dev/null; then
-        print "zterm: "$zterm_hr_name" already running"
-        return 3
-      else
-        #if pty not found, ensure $"$arg1" is empty
-        eval unset "$"$zterm_hr_name""
-        eval unset "$"$zterm_hr_name"_detach"
-      fi
-    fi
-    #generate random pty ID, make human-readable name a variable containing pty ID
-    zterm_name="$(trandom)"
-    zterm_detach_name=""$zterm_name"_detach"
-    eval export "$zterm_hr_name"="$zterm_name"
-    eval export ""$zterm_hr_name"_detach"="$zterm_detach_name"
-    #start zsh login session in pty
-    zpty -b "$zterm_name" "zsh --login -i"
-    #start detachment handler in second pty
-    zpty -b "$zterm_detach_name" "zsh --login -i"
-  }
-
-  #attach term to pty
-  zterm_attach_pty() {
-    #env setup
-    #expect arg1 to be a variable name containing a pty ID
-    eval "export zterm_att_name=$"$1""
-    zterm_att_hr_name="$1"
-    #error out if no arg given
-    if [ -z "$zterm_att_name" ]; then
-      print "zterm: need argument"
-      return 1
-    fi
-    zterm_att_detach_hr_name=""$1"_detach"
-    eval "export zterm_att_detach_name=$"$1"_detach"
-    zterm_detach_is_exit=0
-    #error out if no pty running under pty ID
-    if ! zpty -t "$zterm_att_name"; then
-      print "zterm: no pty exists at "$zterm_att_hr_name" ("$zterm_att_name")"
-      return 2
-    fi
-    #trap SIGINT so CTRL + C is sent to attached session and not the parent shell
-    zterm_att_trap_write() {
-      zpty -w $zterm_att_name "$(print -n "\x03")"
+  ### define functions
+    #
+    ##create pty with random name, save random name to human-readable name as variable
+    zterm_create_pty() {
+      unset zterm_test
+      unset zterm_hr_name
+      zterm_hr_name="$1"
+      # error out if no arg given
+        if [ -z "$zterm_hr_name" ]; then
+          print "zterm: first arg cannot be empty"
+          return 1
+        fi
+      # check if arg1 is a named variable containing a running pty
+        # attempt extract pty name from human-readable name
+          eval "export zterm_test=$"$zterm_hr_name""
+        # if above command returns a non-empty value
+          if [ ! -z "$zterm_test" ]; then
+            # if pty found, error out
+              if zpty -t "$zterm_test" &> /dev/null; then
+                print "zterm: "$zterm_hr_name" already running"
+                return 3
+              else
+                # if pty not found, ensure $"$arg1" is empty
+                  eval unset "$"$zterm_hr_name""
+                  eval unset "$"$zterm_hr_name"_detach"
+              fi
+          fi
+      # generate random pty ID, make human-readable name a variable containing pty ID
+        zterm_name="$(trandom)"
+        zterm_detach_name=""$zterm_name"_detach"
+        eval export "$zterm_hr_name"="$zterm_name"
+        eval export ""$zterm_hr_name"_detach"="$zterm_detach_name"
+      # start zsh login session in pty
+        zpty -b "$zterm_name" "zsh --login -i"
+      # start detachment handler in second pty
+        zpty -b "$zterm_detach_name" "zsh --login -i"
     }
-    trap "zterm_att_trap_write" SIGINT
-    #trap QUIT so CTRL+\ sends detach command
-    zterm_att_detach_write() {
-      zpty -w $zterm_att_detach_name "$(print -n "\x08")"
+
+    ## attach term to pty
+    zterm_attach_pty() {
+      # env setup
+        # expect arg1 to be a variable name containing a pty ID
+          eval "export zterm_att_name=$"$1""
+          zterm_att_hr_name="$1"
+        # error out if no arg given
+          if [ -z "$zterm_att_name" ]; then
+            print "zterm: need argument"
+            return 1
+          fi
+        # fetch detach pty name
+          zterm_att_detach_hr_name=""$1"_detach"
+          eval "export zterm_att_detach_name=$"$1"_detach"
+        # set detect detach via exit to 0
+          zterm_detach_is_exit=0
+      # error out if no pty running under pty ID
+        if ! zpty -t "$zterm_att_name"; then
+          print "zterm: no pty exists at "$zterm_att_hr_name" ("$zterm_att_name")"
+          return 2
+        fi
+      # trap SIGINT so CTRL + C is sent to attached session and not the parent shell
+        zterm_att_trap_write() {
+          zpty -w $zterm_att_name "$(print -n "\x03")"
+        }
+        trap "zterm_att_trap_write" SIGINT
+      # trap QUIT so CTRL+\ sends detach command
+        zterm_att_detach_write() {
+          zpty -w $zterm_att_detach_name "$(print -n "\x08")"
+        }
+        trap "zterm_att_detach_write" QUIT
+      # generate session num
+        zterm_att_session_num="$(nrandom)" &> /dev/null
+      # find libmisc filepath (self-delete script needs it in fpath for isfile and zrm)
+        zterm_att_libmisc_filepath=$(findlibmisc)
+      # print self-deleting script
+        # #!/path/to/zsh
+          print -n '#!' > ""$HOME"/.kill"$zterm_att_session_num""
+          print "$(which zsh)" >> ""$HOME"/.kill"$zterm_att_session_num""
+        # fpath=(/path/to/libmisc.zwc $fpath)
+          print -n 'fpath=(' >> ""$HOME"/.kill"$zterm_att_session_num""
+          print -n "$zterm_att_libmisc_filepath" >> ""$HOME"/.kill"$zterm_att_session_num""
+          print ' $fpath)' >> ""$HOME"/.kill"$zterm_att_session_num""
+        # autoload zrm
+          print 'autoload zrm' >> ""$HOME"/.kill"$zterm_att_session_num""
+        # autoload isfile
+          print 'autoload isfile' >> ""$HOME"/.kill"$zterm_att_session_num""
+        # until ! isfile /path/to/.kill<session_num>; do
+          print "until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
+        #   zrm /path/to/.kill<session_num>
+          print "  zrm "$HOME"/.kill"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
+        # done
+          print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
+        # until ! isfile /path/to/.zterm_session_<session_num>; do
+          print "until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
+        #   zrm /path/to/.zterm_session_<session_num>
+          print "  zrm "$HOME"/.zterm_session_"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
+        # done
+          print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
+        # return 0
+          print "return 0" >> ""$HOME"/.kill"$zterm_att_session_num""
+      # set execute permissions on self-delete script
+        zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
+      # print source-able detach script for detach pty
+        # create zle widget
+          print "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }" > ~/.zterm_session_"$zterm_att_session_num"
+          print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
+          print "zle -N zterm_run_detach" >> ~/.zterm_session_"$zterm_att_session_num"
+        # bindkey CTRL+H to run detach (in detach pty only)
+          print "bindkey \"^H\" "zterm_run_detach"" >> ~/.zterm_session_"$zterm_att_session_num"
+      # source detach script in detach pty
+        zpty -w $zterm_att_detach_name "source ~/.zterm_session_"$zterm_att_session_num""
+      # attached U.I printout
+        print
+        ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
+        print
+      # main loop (counts of "echo -en "\x1B[0m"" and "echo -en "\x1B[8m"" are for switching off/on character echoing to prevent term issues)
+        while true; do
+          # read from pty
+            echo -en "\x1B[0m"
+            zpty -r $zterm_att_name
+            echo -en "\x1B[8m"
+          # check stdin for characters waiting for write, write if found
+            IFS= noglob read -r -k1 -t0.01 -d'' -u0 -s zterm_input_test
+            if [ ! -z "$zterm_input_test" ]; then
+              zpty -w -n $zterm_att_name "$zterm_input_test"
+              unset zterm_input_test
+            fi
+          # break if CTRL+\ used
+            if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
+              echo -en "\x1B[0m"
+              break
+            fi
+          # cleanup and break if term exited
+            if ! zpty -t $zterm_att_name; then
+              echo -en "\x1B[0m"
+              until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
+                zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
+              done
+              until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do
+                zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
+              done
+              zpty -d ""$zterm_att_name"_detach"
+              zterm_detach_is_exit=1
+              break
+            fi
+        done
+      # detach U.I printout
+        print ""
+        print
+        ctext cyan nnl "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
+        # print (exited) after detach message if reason for detach is exit
+          if [ "$zterm_detach_is_exit" = 1 ]; then
+            ctext yellow std " (exited)"
+          else
+            print
+          fi
+        print
+      # return
+        return 0
     }
-    trap "zterm_att_detach_write" QUIT
-    #bindkey CTRL + H in detach pty to the filepath of a generated self-deleting script, which the main loop checks for and breaks if not present, allowing for detach without exit
-    zterm_att_session_num="$(nrandom)" &> /dev/null
-    zterm_att_libmisc_filepath=$(findlibmisc)
-    print -n '#!' > ""$HOME"/.kill"$zterm_att_session_num""
-    print "$(which zsh)" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print -n 'fpath=(' >> ""$HOME"/.kill"$zterm_att_session_num""
-    print -n "$zterm_att_libmisc_filepath" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print ' $fpath)' >> ""$HOME"/.kill"$zterm_att_session_num""
-    print 'autoload zrm' >> ""$HOME"/.kill"$zterm_att_session_num""
-    print 'autoload isfile' >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "  zrm "$HOME"/.kill"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "  zrm "$HOME"/.zterm_session_"$zterm_att_session_num" &> /dev/null" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "done" >> ""$HOME"/.kill"$zterm_att_session_num""
-    print "return 0" >> ""$HOME"/.kill"$zterm_att_session_num""
-    zchmod 755 "$HOME"/.kill"$zterm_att_session_num"
-    print "zterm_zle_run_detach() { echo -en \"\e[2K\r\"; eval \"\$@\"; zle redisplay }" > ~/.zterm_session_"$zterm_att_session_num"
-    print "zterm_run_detach() { zterm_zle_run_detach zsh ~/.kill"$zterm_att_session_num" }" >> ~/.zterm_session_"$zterm_att_session_num"
-    print "zle -N zterm_run_detach" >> ~/.zterm_session_"$zterm_att_session_num"
-    print "bindkey \"^H\" "zterm_run_detach"" >> ~/.zterm_session_"$zterm_att_session_num"
-    zpty -w $zterm_att_detach_name "source ~/.zterm_session_"$zterm_att_session_num""
-    #attached U.I printout
-    print
-    ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
-    print
-    #main loop
-    while true; do
-      #read from pty, check stdin for characters waiting and write if present
-      echo -en "\x1B[0m"
-      zpty -r $zterm_att_name
-      echo -en "\x1B[8m"
-      IFS= noglob read -r -k1 -t0.01 -d'' -u0 -s zterm_input_test
-      if [ ! -z "$zterm_input_test" ]; then
-        zpty -w -n $zterm_att_name "$zterm_input_test"
-        unset zterm_input_test
-      fi
-      #break if exit or CTRL+\ used
-      if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
-        echo -en "\x1B[0m"
-        break
-      fi
-      if ! zpty -t $zterm_att_name; then
-        echo -en "\x1B[0m"
-        until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
-          zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
+
+    ## send keystrokes
+    zterm_send_pty() {
+      # fetch args, separating first arg into var and placing the rest in an array (same method used in main zterm function)
+        unset zterm_send_firstarg
+        unset zterm_send_arr
+        declare -a zterm_send_arr
+        for zterm_send_args in $=@; do
+          if [ -z "$zterm_send_firstarg" ]; then
+            zterm_send_firstarg="$zterm_send_args"
+          else
+            zterm_send_arr+=("$zterm_send_args")
+          fi
         done
-        until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do
-          zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
-        done
-        zpty -d ""$zterm_att_name"_detach"
-        zterm_detach_is_exit=1
-        break
-      fi
-    done
-    #detach U.I printout
-    print ""
-    print
-    ctext cyan nnl "Detached from "$zterm_att_hr_name" ("$zterm_att_name")"
-    if [ "$zterm_detach_is_exit" = 1 ]; then
-      ctext yellow std " (exited)"
-    else
-      print
-    fi
-    print
-    #return
-    return 0
-  }
+      # extract pty name from human-readable name
+        eval export zterm_send_realname=$"$zterm_send_firstarg"
+      # return 0 if write array to first arg succeeds, return 1 if fail
+        if zpty -w $zterm_send_realname "$=zterm_send_arr"; then return 0; else return 1; fi
+    }
 
-  #send keystrokes
-  zterm_send_pty() {
-    #fetch args, separating first arg into var and placing the rest in an array
-    unset zterm_send_firstarg
-    unset zterm_send_arr
-    declare -a zterm_send_arr
-    for zterm_send_args in $=@; do
-      if [ -z "$zterm_send_firstarg" ]; then
-        zterm_send_firstarg="$zterm_send_args"
-      else
-        zterm_send_arr+=("$zterm_send_args")
-      fi
-    done
-    eval export zterm_send_realname=$"$zterm_send_firstarg"
-    #return 0 if write array to first arg succeeds, return 1 if fail
-    if zpty -w $zterm_send_realname "$=zterm_send_arr"; then return 0; else return 1; fi
-  }
+    ## read pty
+    zterm_read_pty() {
+      # extract pty name from human-readable name
+        eval "export zterm_read_realname=$"$1""
+      # return 0 if read succeeds, 1 if fails
+        if zpty -r $zterm_read_realname; then return 0; else return 1; fi
+    }
 
-  #read pty
-  zterm_read_pty() {
-    eval "export zterm_read_realname=$"$1""
-    if zpty -r $zterm_read_realname; then return 0; else return 1; fi
-  }
+    ## close pty
+    zterm_close_pty() {
+      # expect arg1 to be the name of a variable
+        # extract pty name from human-readable name
+          eval "export zterm_close=$"$1""
+          zterm_close_hr="$1"
+        # extract detach pty name from human-readable name
+          eval "export zterm_detach_close=$"$1"_detach"
+          zterm_close_detach_hr=""$1"_detach"
+      # if pty found, close and return 0
+        if zpty -t "$zterm_close" &> /dev/null; then
+          zpty -d "$zterm_close"
+          zpty -d "$zterm_detach_close"
+          return 0
+        else
+          # failure printout if no pty found and return 1
+            print "pty "$zterm_close_hr" does not exist"
+            return 1
+        fi
+    }
 
-  #start single command in detached pty
-  zterm_single_comm() {
-    print "Stub!"
-    return 1
-  }
-
-  #close pty
-  zterm_close_pty() {
-    #expect arg1 to be the name of a variable
-    eval "export zterm_close=$"$1""
-    zterm_close_hr="$1"
-    eval "export zterm_detach_close=$"$1"_detach"
-    zterm_close_detach_hr=""$1"_detach"
-    #if pty found, close and return 0
-    if zpty -t "$zterm_close" &> /dev/null; then
-      zpty -d "$zterm_close"
-      zpty -d "$zterm_detach_close"
-      return 0
-    else
-      #failure printout if no pty found and return 1
-      print "pty "$zterm_close_hr" does not exist"
+  ### stub functions - coming later
+    #
+    ## create global pty
+    zterm_create_global() {
+      print "Stub: not implemented"
       return 1
-    fi
-  }
+    }
 
-  # stub functions - coming later
-  zterm_create_global() {
-    print "Stub: not implemented"
-    return 1
-  }
+    ## attach global pty
+    zterm_attach_global() {
+      print "Stub: not implemented"
+      return 1
+    }
 
-  zterm_attach_global() {
-    print "Stub: not implemented"
-    return 1
-  }
+    ## send global pty
+    zterm_send_global() {
+      print "Stub: not implemented"
+      return 1
+    }
 
-  zterm_send_global() {
-    print "Stub: not implemented"
-    return 1
-  }
+    ## read global pty
+    zterm_read_global() {
+      print "Stub: not implemented"
+      return 1
+    }
 
-  zterm_close_global() {
-    print "Stub: not implemented"
-    return 1
-  }
+    ## close global pty
+    zterm_close_global() {
+      print "Stub: not implemented"
+      return 1
+    }
 
-  #help printout
-  zterm_help() {
-    ctext blue std '---------------------------------------------------------'
-    ctext blue std "- "$(ctext green)"         zterm: tmux-like zpty module wrapper  "$(ctext blue)"       -"
-    ctext blue std '---------------------------------------------------------'
-    ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
-    echo '             create new pty under <pty name>            '
-    ctext yellow std '          att <pty name>                               '
-    echo '             attach running pty under <pty name>  (detach with ^\)'
-    ctext yellow std '          sen <pty name> arg1 arg2 ...                 '
-    echo '             send args after <pty-name> to <pty_name>  '
-    ctext yellow std '          rec <pty-name> arg1 arg2 ...    '
-    echo '             read data from <pty-name> without attach'
-    ctext yellow std '          clo <pty name>                               '
-    echo '             close running pty under <pty-name>         '
-    ctext yellow std '          help || --help                                '
-    echo '             print this help text                        '
-    print ""
-  }
+    ## help printout
+    zterm_help() {
+      ctext blue std '---------------------------------------------------------'
+      ctext blue std "- "$(ctext green)"         zterm: tmux-like zpty module wrapper  "$(ctext blue)"       -"
+      ctext blue std '---------------------------------------------------------'
+      ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
+      echo '             create new pty under <pty name>            '
+      ctext yellow std '          att <pty name>                               '
+      echo -n '             attach running pty under <pty name>  (detach with '
+                                                              ctext cyan nnl '^\'
+                                                                          echo ')'
+      ctext yellow std '          sen <pty name> arg1 arg2 ...                 '
+      echo '             send args after <pty-name> to <pty_name>  '
+      ctext yellow std '          rec <pty-name> arg1 arg2 ...    '
+      echo '             read data from <pty-name> without attach'
+      ctext yellow std '          clo <pty name>                               '
+      echo '             close running pty under <pty-name>         '
+      ctext yellow std '          help || --help                                '
+      echo '             print this help text                        '
+      print ""
+    }
 
-  ##execution
-  #map common mistype function names to their actual names
-  [ "$zterm_op" = "attach" ] && zterm_op="att"
-  [ "$zterm_op" = "send" ] && zterm_op="sen"
-  [ "$zterm_op" = "close" ] && zterm_op="clo"
-  [ "$zterm_op" = "sendgl" ] && zterm_op="sengl"
-  [ "$zterm_op" = "attachgl" ] && zterm_op="attgl"
-  [ "$zterm_op" = "closegl" ] && zterm_op="clogl"
-  [ "$zterm_op" = '--help' ] && zterm_op="help"
-  [ "$zterm_op" = "create" ] && zterm_op="new"
-  [ "$zterm_op" = "creategl" ] && zterm_op="newgl"
-  [ "$zterm_op" = "receive" ] && zterm_op="rec"
-  [ "$zterm_op" = "recv" ] && zterm_op="rec"
-  [ "$zterm_op" = "read" ] && zterm_op="rec"
+  ### execution
+    #
+    ## map common mistype function names to their actual names
+      [ "$zterm_op" = "attach" ] && zterm_op="att"
+      [ "$zterm_op" = "send" ] && zterm_op="sen"
+      [ "$zterm_op" = "close" ] && zterm_op="clo"
+      [ "$zterm_op" = "sendgl" ] && zterm_op="sengl"
+      [ "$zterm_op" = "attachgl" ] && zterm_op="attgl"
+      [ "$zterm_op" = "closegl" ] && zterm_op="clogl"
+      [ "$zterm_op" = '--help' ] && zterm_op="help"
+      [ "$zterm_op" = "create" ] && zterm_op="new"
+      [ "$zterm_op" = "creategl" ] && zterm_op="newgl"
+      [ "$zterm_op" = "receive" ] && zterm_op="rec"
+      [ "$zterm_op" = "recv" ] && zterm_op="rec"
+      [ "$zterm_op" = "read" ] && zterm_op="rec"
 
-  #check arg1 for function name, execute function with arg>1
-  case $zterm_op in
-       (new) zterm_create_pty $=zterm_arg_array ;;
-       (att) zterm_attach_pty $=zterm_arg_array ;;
-       (sen) zterm_send_pty $=zterm_arg_array ;;
-       (rec) zterm_read_pty $=zterm_arg_array ;;
-       (clo) zterm_close_pty $=zterm_arg_array ;;
-     (newgl) zterm_create_global $=zterm_arg_array ;;
-     (attgl) zterm_attach_global $=zterm_arg_array ;;
-     (sengl) zterm_send_global $=zterm_arg_array ;;
-     (clogl) zterm_close_global $=zterm_arg_array ;;
-      (help) zterm_help && return 0 ;;
-         (*) zterm_help && return 1 ;;
-  esac
+    ## check arg1 for function name, execute function with arg>1 if exist, else print help dialogue
+    case $zterm_op in
+         (new) zterm_create_pty $=zterm_arg_array ;;
+         (att) zterm_attach_pty $=zterm_arg_array ;;
+         (sen) zterm_send_pty $=zterm_arg_array ;;
+         (rec) zterm_read_pty $=zterm_arg_array ;;
+         (clo) zterm_close_pty $=zterm_arg_array ;;
+       (newgl) zterm_create_global $=zterm_arg_array ;;
+       (attgl) zterm_attach_global $=zterm_arg_array ;;
+       (sengl) zterm_send_global $=zterm_arg_array ;;
+       (recgl) zterm_read_global $=zterm_arg_array ;;
+       (clogl) zterm_close_global $=zterm_arg_array ;;
+        (help) zterm_help && return 0 ;;
+           (*) zterm_help && return 1 ;;
+    esac
 }
