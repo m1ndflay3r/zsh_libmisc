@@ -114,7 +114,9 @@ zterm() {
     #main loop
     while true; do
       #read from pty, check stdin for characters waiting and write if present
+      echo -en "\x1B[0m"
       zpty -r $zterm_att_name
+      echo -en "\x1B[8m"
       IFS= noglob read -r -k1 -t0.01 -d'' -u0 -s zterm_input_test
       if [ ! -z "$zterm_input_test" ]; then
         zpty -w -n $zterm_att_name "$zterm_input_test"
@@ -122,9 +124,11 @@ zterm() {
       fi
       #break if exit or CTRL+\ used
       if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
+        echo -en "\x1B[0m"
         break
       fi
       if ! zpty -t $zterm_att_name; then
+        echo -en "\x1B[0m"
         until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
           zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
         done
