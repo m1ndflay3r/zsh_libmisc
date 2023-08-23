@@ -125,17 +125,17 @@ Below is a basic summary of the features and components of libmisc:
 Arguably the star of the show (which is why it gets its own section in README.md), **zelfexec** is an *almost-too-useful* piece of software inspired by abbats' *elfexec* ( https://github.com/abbat/elfexec *- used for reference only, all code original* )
 
 
-Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. As you can imagine, this functionality is very powerful. A number of libmisc's functions and utilities wouldn't be possible if they didn't depend on zelfexec for their operation.
+Written in a mixture of both C and pure zsh, this software is capable of executing any ELF binary piped to it without ever actually writing it to a filesystem of any kind. A number of libmisc's functions and utilities wouldn't be possible if they didn't depend on zelfexec for their operation.
 
 
 
-Differences to abbats' version: 
+Differences to abbats' version:
 
 
 - it's in a zsh library!
 
 
-- arg1 isn't treated as a filepath for an executable ( because why would it be when we can just run *./path/to/binary* or *fileread /path/to/file | zelfexec* )
+- arg1 isn't treated as a filepath for an executable (run *<fileread> /path/to/file | zelfexec* if you really need this)
 
 
 - stdin of the child process can be handled separately from stdin of zelfexec ( via the environment variable *zSTDIN* )
