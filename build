@@ -19,24 +19,11 @@ print '  print "To use the included busybox module, recompile libmisc with zlibm
 print '  return 1' >> zsh/comp/busybox
 print '}' >> zsh/comp/busybox
 
-## print dummy ztmux module
-print '#!/usr/bin/env zsh' > zsh/comp/ztmux
-print 'ztmux() {' > zsh/comp/ztmux
-print '  print "Error: libmisc compiled without ztmux"' >> zsh/comp/ztmux
-print '  print "To use the included tmux module, recompile libmisc with zlibmisc_incl_extra=ztmux ./build (--dynamic; --static)"' >> zsh/comp/ztmux
-print '  return 1' >> zsh/comp/ztmux
-print '}' >> zsh/comp/ztmux
-
 ## include extra module functions go here
 #busybox
 func_incl_busybox() {
   cat zsh/extra/busybox > zsh/comp/busybox
   echo "autoload busybox" >> zsh/comp/libmiscinit
-}
-#tmux
-func_incl_ztmux() {
-  cat zsh/extra/ztmux > zsh/comp/ztmux
-  echo "autoload ztmux" >> zsh/comp/libmiscinit
 }
 
 ## as per name, handler for extra module inclusion in builds
@@ -45,7 +32,6 @@ extra_module_handle() {
   for zlibmisc_extra_opts in $=zlibmisc_incl_extra; do
     case $zlibmisc_extra_opts in
       (busybox) func_incl_busybox ;;
-      (ztmux) func_incl_ztmux ;;
       (*) echo "extra module $zlibmisc_extra_opts does not exist"
     esac
   done
