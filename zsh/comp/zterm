@@ -23,14 +23,15 @@ zterm() {
     autoload zchmod
     autoload ctext
     autoload zrm
+    autoload findlibmisc
 
   ### define functions
-    #
     ##create pty with random name, save random name to human-readable name as variable
     zterm_create_pty() {
-      unset zterm_test
-      unset zterm_hr_name
-      zterm_hr_name="$1"
+      # ensure clean env & fetch arg1
+        unset zterm_test
+        unset zterm_hr_name
+        zterm_hr_name="$1"
       # error out if no arg given
         if [ -z "$zterm_hr_name" ]; then
           print "zterm: first arg cannot be empty"
@@ -76,7 +77,7 @@ zterm() {
         # fetch detach pty name
           zterm_att_detach_hr_name=""$1"_detach"
           eval "export zterm_att_detach_name=$"$1"_detach"
-        # set detect detach via exit to 0
+        # set detach via exit flag to 0 (used for detach printout)
           zterm_detach_is_exit=0
       # error out if no pty running under pty ID
         if ! zpty -t "$zterm_att_name"; then
@@ -88,7 +89,7 @@ zterm() {
           zpty -w $zterm_att_name "$(print -n "\x03")"
         }
         trap "zterm_att_trap_write" SIGINT
-      # trap QUIT so CTRL+\ sends detach command
+      # trap QUIT so CTRL+\ sends detach command (^H) to detach pty
         zterm_att_detach_write() {
           zpty -w $zterm_att_detach_name "$(print -n "\x08")"
         }
@@ -138,34 +139,41 @@ zterm() {
         print
         ctext cyan std "Attached to "$zterm_att_hr_name" ("$zterm_att_name")"
         print
-      # main loop (counts of "echo -en "\x1B[0m"" and "echo -en "\x1B[8m"" are for switching off/on character echoing to prevent term issues)
+      # main loop - handle pty read/write until detach detected
         while true; do
-          # read from pty
+          # set text to visible
             echo -en "\x1B[0m"
+          # read from pty
             zpty -r $zterm_att_name
+          # set text to invisible
             echo -en "\x1B[8m"
           # check stdin for characters waiting for write, write if found
-            IFS= noglob read -r -k1 -t0.01 -d'' -u0 -s zterm_input_test
+            IFS= noglob read -r -k1 -t0.001 -d'' -u0 -s zterm_input_test
             if [ ! -z "$zterm_input_test" ]; then
               zpty -w -n $zterm_att_name "$zterm_input_test"
               unset zterm_input_test
             fi
           # break if CTRL+\ used
             if ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; then
-              echo -en "\x1B[0m"
+              # set text to visible
+                echo -en "\x1B[0m"
               break
             fi
           # cleanup and break if term exited
             if ! zpty -t $zterm_att_name; then
-              echo -en "\x1B[0m"
-              until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
-                zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
-              done
-              until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do
-                zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
-              done
-              zpty -d ""$zterm_att_name"_detach"
-              zterm_detach_is_exit=1
+              # set text to visible
+                echo -en "\x1B[0m"
+              # clear leftover session files
+                until ! isfile ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null; do
+                  zrm ""$HOME"/.kill"$zterm_att_session_num"" &> /dev/null
+                done
+                until ! isfile ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null; do
+                  zrm ""$HOME"/.zterm_session_"$zterm_att_session_num"" &> /dev/null
+                done
+              # ensure pty is fully closed to prevent zombie process
+                zpty -d ""$zterm_att_name"_detach"
+              # set detach via exit flag to 1 (for U.I printout)
+                zterm_detach_is_exit=1
               break
             fi
         done
@@ -233,7 +241,6 @@ zterm() {
     }
 
   ### stub functions - coming later
-    #
     ## create global pty
     zterm_create_global() {
       print "Stub: not implemented"
@@ -272,9 +279,7 @@ zterm() {
       ctext cyan std "  usage: "$(ctext yellow)" new <pty name>     "
       echo '             create new pty under <pty name>            '
       ctext yellow std '          att <pty name>                               '
-      echo -n '             attach running pty under <pty name>  (detach with '
-                                                              ctext cyan nnl '^\'
-                                                                          echo ')'
+      echo -n '             attach running pty under <pty name>  (detach with '; ctext cyan nnl '^\'; echo ')'
       ctext yellow std '          sen <pty name> arg1 arg2 ...                 '
       echo '             send args after <pty-name> to <pty_name>  '
       ctext yellow std '          rec <pty-name> arg1 arg2 ...    '
@@ -287,8 +292,7 @@ zterm() {
     }
 
   ### execution
-    #
-    ## map common mistype function names to their actual names
+    ## map commonly mistyped function names to their actual names
       [ "$zterm_op" = "attach" ] && zterm_op="att"
       [ "$zterm_op" = "send" ] && zterm_op="sen"
       [ "$zterm_op" = "close" ] && zterm_op="clo"
