@@ -8,7 +8,7 @@ zchgwn() {
   [ -z "$1" ] && zchgwn_fail_noargs
   [ -z "$2" ] && zchgwn_fail_insuff_args && return 1
   [ -z "$zchgwn_forkbomb_detect" ] && zchgwn_forkbomb_detect=0
-  [ "$zchgwn_forkbomb_detect" = 1 ] && return 1
+  [ "$zchgwn_forkbomb_detect" = 1 ] && print "zchgwn: forkbomb detect tripped. Refusing to run." && return 1
   # flag ensures sec arg check doesnt run on arg >= 3
   zchgwn_second_pass=0
   # ensure clean state
