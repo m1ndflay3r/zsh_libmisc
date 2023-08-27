@@ -1,0 +1,86 @@
+#!/usr/bin/env zsh
+
+zchgwn() {
+  ## fetch args
+  # fail if no arg or insuff. args given
+  zchgwn_fail_noargs() { print "Error: no arguments given" }
+  zchgwn_fail_insuff_args() { print "Error: zchgwn requires at least two arguments" }
+  [ -z "$1" ] && zchgwn_fail_noargs
+  [ -z "$2" ] && zchgwn_fail_insuff_args && return 1
+  [ -z "$zchgwn_forkbomb_detect" ] && zchgwn_forkbomb_detect=0
+  [ "$zchgwn_forkbomb_detect" = 1 ] && return 1
+  # flag ensures sec arg check doesnt run on arg >= 3
+  zchgwn_second_pass=0
+  # ensure clean state
+  unset zchgwn_first_arg
+  unset zchgwn_second_arg
+  unset zchgwn_arg_array
+  # arg array logic
+  declare -a zchgwn_arg_array
+  for zchgwn_arg in $=@; do
+    # zchgwn_arg as first_arg if first_arg empty
+    if [ -z "$zchgwn_first_arg" ]; then
+      zchgwn_first_arg="$zchgwn_arg"
+    # zchgwn_arg as second_arg if second_arg empty, zchgwn_arg is -R, and this check hasnt run yet.
+    # empty / not empty state of zchgwn_second_arg controls whether we use recursion.
+    elif [ -z "$zchgwn_second_arg" ] && [ "$zchgwn_arg" = "-R" ] && [ "$zchgwn_second_pass" = 0 ]; then
+      zchgwn_second_arg="$zchgwn_arg"
+      zchgwn_second_pass=1
+    # in all other circumstances, assign zchgwn_arg to array
+    else
+      zchgwn_second_pass=1
+      zchgwn_arg_array+=("$zchgwn_arg")
+    fi
+  done
+  # set recursion to 1 by default, then if second_arg empty, change value to 0
+  zchgwn_recursive=1
+  [ -z "$zchgwn_second_arg" ] && zchgwn_recursive=0
+  # dont store 2 bytes we won't use (it bugged me, okay?)
+  [ ! -z "$zchgwn_second_arg" ] && unset zchgwn_second_arg
+
+  ## load modules
+  autoload zchgrp
+  autoload zchown
+  autoload isfile
+
+  ## env setup
+  zchgwn_return=0
+  unset zchgwn_oldpreservedir
+
+  ## begin main body
+  # assume arg_array is a list of files, folders, etc, and iterate through them.
+  for zchgwn_target in $=zchgwn_arg_array; do
+    # operation fail if nothing at given filepath
+    if isfile "$zchgwn_target" &> /dev/null; then
+      # set return to 0 if file exists.
+      zchgwn_return=0
+      # run zchown and zchgrp. set return to 1 if either fails
+      zchown "$zchgwn_first_arg" "$zchgwn_target" || zchgwn_return=1
+      zchgrp "$zchgwn_first_arg" "$zchgwn_target" || zchgwn_return=1
+      ## recursion logic
+      if [ "$zchgwn_recursive" = 1 ] && [ -d "$zchgwn_target" ]; then
+        [ ! -z "$zchgwn_preservedir" ] && zchgwn_oldpreservedir="$zchgwn_preservedir"
+        zchgwn_preservedir=$(pwd)
+        cd "$zchgwn_target"
+        zchgwn_no_forkbomb=$(pwd)
+        for rec_target in *; do
+          zchgwn -R "$rec_target"
+        done
+        [ ! -z "$zchgwn_oldpreservedir" ] && \
+        [ "$zchgwn_no_forkbomb" = "$zchgwn_preservedir" ] && \
+        [ "$zchgwn_no_forkbomb" = "$zchgwn_oldpreservedir" ] && \
+          print "FATAL: fork bomb detected!" && \
+          print "you will need to run - unset zchgwn_forkbomb_detect - before you can use zchgwn again in this session." && \
+          print "attempting kill remaining zchgwn processes..." && \
+            (eval $(which killall) -9 zchgwn || export zchgwn_forkbomb_detect=1) && \
+            return 1
+        [ "$zchgwn_preservedir" = "$zchgwn_no_forkbomb" ] && zchown "$zchgwn_first_arg" "." && zchgrp "$zchgwn_first_arg" "."
+      fi
+    else
+      print "zchgwn: target "$zchgwn_target" does not exist"
+      zchgwn_return=1
+    fi
+  done
+  ## return = return of last operation performed
+  return $zchgwn_return
+}
