@@ -87,5 +87,6 @@ fetchpackagelist() {
       fi
     fi
   done < <(fpl_space_cleanup)
+  [ ! -z "$zpl_final_buffer" ] && print -n "$zpl_final_buffer"
   return 0
 }
