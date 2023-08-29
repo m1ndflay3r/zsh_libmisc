@@ -3,7 +3,6 @@ fetchpackagelist() {
   ## env setup
   unset fetpaclis_print_flag
   fetpaclis_print_flag=0
-  fpath=(/root/zsh_misc/libmisc.zwc $fpath)
   # load modules
   autoload hexd
   autoload hexud
