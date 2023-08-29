@@ -1,5 +1,6 @@
+#!/usr/bin/env zsh
 busybox() {
   print "Error: libmisc compiled without busybox"
-  print "To use the included busybox module, recompile libmisc with zlibmisc_incl_extra=busybox ./build (--dynamic; --static)"
+  print " To use the included busybox module, recompile libmisc with zlibmisc_incl_extra=busybox ./build (--static || --dynamic)"
   return 1
 }

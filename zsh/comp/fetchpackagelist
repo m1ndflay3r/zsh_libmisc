@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+fetchpackagelist() {
+  print "Error: libmisc compiled without fetchpackagelist"
+  print " To use the included fetchpackagelist module, recompile libmisc with zlibmisc_incl_extra=fetchpackagelist ./build (--static || --dynamic)"
+  return 1
+}
