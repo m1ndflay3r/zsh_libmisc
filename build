@@ -39,14 +39,14 @@ done
 #busybox
 func_incl_busybox() {
   cat zsh/extra/busybox > zsh/comp/busybox
-  echo "autoload busybox" >> zsh/.libmiscinit.bak
+  echo "autoload busybox" >> zsh/comp/libmiscinit
 }
 
 #fetchpackagelist
 
 func_incl_fetchpackagelist() {
   cat zsh/extra/fetchpackagelist > zsh/comp/fetchpackagelist
-  echo "autoload fetchpackagelist" >> zsh/.libmiscinit.bak
+  echo "autoload fetchpackagelist" >> zsh/comp/libmiscinit
 }
 
 ## as per name, handler for extra module inclusion in builds
