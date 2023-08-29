@@ -1,4 +1,13 @@
 #!/usr/bin/env zsh
+
+# Hello, enduser. If you read this, then you may wonder why I created this particular extra module.
+# Well you see, server of mine acting rather funny earlier.
+# pacman -Qqe and pacman -Ss not working, and caused hang.
+# notice pacsearch still work. Needed packagelist for wipe server.
+# decide <<why not, is fringe case anyways, so I make code exercise!
+# so is convoluted. Very. But why you need this anyway? Your pacman not work? Who know!
+
+
 fetchpackagelist() {
   ## load modules
   autoload hexd
