@@ -1,20 +1,21 @@
 #!/usr/bin/env zsh
 fetchpackagelist() {
-  ## env setup
-  unset fetpaclis_print_flag
-  fetpaclis_print_flag=0
-  # load modules
+  ## load modules
   autoload hexd
   autoload hexud
   autoload revstr
+  ## env setup
+  unset fetpaclis_print_flag
+  fetpaclis_print_flag=0
   # valid char array (hacky way to remove ANSI codes)
   fpl_chars_valid=('a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' 'K' 'L' 'M' 'N' 'O' 'P' 'Q' 'R' 'S' 'T' 'U' 'V' 'W' 'X' 'Y' 'Z' '1' '2' '3' '4' '5' '6' '7' '8' '9' '0' '-' '_' '.')
   # use pacsearch to get a list of all packages.
   fetchpackagelist_raw=$(pacsearch '')
+  ## main function
   # iterate over each line generated from pacsearch, trigger package print if string contains substring [installed]
   unset fpl_package_arr
   declare -a fpl_package_arr
-  fpl_func_clean() {
+  fpl_main() {
     IFS=$'\n'
     for package in $=fetchpackagelist_raw; do
       if [[ $package = *'[installed]'* ]]; then
@@ -61,7 +62,7 @@ fetchpackagelist() {
       fpl_hasspaced=1
       print -n ' '
     fi
-  done < <(fpl_func_clean)
+  done < <(fpl_main)
   # probably unnecessary, but did this out of habit.
   # on the off chance the above while loop broke before the last character in read buffer was printed, print that character.
   if [ ! -z "$LOOPZ" ]; then
