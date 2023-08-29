@@ -11,19 +11,42 @@ if ls -a libmisc &> /dev/null; then
   rm -rf libmisc*
 fi
 
-## print dummy busybox module
-print '#!/usr/bin/env zsh' > zsh/comp/busybox
-print 'busybox() {' > zsh/comp/busybox
-print '  print "Error: libmisc compiled without busybox"' >> zsh/comp/busybox
-print '  print "To use the included busybox module, recompile libmisc with zlibmisc_incl_extra=busybox ./build (--dynamic; --static)"' >> zsh/comp/busybox
-print '  return 1' >> zsh/comp/busybox
-print '}' >> zsh/comp/busybox
+## print dummies for extra modules
+func_print_dummy() {
+  print '#!/usr/bin/env zsh' > zsh/comp/"$func_print_dummy_name"
+  print -n "$func_print_dummy_name" >> zsh/comp/"$func_print_dummy_name"
+  print '() {' >> zsh/comp/"$func_print_dummy_name"
+  print -n '  print "Error: libmisc compiled without ' >> zsh/comp/"$func_print_dummy_name"
+  print -n "$func_print_dummy_name" >> zsh/comp/"$func_print_dummy_name"
+  print '"' >> zsh/comp/"$func_print_dummy_name"
+  print -n '  print " To use the included ' >> zsh/comp/"$func_print_dummy_name"
+  print -n "$func_print_dummy_name" >> zsh/comp/"$func_print_dummy_name"
+  print -n " module, recompile libmisc with zlibmisc_incl_extra=" >> zsh/comp/"$func_print_dummy_name"
+  print -n "$func_print_dummy_name" >> zsh/comp/"$func_print_dummy_name"
+  print ' ./build (--static || --dynamic)"' >> zsh/comp/"$func_print_dummy_name"
+  print '  return 1' >> zsh/comp/"$func_print_dummy_name"
+  print '}' >> zsh/comp/"$func_print_dummy_name"
+}
+
+extra_module_list_array=('busybox'
+                         'fetchpackagelist')
+
+for func_print_dummy_name in $=extra_module_list_array; do
+  func_print_dummy
+done
 
 ## include extra module functions go here
 #busybox
 func_incl_busybox() {
   cat zsh/extra/busybox > zsh/comp/busybox
-  echo "autoload busybox" >> zsh/comp/libmiscinit
+  echo "autoload busybox" >> zsh/.libmiscinit.bak
+}
+
+#fetchpackagelist
+
+func_incl_fetchpackagelist() {
+  cat zsh/extra/fetchpackagelist > zsh/comp/fetchpackagelist
+  echo "autoload fetchpackagelist" >> zsh/.libmiscinit.bak
 }
 
 ## as per name, handler for extra module inclusion in builds
@@ -32,6 +55,7 @@ extra_module_handle() {
   for zlibmisc_extra_opts in $=zlibmisc_incl_extra; do
     case $zlibmisc_extra_opts in
       (busybox) func_incl_busybox ;;
+      (fetchpackagelist) func_incl_fetchpackagelist ;;
       (*) echo "extra module $zlibmisc_extra_opts does not exist"
     esac
   done
