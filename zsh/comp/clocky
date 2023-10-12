@@ -78,17 +78,18 @@ clocky() {
     #adjust for tz
     clocky_hour=${clocky_tobeprinted: :2}
     clocky_tobeprinted=${clocky_tobeprinted:2}
-    clocky_tz_operator=${clocky_tz: :1}
-    clocky_tz=${clocky_tz:1}
+    clocky_tz_local="$clocky_tz"
+    clocky_tz_operator=${clocky_tz_local: :1}
+    clocky_tz_local=${clocky_tz_local:1}
     if [ "$clocky_tz_operator" = '-' ]; then
-      if [ "$clocky_tz" -gt "$clocky_hour" ]; then
-        clocky_hour_hold=$((clocky_hour+clocky_tz))
+      if [ "$clocky_tz_local" -gt "$clocky_hour" ]; then
+        clocky_hour_hold=$((clocky_hour+clocky_tz_local))
         clocky_hour=$((24-clocky_hour_hold))
       else
-        clocky_hour=$((clocky_hour-clocky_tz))
+        clocky_hour=$((clocky_hour-clocky_tz_local))
       fi
     else
-      clocky_hour=$((clocky_hour+clocky_tz))
+      clocky_hour=$((clocky_hour+clocky_tz_local))
     fi
     if [ "$clocky_hour" -gt 23 ]; then
       until [ ! "$clocky_hour" -gt 23 ]; do
