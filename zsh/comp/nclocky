@@ -1,0 +1,51 @@
+#!/data/local/playground/bin/zsh
+
+nclocky() {
+  ## load modules
+  autoload clocky
+  autoload hexd
+  autoload hexud
+  ## env setup
+  unset nclocky_do_read
+  [ -z "$nclocky_loop" ] && \
+    nclocky_loop=0
+  ## main function
+  nclocky_main() {
+    # fetch colourized time from clocky, pipe to hexd
+    nclocky_fetch_time=$(clocky | hexd)
+    # remove ANSI and print, piping to hexud
+    while true; do
+      [ -z "$nclocky_do_read" ] && \
+        nclocky_do_read=0
+      nclocky_char=${nclocky_fetch_time: :2}
+      nclocky_fetch_time=${nclocky_fetch_time:2}
+      [ "$nclocky_char" = "1b" ] && \
+        nclocky_do_read=0
+      [ $nclocky_do_read = 1 ] && \
+        printf "%s""$nclocky_char" | hexud
+      [ "$nclocky_char" = "6d" ] && \
+        nclocky_do_read=1
+      [ -z "$nclocky_char" ] && \
+        break
+    done
+  }
+  ## loop function
+  nclocky_looper() {
+    while true; do
+      nclocky_main
+      sleep 0.3
+      printf "\r"
+    done
+    return 0
+  }
+  ## exec steps
+  # loop if nclocky_loop = 1
+  [ "$nclocky_loop" = 1 ] && \
+    nclocky_loop=0 && \
+    nclocky_looper
+  # oneshot if nclocky_loop = 0
+  [ "$nclocky_loop" = 0 ] && \
+    nclocky_main
+  ## return
+  return 0
+}

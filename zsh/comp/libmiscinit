@@ -4,6 +4,7 @@ libmiscinit() {
   autoload zln
   autoload zwhich
   autoload clocky
+  autoload nclocky
   autoload zdate
   autoload zreadin
   autoload blep
