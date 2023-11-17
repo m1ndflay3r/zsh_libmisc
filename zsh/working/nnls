@@ -1,0 +1,92 @@
+#!/usr/bin/env zsh
+
+nnls() {
+
+  ## load modules
+  autoload ctext
+  autoload ztput
+
+  ## fetch dir contents
+  nnls_fetchdir() {
+    #print to represent current dir
+    print '.'
+    #print to represent previous dir if current dir is not /
+    [ "$(pwd)" != '/' ] && \
+      print '..'
+    #print all non-hidden files in current dir
+    for zfetchdir in .*; do
+      print "$zfetchdir"
+    done
+    #print all hidden files in current dir
+    for zfetchdir in *; do
+      print "$zfetchdir"
+    done
+  }
+
+  ## test archive by extension
+  nnls_isarchive() {
+    #input collection
+    nnls_isarchive_input="$1"
+    #known archive type array
+    nnls_archive_types=('.tar'
+                         '.xz'
+                         '.7z'
+                        '.bz2'
+                       '.cpio'
+                        '.arj'
+                        '.lha'
+                      '.lrzip'
+                        '.lz4'
+                       '.lzip'
+                       '.lzop'
+                        '.rar'
+                        '.zip'
+                       '.zstd'
+                        '.zst'
+                         '.gz')
+    #set ret to 1 by default
+    nnls_isarchive_ret=1
+    #iterate over known archive extensions for match on tail of input; set ret to 0 if found
+    for nnls_test_ar in $=nnls_archive_types; do
+      [[ "$nnls_isarchive_input" = *"$nnls_test_ar" ]] && \
+        nnls_isarchive_ret=0 && \
+        break
+    done
+    #return
+    return $nnls_isarchive_ret
+  }
+
+  ## main loop
+  nnls_main() {
+    #colourize dir contents by type; print colourized contents
+    IFS=$'\n'
+    for nnls_fetchd in $(nnls_fetchdir); do
+      ([ -h "$nnls_fetchd" ] && ztput bold && ctext cyan nnl " "$nnls_fetchd" ") || \
+      ([ -b "$nnls_fetchd" ] && ztput bold && ctext yellow nnl " "$nnls_fetchd" ") || \
+      ([ -S "$nnls_fetchd" ] && ztput bold && ctext magenta nnl " "$nnls_fetchd" ") || \
+      ([ -c "$nnls_fetchd" ] && ctext magenta nnl " "$nnls_fetchd" ") || \
+      ([ -p "$nnls_fetchd" ] && ctext yellow nnl " "$nnls_fetchd" ") || \
+      ([ -d "$nnls_fetchd" ] && ztput bold && ctext blue nnl " "$nnls_fetchd" ") || \
+      ([ -x "$nnls_fetchd" ] && ztput bold && ctext green nnl " "$nnls_fetchd" ") || \
+      (nnls_isarchive "$nnls_fetchd" && ctext red nnl " "$nnls_fetchd" ") || \
+      ([ -f "$nnls_fetchd" ] && ctext white nnl " "$nnls_fetchd" ") || \
+      true
+    done
+    unset IFS
+  }
+
+  ## input handling
+  nnls_preserve_dir=$(pwd)
+  [ ! -z "$1" ] && \
+    cd "$1"
+
+  ## exec main function
+  nnls_main
+
+  ## preserve working dir
+  cd $nnls_preserve_dir
+  unset nnls_preserve_dir
+
+  ## trailing newline
+  print
+}
