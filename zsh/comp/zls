@@ -1,162 +1,109 @@
 #!/usr/bin/env zsh
 
 zls() {
+
   ## load modules
-  autoload isfile
   autoload ctext
   autoload ztput
 
-  ## fetch args
-  unset zls_arg_array
-  declare -a zls_arg_array
-  for zls_args in $=@; do
-    zls_arg_array+=("$zls_args")
-  done
+  ## env setup
+  [ ! -z "$zls_nnl" ] && \
+    zls_ctext_op="nnl" || \
+    zls_ctext_op="std"
 
-  ## use current dir for arg if none given
-  if [ -z "$1" ]; then
-    zls_arg_array+=("$(pwd)")
-  fi
-
-  ## starting directory
-  zls_preserve_dir=$(pwd)
-
-  unset zls_folder_contents_var
-
-  ## check for known archive extensions
-  zls_is_archive() {
-    for zls_working_arg in $=@; do
-      case $zls_working_arg in
-         (*.ar) return 0 ;;
-          (*.a) return 0 ;;
-         (*.7z) return 0 ;;
-         (*.xz) return 0 ;;
-         (*.gz) return 0 ;;
-        (*.zip) return 0 ;;
-        (*.zst) return 0 ;;
-        (*.tar) return 0 ;;
-        (*.deb) return 0 ;;
-        (*.rar) return 0 ;;
-        (*.arj) return 0 ;;
-        (*.LBR) return 0 ;;
-       (*.cpio) return 0 ;;
-       (*.shar) return 0 ;;
-        (*.iso) return 0 ;;
-        (*.lbr) return 0 ;;
-        (*.mar) return 0 ;;
-        (*.sbx) return 0 ;;
-        (*.bz2) return 0 ;;
-         (*.br) return 0 ;;
-    (*.genozip) return 0 ;;
-         (*.lz) return 0 ;;
-        (*.s7z) return 0 ;;
-        (*.lz4) return 0 ;;
-       (*.lzma) return 0 ;;
-        (*.lzo) return 0 ;;
-         (*.sz) return 0 ;;
-        (*.img) return 0 ;;
-        (*.IMG) return 0 ;;
-        (*.apk) return 0 ;;
-        (*.ace) return 0 ;;
-            (*) return 1 ;;
-      esac
+  ## fetch dir contents
+  zls_fetchdir() {
+    #print to represent current dir
+    print '.'
+    #print to represent previous dir if current dir is not /
+    [ "$(pwd)" != '/' ] && \
+      print '..'
+    #print all non-hidden files in current dir
+    (
+    for zfetchdir in .*; do
+      print "$zfetchdir"
     done
+    ) 2>/dev/null || true
+    #print all hidden files in current dir
+    (
+    for zfetchdir in *; do
+      print "$zfetchdir"
+    done
+    ) 2>/dev/null || true
   }
 
-  ## fill item contents array - perform on each operation given
-  for zls_ops in $=zls_arg_array; do
-    #folder contents array
-    unset zls_contains_items
-    declare -a zls_contains_items
-    #directory
-    if [ -d "$zls_ops" ]; then
-      #error out if fail to cd
-      cd "$zls_ops" || return 1
-      #include current dir
-      zls_contains_items+=(".")
-      #check if we're at /
-      zls_chkcurrentdir=$(pwd)
-      if [ ! "$zls_chkcurrentdir" = '/' ]; then
-        zls_contains_items+=("..")
-      fi
-      #if folder contains items
-      if (print *) &> /dev/null; then
-        #save folder contents to var
-        zls_folder_contents_var=$(print *)
-        #divide folder content var by space, add each item to contents var
-        IFS=$' '
-        for zls_indiv_items in $=zls_folder_contents_var; do
-          zls_contains_items+=("$zls_indiv_items")
-        done
-        unset IFS
-      fi
-      unset zls_folder_contents_var
-      unset zls_indiv_items
-      #if folder contains hidden items
-      if (print .*) &> /dev/null; then
-        #save folder contents to var
-        zls_folder_contents_var=$(print .*)
-        #divide folder content var by space, add each item to contents var
-        IFS=$' '
-        for zls_indiv_items in $=zls_folder_contents_var; do
-          zls_contains_items+=("$zls_indiv_items")
-        done
-        unset IFS
-      fi
-    else
-      #file
-      if isfile "$zls_ops" &> /dev/null; then
-        zls_contains_items+=("$zls_ops")
-      else
-        return 1
-      fi
-    fi
-    ## colourize output
-    for zls_output in $=zls_contains_items; do
-      # symlink
-      if [ -L "$zls_output" ]; then
-        ztput bold
-        ctext cyan std "$zls_output"
-      # block special
-      elif [ -b "$zls_output" ]; then
-        ztput bold
-        ctext yellow std "$zls_output"
-      # socket
-      elif [ -S "$zls_output" ]; then
-        ztput bold
-        ctext magenta std "$zls_output"
-      # character special
-      elif [ -c "$zls_output" ]; then
-        ctext blue std "$zls_output"
-      # fifo
-      elif [ -p "$zls_output" ]; then
-        ctext yellow std "$zls_output"
-      # directory
-      elif [ -d "$zls_output" ]; then
-        ztput bold
-        ctext blue std "$zls_output"
-      # executable
-      elif [ -x "$zls_output" ]; then
-        ztput bold
-        ctext green std "$zls_output"
-      # archive
-      elif zls_is_archive "$zls_output"; then
-        ztput bold
-        ctext red std "$zls_output"
-      # regular file
-      elif [ -f "$zls_output" ]; then
-        ctext white std "$zls_output"
-      # anything else
-#      else
-#        ztput dim
-#        ctext white std "$zls_output"
-      fi
+  ## test archive by extension
+  zls_isarchive() {
+    #input collection
+    zls_isarchive_input="$1"
+    #known archive type array
+    zls_archive_types=('.tar'
+                         '.xz'
+                         '.7z'
+                        '.bz2'
+                       '.cpio'
+                        '.arj'
+                        '.lha'
+                      '.lrzip'
+                        '.lz4'
+                       '.lzip'
+                       '.lzop'
+                        '.rar'
+                        '.zip'
+                       '.zstd'
+                        '.zst'
+                         '.gz')
+    #set ret to 1 by default
+    zls_isarchive_ret=1
+    #iterate over known archive extensions for match on tail of input; set ret to 0 if found
+    for zls_test_ar in $=zls_archive_types; do
+      [[ "$zls_isarchive_input" = *"$zls_test_ar" ]] && \
+        zls_isarchive_ret=0 && \
+        break
     done
-  done
+    #return
+    return $zls_isarchive_ret
+  }
 
-  ## return to base dir
-  cd "$zls_preserve_dir"
+  ## main loop
+  zls_main() {
+    #colourize dir contents by type; print colourized contents
+    IFS=$'\n'
+    for zls_fetchd in $(zls_fetchdir); do
+      ([ -h "$zls_fetchd" ] && ztput bold && ctext cyan $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -b "$zls_fetchd" ] && ztput bold && ctext yellow $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -S "$zls_fetchd" ] && ztput bold && ctext magenta $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -c "$zls_fetchd" ] && ctext magenta $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -p "$zls_fetchd" ] && ctext yellow $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -d "$zls_fetchd" ] && ztput bold && ctext blue $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -x "$zls_fetchd" ] && ztput bold && ctext green $zls_ctext_op " "$zls_fetchd" ") || \
+      (zls_isarchive "$zls_fetchd" && ctext red $zls_ctext_op " "$zls_fetchd" ") || \
+      ([ -f "$zls_fetchd" ] && ctext white $zls_ctext_op " "$zls_fetchd" ") || \
+      true
+    done
+    unset IFS
+  }
 
-  ## return
-  return 0
+  ## input handling
+  zls_preserve_dir=$(pwd)
+  zls_cd_success=0
+  [ ! -z "$1" ] && \
+    cd "$1" && \
+    zls_cd_success=1
+
+  [ ! -z "$1" ] && \
+  [ "$zls_cd_success" = 0 ] && \
+    return 1
+
+  ## exec main function
+  zls_main
+
+  ## preserve working dir
+  cd $zls_preserve_dir
+  unset zls_preserve_dir
+
+  ## trailing newline
+  [ "$zls_ctext_op" = "nnl" ] && \
+    print || \
+    return 0
 }
