@@ -18,13 +18,13 @@ zls() {
     #print to represent previous dir if current dir is not /
     [ "$(pwd)" != '/' ] && \
       print '..'
-    #print all non-hidden files in current dir
+    #print all hidden files in current dir
     (
     for zfetchdir in .*; do
       print "$zfetchdir"
     done
     ) 2>/dev/null || true
-    #print all hidden files in current dir
+    #print all non-hidden files in current dir
     (
     for zfetchdir in *; do
       print "$zfetchdir"
