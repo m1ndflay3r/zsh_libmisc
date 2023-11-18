@@ -38,21 +38,21 @@ zls() {
     zls_isarchive_input="$1"
     #known archive type array
     zls_archive_types=('.tar'
-                         '.xz'
-                         '.7z'
-                        '.bz2'
-                       '.cpio'
-                        '.arj'
-                        '.lha'
-                      '.lrzip'
-                        '.lz4'
-                       '.lzip'
-                       '.lzop'
-                        '.rar'
-                        '.zip'
-                       '.zstd'
-                        '.zst'
-                         '.gz')
+                        '.xz'
+                        '.7z'
+                       '.bz2'
+                      '.cpio'
+                       '.arj'
+                       '.lha'
+                     '.lrzip'
+                       '.lz4'
+                      '.lzip'
+                      '.lzop'
+                       '.rar'
+                       '.zip'
+                      '.zstd'
+                       '.zst'
+                        '.gz')
     #set ret to 1 by default
     zls_isarchive_ret=1
     #iterate over known archive extensions for match on tail of input; set ret to 0 if found
