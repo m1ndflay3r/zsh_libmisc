@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+rzls() {
+  sudo zsh <<EOF
+  fpath=(/home/v1ru5/zsh_misc/libmisc.zwc $fpath)
+  autoload zls
+  zls $=@
+EOF
+}

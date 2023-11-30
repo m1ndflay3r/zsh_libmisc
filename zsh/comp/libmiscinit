@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
+
 libmiscinit() {
+  autoload rzls
   autoload zterm
   autoload zln
   autoload zwhich
