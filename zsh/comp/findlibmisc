@@ -3,12 +3,12 @@
 findlibmisc() {
   autoload blep
   find_libmisc_fpath_read="$(echo -n "$fpath")"
-  libmisc_found=0
+  libmisc_found=1
   IFS=$' '
   for fpath_items in $=find_libmisc_fpath_read; do
     if print $fpath_items | blep 'libmisc.zwc' &> /dev/null; then
       print $fpath_items
-      libmisc_found=1
+      libmisc_found=0
       break
     fi
   done
