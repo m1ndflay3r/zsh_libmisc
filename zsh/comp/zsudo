@@ -1,7 +1,14 @@
 #!/usr/bin/env zsh
 zsudo() {
-  if which sudo &> /dev/null; then
+  autoload isfile
+  zsudo_check_disable() {
+    isfile $HOME/.zlibmisc_nosudo && \
+      print 'warning: zsh_libmisc cannot use sudo due to explicit disable (remove file ".zlibmisc_nosudo" from your home dir to re-enable)' && \
+      return 0
     sudo $@
+  }
+  if which sudo &> /dev/null; then
+    zsudo_check_disable $@
     return $?
   else
     print "warning: sudo not found. Cannot escalate privileges."
