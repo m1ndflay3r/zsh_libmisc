@@ -72,28 +72,25 @@
     print "$indice_count" >> /tmp/libmisc_2d_arr/$arrname/indice_count
   }
 
+  # update indice at x y coords in array
   update() {
     # char to be swapped in
     update_char="$2"
     x_coord="$3"
     y_coord="$4"
-    print "DEBUG: Got "$update_char" for update char, xcoord "$x_coord", ycoord "$y_coord""
     (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
-      print "Error: array undeclared" && \
+      print "Error: attempted update undeclared array" && \
+      fail && \
       return 1
     array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
     indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    print "DEBUG: got indice count "$indice_count" and array count "$array_count""
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && \
-      print "update" && \
-      print "usage: x_coord= y_coord= update <character>" && \
+      fail && \
       return 1
-    print "passed x y is blank check"
     # error if out of bounds update attempt
     ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && \
       return 1
-    print "passed gt count check"
     # write pos. update script (I know, I know)
     rm -rf /tmp/libmisc_2d_arr/$arrname/working
     #env setup
@@ -161,6 +158,7 @@
     print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
   }
 
+  # delete array
   delete() {
     (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
       return 0
@@ -178,6 +176,84 @@
     return 0
   }
 
+  # retrieve contents of indice at x y coord
+  query() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
+      print "Error: attempted query undeclared array" && \
+      fail && \
+      return 1
+    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && \
+      print "Error: received empty query" && \
+      fail && \
+      return 1
+    # error if out of bounds query attempt
+    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && \
+      print "OOB" && \
+      return 3
+    rm -rf /tmp/libmisc_2d_arr/$arrname/query
+    # write position query script (I know, I know)
+    print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/query
+    print '' >> /tmp/libmisc_2d_arr/$arrname/query
+    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> /tmp/libmisc_2d_arr/$arrname/query
+    print 'autoload isfile' >> /tmp/libmisc_2d_arr/$arrname/query
+    #env setup
+    print "x_coord="$x_coord"" >> /tmp/libmisc_2d_arr/$arrname/query
+    print "y_coord="$y_coord"" >> /tmp/libmisc_2d_arr/$arrname/query
+    print "arrname="$arrname"" >> /tmp/libmisc_2d_arr/$arrname/query
+    print "source /tmp/libmisc_2d_arr/$arrname/input_arrays" >> /tmp/libmisc_2d_arr/$arrname/query
+    print 'isfile /tmp/libmisc_2d_arr/$arrname/ledger && \' >> /tmp/libmisc_2d_arr/$arrname/query
+    print "source /tmp/libmisc_2d_arr/$arrname/ledger" >> /tmp/libmisc_2d_arr/$arrname/query
+    print 'indice_count=0' >> /tmp/libmisc_2d_arr/$arrname/query
+    #iterate over each indice until reaching x coord
+    print -n 'for indice in $=' >> /tmp/libmisc_2d_arr/$arrname/query
+    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/query
+    print -n '_y_array_' >> /tmp/libmisc_2d_arr/$arrname/query
+    print -n "$y_coord" >> /tmp/libmisc_2d_arr/$arrname/query
+    print '; do' >> /tmp/libmisc_2d_arr/$arrname/query
+
+    print 'indice_count=$((indice_count+1))' >> /tmp/libmisc_2d_arr/$arrname/query
+    print '[ "$indice_count" = "$x_coord" ] && \' >> /tmp/libmisc_2d_arr/$arrname/query
+    print '  print "$indice" && \' >> /tmp/libmisc_2d_arr/$arrname/query
+    print '  break' >> /tmp/libmisc_2d_arr/$arrname/query
+
+    print 'done' >> /tmp/libmisc_2d_arr/$arrname/query
+    chmod 755 /tmp/libmisc_2d_arr/$arrname/query
+    query_result=$(/tmp/libmisc_2d_arr/$arrname/query)
+    print "$query_result"
+  }
+
+  # search array for indices containing value
+  search() {
+    do_search=$op_three
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
+      print "Error: attempted search undeclared array" && \
+      fail && \
+      return 1
+    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    x_coord=0
+    y_coord=0
+    found=0
+    while true; do
+      y_coord=$((y_coord+1))
+      [ "$y_coord" = "$((array_count+1))" ] && \
+        break
+      x_coord=0
+      while true; do
+        x_coord=$((x_coord+1))
+        [ "$x_coord" = "$((indice_count+1))" ] && \
+          break
+        test_position=$(2d_arr query $arrname $x_coord $y_coord)
+        [ "$test_position" = "$do_search" ] && \
+          print ""$x_coord" "$y_coord""
+      done
+    done
+  }
   $@
 }
 
