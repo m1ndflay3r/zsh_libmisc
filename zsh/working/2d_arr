@@ -2,14 +2,12 @@
 
 2d_arr() {
   ## fetch input
-
   request="$1"
   arrname="$2"
   op_three="$3"
   op_four="$4"
   op_five="$5"
   op_six="$6"
-#  2d_arr_input_raw="$@"
 
   ## fail printout
   fail() {
@@ -38,19 +36,11 @@
   autoload zrmdir
   autoload fox
   autoload fox-fr
+  autoload getstrln
 
   # create working dir if not found
   ! isfile /tmp/libmisc_2d_arr && \
     zmkdir /tmp/libmisc_2d_arr
-
-  # convert comm. line opts to array
-#  unset 2d_arr_input
-#  declare -a 2d_arr_input
-#  IFS=$' '
-#  for 2d_input in $=2d_arr_input_raw; do
-#    2d_arr_input+=("$2d_input")
-#  done
-#  unset IFS
 
   ## define functions
   # convert input provided on stdin to zsh-format arrays
@@ -61,17 +51,20 @@
     touch /tmp/libmisc_2d_arr/$arrname/input_arrays
     conv_to_arr_input=$(fox)
     array_count=0
+    indice_count=0
     IFS=$'\n'
     for cr_array in $=conv_to_arr_input; do
-      indice_count=0
+      indice_placeholder=0
       array_count=$((array_count+1))
       print -n ""$arrname"_y_array_"$array_count"=(" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
       while IFS= noglob read -r -k1 -d '' -u0 array_indice; do
         print -n "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
         print -n "$array_indice" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
         print "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
-        indice_count=$((indice_count+1))
+        indice_placeholder=$((indice_placeholder+1))
       done < <(IFS= noglob print -rn "$cr_array")
+      [ "$indice_placeholder" -gt "$indice_count" ] && \
+        indice_count="$indice_placeholder"
       print ')' >> /tmp/libmisc_2d_arr/$arrname/input_arrays
     done
     unset IFS
@@ -166,6 +159,23 @@
       touch /tmp/libmisc_2d_arr/$arrname/ledger
     fox-fr /tmp/libmisc_2d_arr/$arrname/array_update >> /tmp/libmisc_2d_arr/$arrname/ledger
     print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
+  }
+
+  delete() {
+    (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
+      return 0
+    preservedir=$(pwd)
+    cd /tmp/libmisc_2d_arr/$arrname
+    for delete_arr in *; do
+      until ! isfile $delete_arr &> /dev/null; do
+        zrm $delete_arr &> /dev/null
+      done
+    done
+    cd $preservedir
+    until ! isfile /tmp/libmisc_2d_arr/$arrname &> /dev/null; do
+      zrmdir /tmp/libmisc_2d_arr/$arrname &> /dev/null
+    done
+    return 0
   }
 
   $@
