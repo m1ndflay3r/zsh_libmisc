@@ -1,9 +1,22 @@
-create function to convert a given C binary into a libmisc module
-libmisc should create its own folder in /tmp/
-add ls -l equiv (easily doable now that ztat is more or less complete)
-continue work on blep
-*b64* large file versions
-ztput background handling
-build actual sudo implementation into zsudo
-more testing on aarch64
-moar features!
+- expand 2d_arr functionality: 2d_arr should be able to
+  a; create empty arrays
+  b; expand size of existing arrays
+  c; pad non-uniform input with spaces to create even grid
+
+- create function to convert a given C binary into a libmisc module
+
+- libmisc should create its own folder in /tmp/
+
+- add ls -l equiv (easily doable now that ztat is more or less complete)
+
+- continue work on blep
+
+- *b64* large file versions
+
+- ztput background handling
+
+- build actual sudo implementation into zsudo
+
+- more testing on aarch64
+
+- moar features!
