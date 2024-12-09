@@ -1,0 +1,173 @@
+#!/usr/bin/env zsh
+
+2d_arr() {
+  ## fetch input
+
+  request="$1"
+  arrname="$2"
+  op_three="$3"
+  op_four="$4"
+  op_five="$5"
+  op_six="$6"
+#  2d_arr_input_raw="$@"
+
+  ## fail printout
+  fail() {
+    print '  Usage:'
+    print ''
+    print '2d_arr create <arr_name> - read data from stdin, convert to 2d array under <arr_name>'
+    print '2d_arr delete <arr_name> - delete existing 2d array'
+    print '2d_arr query <arr_name> <x> <y> - return contents of indice at pos x y in given array'
+    print '2d_arr search <arr_name> <search term> - search 2d array for indice matching search term'
+    print '2d_arr update <arr_name> <value> <x> <y> - change contents of indice at x and y pos to given value'
+    print '2d_arr draw <arr_name> - print grid corresponding to arr_name'
+  }
+
+  ## exit with fail status if no input given
+  [ -z "$arrname" ] && \
+    print "Error: insufficient input!" && \
+    print '' && \
+    fail && \
+    return 1
+
+  ## env setup
+  autoload nrandom
+  autoload isfile
+  autoload zmkdir
+  autoload zrm
+  autoload zrmdir
+  autoload fox
+  autoload fox-fr
+
+  # create working dir if not found
+  ! isfile /tmp/libmisc_2d_arr && \
+    zmkdir /tmp/libmisc_2d_arr
+
+  # convert comm. line opts to array
+#  unset 2d_arr_input
+#  declare -a 2d_arr_input
+#  IFS=$' '
+#  for 2d_input in $=2d_arr_input_raw; do
+#    2d_arr_input+=("$2d_input")
+#  done
+#  unset IFS
+
+  ## define functions
+  # convert input provided on stdin to zsh-format arrays
+  create() {
+    ! isfile /tmp/libmisc_2d_arr/$arrname/ && \
+      zmkdir /tmp/libmisc_2d_arr/$arrname
+    rm -rf /tmp/libmisc_2d_arr/$arrname/input_arrays
+    touch /tmp/libmisc_2d_arr/$arrname/input_arrays
+    conv_to_arr_input=$(fox)
+    array_count=0
+    IFS=$'\n'
+    for cr_array in $=conv_to_arr_input; do
+      indice_count=0
+      array_count=$((array_count+1))
+      print -n ""$arrname"_y_array_"$array_count"=(" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+      while IFS= noglob read -r -k1 -d '' -u0 array_indice; do
+        print -n "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+        print -n "$array_indice" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+        print "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+        indice_count=$((indice_count+1))
+      done < <(IFS= noglob print -rn "$cr_array")
+      print ')' >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+    done
+    unset IFS
+    print "$array_count" > /tmp/libmisc_2d_arr/$arrname/array_count
+    print "$indice_count" >> /tmp/libmisc_2d_arr/$arrname/indice_count
+  }
+
+  update() {
+    # char to be swapped in
+    update_char="$2"
+    x_coord="$3"
+    y_coord="$4"
+    print "DEBUG: Got "$update_char" for update char, xcoord "$x_coord", ycoord "$y_coord""
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
+      print "Error: array undeclared" && \
+      return 1
+    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    print "DEBUG: got indice count "$indice_count" and array count "$array_count""
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && \
+      print "update" && \
+      print "usage: x_coord= y_coord= update <character>" && \
+      return 1
+    print "passed x y is blank check"
+    # error if out of bounds update attempt
+    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && \
+      return 1
+    print "passed gt count check"
+    # write pos. update script (I know, I know)
+    rm -rf /tmp/libmisc_2d_arr/$arrname/working
+    #env setup
+    print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/working
+    print '' >> /tmp/libmisc_2d_arr/$arrname/working
+    print "arrname="$arrname"" >> /tmp/libmisc_2d_arr/$arrname/working
+    #fetch input arrays
+    print 'source /tmp/libmisc_2d_arr/$arrname/input_arrays' >> /tmp/libmisc_2d_arr/$arrname/working
+    #env setup
+    print 'rm -rf /tmp/libmisc_2d_arr/$arrname/array_update' >> /tmp/libmisc_2d_arr/$arrname/working
+    print "x_coord="$x_coord"" >> /tmp/libmisc_2d_arr/$arrname/working
+    print "y_coord="$y_coord"" >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "update_char='" >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "$update_char" >> /tmp/libmisc_2d_arr/$arrname/working
+    print "'" >> /tmp/libmisc_2d_arr/$arrname/working
+    #print start of updated array
+    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '_y_array_"$y_coord"=(" > /tmp/libmisc_2d_arr/$arrname/array_update' >> /tmp/libmisc_2d_arr/$arrname/working
+    #iterate over each indice in target array, add indice as is if not target, add swap char instead if ta>
+    print 'indice_count=0' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'for indice in $=' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n '_y_array_' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "$y_coord" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '; do' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print '  indice_count=$((indice_count+1))' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print '  [ "$indice_count" = "$x_coord" ] && \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update && \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "$update_char" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update && \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'print "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update || \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n '(print -n "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update && \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n '$indice' >> /tmp/libmisc_2d_arr/$arrname/working
+    print '">> /tmp/libmisc_2d_arr/$arrname/array_update && \' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print -n 'print "' >> /tmp/libmisc_2d_arr/$arrname/working
+    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working
+    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update)' >> /tmp/libmisc_2d_arr/$arrname/working
+
+    print 'done' >> /tmp/libmisc_2d_arr/$arrname/working
+    print "print ')' >> /tmp/libmisc_2d_arr/$arrname/array_update" >> /tmp/libmisc_2d_arr/$arrname/working
+    chmod 755 /tmp/libmisc_2d_arr/$arrname/working
+    /tmp/libmisc_2d_arr/$arrname/working
+    source /tmp/libmisc_2d_arr/$arrname/array_update
+    ! isfile /tmp/libmisc_2d_arr/$arrname/ledger && \
+      touch /tmp/libmisc_2d_arr/$arrname/ledger
+    fox-fr /tmp/libmisc_2d_arr/$arrname/array_update >> /tmp/libmisc_2d_arr/$arrname/ledger
+    print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
+  }
+
+  $@
+}
+
