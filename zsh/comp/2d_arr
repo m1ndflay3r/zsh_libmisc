@@ -14,6 +14,7 @@
     print '  Usage:'
     print ''
     print '2d_arr create <arr_name> - read data from stdin, convert to 2d array under <arr_name>'
+    print '  blank=1 2d_arr create <arrname> <x> <y> - create empty array under <arrname> with size <x> and <y> (default 10x10)'
     print '2d_arr delete <arr_name> - delete existing 2d array'
     print '2d_arr query <arr_name> <x> <y> - return contents of indice at pos x y in given array'
     print '2d_arr search <arr_name> <search term> - search 2d array for indice matching search term'
@@ -66,7 +67,33 @@
       zmkdir /tmp/libmisc_2d_arr/$arrname
     rm -rf /tmp/libmisc_2d_arr/$arrname/input_arrays
     touch /tmp/libmisc_2d_arr/$arrname/input_arrays
-    conv_to_arr_input=$(fox)
+    create_blank() {
+      x_length="$op_three"
+      y_length="$op_four"
+      #set default size to 10x10 if no x y given
+      [ -z "$x_length" ] && \
+        x_length=10
+      [ -z "$y_length" ] && \
+        y_length=10
+      y_count=0
+      while true; do
+        y_count=$((y_count+1))
+        [ "$y_count" = $((y_length+1)) ] && \
+          break
+        x_count=0
+        while true; do
+          x_count=$((x_count+1))
+          [ "$x_count" = $((x_length+1)) ] && \
+            break
+          print -n '~'
+        done
+        print ''
+      done
+    }
+    [ "$blank" = 1 ] && \
+      conv_to_arr_input=$(create_blank) || \
+      conv_to_arr_input=$(fox)
+    unset blank
     array_count=0
     indice_count=0
     IFS=$'\n'
