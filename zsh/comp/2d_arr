@@ -32,7 +32,6 @@
   ## validate input
   valid_comm_list=('create'
                       'delete'
-                      'del'
                       'query'
                       'search'
                       'update'
@@ -46,9 +45,6 @@
     print "Error: received invalid command" && \
     fail && \
     return 1
-
-  [ "$request" = 'del' ] && \
-    request='delete'
 
   ## env setup
   autoload nrandom
