@@ -66,6 +66,7 @@
     ! isfile /tmp/libmisc_2d_arr/$arrname/ && \
       zmkdir /tmp/libmisc_2d_arr/$arrname
     rm -rf /tmp/libmisc_2d_arr/$arrname/input_arrays
+    rm -rf /tmp/libmisc_2d_arr/$arrname/ledger
     touch /tmp/libmisc_2d_arr/$arrname/input_arrays
     create_blank() {
       x_length="$op_three"
@@ -113,7 +114,7 @@
     done
     unset IFS
     print "$array_count" > /tmp/libmisc_2d_arr/$arrname/array_count
-    print "$indice_count" >> /tmp/libmisc_2d_arr/$arrname/indice_count
+    print "$indice_count" > /tmp/libmisc_2d_arr/$arrname/indice_count
   }
 
   # update indice at x y coords in array
