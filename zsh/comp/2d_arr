@@ -85,7 +85,7 @@
           x_count=$((x_count+1))
           [ "$x_count" = $((x_length+1)) ] && \
             break
-          print -n '~'
+          print -n '.'
         done
         print ''
       done
