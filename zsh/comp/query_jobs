@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+query_jobs() {
+  job_counter=0
+  while IFS=$'\n' read -r -u0 active_jobs; do
+    job_counter=$((job_counter+1))
+  done < <(jobs)
+}
