@@ -11,15 +11,7 @@
 
   ## fail printout
   fail() {
-    print '  Usage:'
-    print ''
-    print '2d_arr create <arr_name> - read data from stdin, convert to 2d array under <arr_name>'
-    print '  blank=1 2d_arr create <arrname> <x> <y> - create empty array under <arrname> with size <x> and <y> (default 10x10)'
-    print '2d_arr delete <arr_name> - delete existing 2d array'
-    print '2d_arr query <arr_name> <x> <y> - return contents of indice at pos x y in given array'
-    print '2d_arr search <arr_name> <search term> - search 2d array for indice matching search term'
-    print '2d_arr update <arr_name> <value> <x> <y> - change contents of indice at x and y pos to given value'
-    print '2d_arr draw <arr_name> - print grid corresponding to arr_name'
+    print "See man/libmisc/2d_arr.md for usage"
   }
 
   ## exit with fail status if no input given
@@ -31,11 +23,19 @@
 
   ## validate input
   valid_comm_list=('create'
-                      'delete'
-                      'query'
-                      'search'
-                      'update'
-                      'draw')
+                   'delete'
+                   'query'
+                   'query_grid'
+                   'search'
+                   'update'
+                   'draw'
+                   'del'
+                   'cr'
+                   'ss'
+                   'upd'
+                   'qu'
+                   'dr'
+                   'qg')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -45,6 +45,15 @@
     print "Error: received invalid command" && \
     fail && \
     return 1
+
+  # command aliases for brevity
+  alias del="delete"
+  alias cr="create"
+  alias ss="search"
+  alias upd="update"
+  alias qu="query"
+  alias dr="draw"
+  alias qg="query_grid"
 
   ## env setup
   autoload nrandom
@@ -131,12 +140,14 @@
     indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && \
+      print "Error: received blank coord!" && \
       fail && \
       return 1
     # error if out of bounds update attempt
     ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && \
-      return 1
-    # write pos. update script (I know, I know)
+      print "OOB" && \
+      return 3
+    # write position update script (I know, I know)
     rm -rf /tmp/libmisc_2d_arr/$arrname/working
     #env setup
     print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/working
@@ -274,6 +285,16 @@
     chmod 755 /tmp/libmisc_2d_arr/$arrname/query
     query_result=$(/tmp/libmisc_2d_arr/$arrname/query)
     print "$query_result"
+  }
+
+  query_grid() {
+    (! isfile /tmp/libmisc_2d_arr/$arrname/indice_count || ! isfile /tmp/libmisc_2d_arr/$arrname/array_count) && {
+      print "Error: attempted to query undeclared array"
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    print ""$x_ln" "$y_ln""
   }
 
   # search array for indices containing value
