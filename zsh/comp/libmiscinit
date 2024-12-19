@@ -59,7 +59,6 @@ libmiscinit() {
   autoload findlibmisc
   autoload 2d_arr
   autoload query_jobs
-  autoload pwr_of
   rm -rf $HOME/.zlsfirstrun
   if [ -d "/tmp" ]; then
     if ! which zsudo &> /dev/null; then
