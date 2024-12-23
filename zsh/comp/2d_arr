@@ -28,6 +28,7 @@
                    'query_grid'
                    'query_col'
                    'query_row'
+                   'query_adj'
                    'search'
                    'update'
                    'draw'
@@ -39,7 +40,8 @@
                    'dr'
                    'qg'
                    'qc'
-                   'qr')
+                   'qr'
+                   'qa')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -61,6 +63,7 @@
     (qg) request=query_grid ;;
     (qr) request=query_row ;;
     (qc) request=query_col ;;
+    (qa) request=query_adj
   esac
 
   ## env setup
@@ -375,8 +378,6 @@
       print "OOB"
       return 3
     }
-    # generate session id (multithread clash prevention)
-    zsession_id=$(nrandom)
     y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     y_counter=0
     while true; do
@@ -385,6 +386,114 @@
         break
       2d_arr query $arrname $x_coord $y_counter
     done
+  }
+
+  query_adj() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    direction="$op_five"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted query undeclared array"
+      fail
+      return 1
+    }
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
+      print "Error: received empty query"
+      fail
+      return 1
+    }
+    # error if out of bounds query attempt
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ]) && {
+      print "OOB"
+      return 3
+    }
+    [ "$direction" = "nw" ] && {
+      while true; do
+        x_coord=$((x_coord-1))
+        y_coord=$((y_coord-1))
+        ([ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "n" ] && {
+      while true; do
+        y_coord=$((y_coord-1))
+        [ "$y_coord" -le 0 ] && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "ne" ] && {
+      while true; do
+        x_coord=$((x_coord+1))
+        y_coord=$((y_coord-1))
+        ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -le 0 ]) && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "e" ] && {
+      while true; do
+        x_coord=$((x_coord+1))
+        [ "$x_coord" -gt "$x_ln" ] && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "se" ] && {
+      while true; do
+        x_coord=$((x_coord+1))
+        y_coord=$((y_coord+1))
+        ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ]) && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "s" ] && {
+      while true; do
+        y_coord=$((y_coord+1))
+        [ "$y_coord" -gt "$y_ln" ] && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "sw" ] && {
+      while true; do
+        x_coord=$((x_coord-1))
+        y_coord=$((y_coord+1))
+        ([ "$x_coord" -le 0 ] || [ "$y_coord" -gt "$y_ln" ]) && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
+    [ "$direction" = "w" ] && {
+      while true; do
+        x_coord=$((x_coord-1))
+        [ "$x_coord" -le 0 ] && \
+          return 0
+        print ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
+        [ "$single" = "1" ] && \
+          return 0
+      done
+    }
   }
 
   # search array for indices containing value
