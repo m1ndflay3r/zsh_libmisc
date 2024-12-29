@@ -56,6 +56,12 @@
     2d_arr <draw||dr> <arr_name> - print grid corresponding to arr_name
 
 
+    updstr=<char> 2d_arr <update_section||us> <arr_name> <x> <y> <xx> <yy> - replace contents of every indice starting from x y and ending at xx yy with contents of updstr
+
+
+    2d_arr <query_section||qs> <arr_name> <x> <y> <xx> <yy> - print section of grid starting from x y and ending at xx yy
+
+
 ---------------------------------
 
 utilizes zelfexec

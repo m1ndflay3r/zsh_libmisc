@@ -35,6 +35,8 @@
                    'create_link'
                    'query_link'
                    'delete_link'
+                   'update_section'
+                   'query_section'
                    'del'
                    'cr'
                    'ss'
@@ -47,7 +49,9 @@
                    'qa'
                    'cl'
                    'ql'
-                   'dl')
+                   'dl'
+                   'us'
+                   'qs')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -72,7 +76,9 @@
     (qa) request=query_adj ;;
     (cl) request=create_link ;;
     (ql) request=query_link ;;
-    (dl) request=delete_link
+    (dl) request=delete_link ;;
+    (us) request=update_section ;;
+    (qs) request=query_section ;;
   esac
 
   ## env setup
@@ -84,6 +90,8 @@
   autoload fox
   autoload fox-fr
   autoload getstrln
+  autoload chkvldint
+  autoload revstr
 
   # create working dir if not found
   ! isfile /tmp/libmisc_2d_arr && \
@@ -104,6 +112,11 @@
         x_length=10
       [ -z "$y_length" ] && \
         y_length=10
+      (! chkvldint $x_length || ! chkvldint $y_length) && {
+        print "Error: x_ln and y_ln must be int"
+        fail
+        return 1
+      }
       y_count=0
       while true; do
         y_count=$((y_count+1))
@@ -161,6 +174,12 @@
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received blank coord!"
+      fail
+      return 1
+    }
+    # error if x or y not int
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord") && {
+      print "Error: x and y must be int"
       fail
       return 1
     }
@@ -239,8 +258,16 @@
     source /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id
     ! isfile /tmp/libmisc_2d_arr/$arrname/ledger && \
       touch /tmp/libmisc_2d_arr/$arrname/ledger
+    # utilize lock file for ledger write (multithread clash prevention)
+    isfile /tmp/libmisc_2d_arr/$arrname/ledger.lck && {
+      until ! isfile /tmp/libmisc_2d_arr/$arrname/ledger.lck; do
+        sleep 1
+      done
+    }
+    touch /tmp/libmisc_2d_arr/$arrname/ledger.lck
     fox-fr /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id >> /tmp/libmisc_2d_arr/$arrname/ledger
     print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
+    rm -rf /tmp/libmisc_2d_arr/$arrname/ledger.lck
     rm -rf /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id
     rm -rf /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
   }
@@ -289,6 +316,11 @@
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
+      fail
+      return 1
+    }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord") && {
+      print "Error: x and y must be int"
       fail
       return 1
     }
@@ -355,6 +387,11 @@
       fail
       return 1
     }
+    ! chkvldint "$y_coord" && {
+      print "Error: y must be int"
+      fail
+      return 1
+    }
     y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
     ([ "$y_coord" -gt "$y_ln" ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
@@ -394,12 +431,17 @@
       fail
       return 1
     }
+    ! chkvldint "$x_coord" && {
+      print "Error: x must be int"
+      fail
+      return 1
+    }
     x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$x_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
     y_counter=0
     while true; do
       y_counter=$((y_counter+1))
@@ -426,10 +468,36 @@
       fail
       return 1
     }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord") && {
+      print "Error: x and y must be int"
+      fail
+      return 1
+    }
     # error if out of bounds query attempt
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
+    }
+    # error if direction invalid
+    valid_directions=('nw'
+                      'n'
+                      'ne'
+                      'e'
+                      'se'
+                      's'
+                      'sw'
+                      'w')
+    direction_invalid=1
+    for check_valid_direction in $=valid_directions; do
+      [ "$check_valid_direction" = "$direction" ] && {
+        direction_invalid=0
+        break
+      }
+    done
+    [ "$direction_invalid" = 1 ] && {
+      print "Error: direction must be nw, n, ne, e, se, s, sw, or w"
+      fail
+      return 1
     }
     [ "$direction" = "nw" ] && {
       while true; do
@@ -535,6 +603,12 @@
       fail
       return 1
     }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord" || \
+    ! chkvldint "$xx_coord" || ! chkvldint "$yy_coord") && {
+      print "Error: x and y must be int"
+      fail
+      return 1
+    }
     # error if out of bounds link attempt
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
@@ -553,7 +627,15 @@
       unset IFS
     } || \
     touch /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    # use lock file (multithread clash prevention)
+    isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck && {
+      until ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck; do
+        sleep 1
+      done
+    }
+    touch /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
     print ""$xx_coord" "$yy_coord"" >> /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    rm -rf /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
     ! [ "$mono" = 1 ] && \
       2d_arr create_link $arrname $xx_coord $yy_coord $x_coord $y_coord
     return 0
@@ -572,6 +654,11 @@
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty link query"
+      fail
+      return 1
+    }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord") && {
+      print "Error: x and y must be int"
       fail
       return 1
     }
@@ -608,9 +695,17 @@
       fail
       return 1
     }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord" || \
+    ! chkvldint "$xx_coord" || ! chkvldint "$yy_coord") && {
+      print "Error: x and y must be int"
+      fail
+      return 1
+    }
     # error if out of bounds
-    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
-     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
+     [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
+     [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -685,6 +780,112 @@
     draw_buffer=$(draw_proto)
     print "$draw_buffer"
   }
+
+  update_section() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    xx_coord="$op_five"
+    yy_coord="$op_six"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || \
+    [ -z "$yy_coord" ] || [ -z "$updstr" ] && {
+      print "Error: update_section received insufficient input"
+      fail
+      return 1
+    }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord" || \
+    ! chkvldint "$xx_coord" || ! chkvldint "$yy_coord") && {
+      print "Error: x and y must be int"
+      fail
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
+     [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
+     [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    upd_y_count=$op_four
+    y_stop_point=$yy_coord
+    x_stop_point=$xx_coord
+    while true; do
+      upd_x_count=$op_three
+      while true; do
+        (2d_arr update "$arrname" "$updstr" "$upd_x_count" "$upd_y_count")
+        upd_x_count=$((upd_x_count+1))
+        [ "$upd_x_count" -gt "$x_stop_point" ] && \
+          break
+      done
+      upd_y_count=$((upd_y_count+1))
+      [ "$upd_y_count" -gt "$y_stop_point" ] && \
+        break
+    done
+    return 0
+  }
+
+  query_section() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    xx_coord="$op_five"
+    yy_coord="$op_six"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || \
+    [ -z "$yy_coord" ] && {
+      print "Error: query_section received insufficient input"
+      fail
+      return 1
+    }
+    (! chkvldint "$x_coord" || ! chkvldint "$y_coord" || \
+    ! chkvldint "$xx_coord" || ! chkvldint "$yy_coord") && {
+      print "Error: x and y must be int"
+      fail
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
+     [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
+     [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    y_stop_point=$yy_coord
+    x_stop_point=$xx_coord
+    y_start_point=$y_coord
+    x_start_point=$x_coord
+    while true; do
+      query_section_working=$(2d_arr query_row $arrname $y_start_point)
+      query_sec_county=0
+      IFS=$' '
+      for query_sect_working in $=query_section_working; do
+        query_sec_county=$((query_sec_county+1))
+        [ "$query_sec_county" -ge "$x_start_point" ] && \
+        [ "$query_sec_county" -le "$x_stop_point" ] && \
+          print -n ""$query_sect_working" "
+        [ "$query_sec_county" -gt "$x_stop_point" ] && \
+          break
+      done
+      unset IFS
+      print ''
+      y_start_point=$((y_start_point+1))
+      [ "$y_start_point" -gt "$y_stop_point" ] && \
+        break
+    done
+    return 0
+  }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }
-
