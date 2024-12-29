@@ -32,6 +32,9 @@
                    'search'
                    'update'
                    'draw'
+                   'create_link'
+                   'query_link'
+                   'delete_link'
                    'del'
                    'cr'
                    'ss'
@@ -41,7 +44,10 @@
                    'qg'
                    'qc'
                    'qr'
-                   'qa')
+                   'qa'
+                   'cl'
+                   'ql'
+                   'dl')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -63,7 +69,10 @@
     (qg) request=query_grid ;;
     (qr) request=query_row ;;
     (qc) request=query_col ;;
-    (qa) request=query_adj
+    (qa) request=query_adj ;;
+    (cl) request=create_link ;;
+    (ql) request=query_link ;;
+    (dl) request=delete_link
   esac
 
   ## env setup
@@ -156,7 +165,7 @@
       return 1
     }
     # error if out of bounds update attempt
-    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && {
+    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ] || [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -241,6 +250,18 @@
     (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
       return 0
     preservedir=$(pwd)
+    isfile /tmp/libmisc_2d_arr/$arrname/links && {
+      cd /tmp/libmisc_2d_arr/$arrname/links
+      for delete_links in *; do
+        until ! isfile $delete_links &> /dev/null; do
+          zrm $delete_links &> /dev/null
+        done
+      done
+      cd ..
+      until ! isfile /tmp/libmisc_2d_arr/$arrname/links &> /dev/null; do
+        zrmdir /tmp/libmisc_2d_arr/$arrname/links &> /dev/null
+      done
+    }
     cd /tmp/libmisc_2d_arr/$arrname
     for delete_arr in *; do
       until ! isfile $delete_arr &> /dev/null; do
@@ -272,7 +293,7 @@
       return 1
     }
     # error if out of bounds query attempt
-    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ]) && {
+    ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ] || [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -335,7 +356,7 @@
       return 1
     }
     y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    [ "$y_coord" -gt "$y_ln" ] && {
+    ([ "$y_coord" -gt "$y_ln" ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -374,7 +395,7 @@
       return 1
     }
     x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    [ "$x_coord" -gt "$x_ln" ] && {
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$x_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -406,7 +427,7 @@
       return 1
     }
     # error if out of bounds query attempt
-    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ]) && {
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
@@ -494,6 +515,124 @@
           return 0
       done
     }
+  }
+
+  create_link() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    xx_coord="$op_five"
+    yy_coord="$op_six"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
+      print "Error: received empty link req"
+      fail
+      return 1
+    }
+    # error if out of bounds link attempt
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    ! isfile /tmp/libmisc_2d_arr/$arrname/links && \
+      zmkdir /tmp/libmisc_2d_arr/$arrname/links
+    isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord" && {
+      chk_link_dup=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+      IFS=$'\n'
+      for chk_link in $=chk_link_dup; do
+        [ "$chk_link" = ""$xx_coord" "$yy_coord"" ] && \
+          return 0
+      done
+      unset IFS
+    } || \
+    touch /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    print ""$xx_coord" "$yy_coord"" >> /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    ! [ "$mono" = 1 ] && \
+      2d_arr create_link $arrname $xx_coord $yy_coord $x_coord $y_coord
+    return 0
+  }
+
+  query_link() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
+      print "Error: received empty link query"
+      fail
+      return 1
+    }
+    # error if out of bounds link attempt
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    # error if link not exist
+    (! isfile /tmp/libmisc_2d_arr/$arrname/links || ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
+      print "none"
+      return 4
+    }
+    fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    return 0
+  }
+
+  delete_link() {
+    x_coord="$op_three"
+    y_coord="$op_four"
+    xx_coord="$op_five"
+    yy_coord="$op_six"
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # error if insufficient input
+    ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
+      print "Error: received empty unlink req"
+      fail
+      return 1
+    }
+    # error if out of bounds
+    ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
+     [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || [ "$xx_coord" -le 0 ] || [ "$yy_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    # return 0 if link not exist
+    (! isfile /tmp/libmisc_2d_arr/$arrname/links || ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
+      return 0
+    }
+    # read links into variable, blank out links
+    fetch_current_links=$(fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    print -n '' > /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    # divide up links by newline, print back to links if not unlink target
+    IFS=$'\n'
+    for zlinks in $=fetch_current_links; do
+      [ "$zlinks" != ""$xx_coord" "$yy_coord"" ] && \
+        print "$zlinks" >> /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    done
+    unset IFS
+    # delete links if blank after unlink
+    fetch_adjusted_links=$(fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    [ -z "$fetch_adjusted_links" ] && \
+      rm -rf /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    return 0
   }
 
   # search array for indices containing value

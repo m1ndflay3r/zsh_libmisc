@@ -10,6 +10,8 @@
 
     fox-fr /path/to/file | 2d_arr <create||cr> <arr_name> - read data from stdin, convert to 2d array under <arr_name>
 
+      note: expects data to be a proper grid, with all lines the same length. Padding will be added in a future update.
+
 
     blank=1 2d_arr <create||cr> <arrname> <x> <y> - create empty array under <arrname> with size <x> by <y> (default 10x10)
 
@@ -34,6 +36,17 @@
       note: set flag single=1 before command to only print first adjacent result
 
 
+    2d_arr <create_link||cl> <arr_name> <x> <y> <xx> <yy> - link indice x y to indice xx yy
+
+      note: set flag mono=1 before command to only link in one direction (i.e querying <x> <y> will return <xx> <yy>, but querying <xx> <yy> won't return <x> <y>)
+
+
+    2d_arr <query_link||ql> <arr_name> <x> <y> - query indice x y for x y coords of all indices linked to it (in format of "x y", separated by newline)
+
+
+    2d_arr <delete_link||dl> <arr_name> <x> <y> <xx> <yy> - unlink indice x y from indice xx yy
+
+
     2d_arr <search||ss> <arr_name> <search term> - search 2d array for all indices matching search term (in format of "x y", each result on newline)
 
 
@@ -48,3 +61,7 @@
 utilizes zelfexec
 
 able to handle multi-char entries in a single indice, though this will result in draw appearing warped
+
+return code 3 = oob
+
+return code 4 (for links) = no link exists
