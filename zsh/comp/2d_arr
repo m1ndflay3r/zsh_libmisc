@@ -892,6 +892,7 @@
       done
     }
     arr_contents_orig=$(draw_inverted)
+    blank=1 2d_arr create $arrname $invert_x_ln $invert_y_ln
     invert_y_count=0
     IFS=$'\n'
     for invert_working in $=arr_contents_orig; do
