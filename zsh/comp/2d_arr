@@ -117,6 +117,11 @@
         fail
         return 1
       }
+      ([ "$x_length" -le 0 ] || [ "$y_length" -le 0 ]) && {
+        print "Error: x_ln and y_ln must be > 0"
+        fail
+        return 1
+      }
       y_count=0
       while true; do
         y_count=$((y_count+1))
