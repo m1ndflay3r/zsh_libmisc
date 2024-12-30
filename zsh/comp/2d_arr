@@ -277,7 +277,7 @@
     (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
       return 0 \
     || \
-      rm -rf isfile /tmp/libmisc_2d_arr/$arrname
+      rm -rf /tmp/libmisc_2d_arr/$arrname
       return 0
   }
 
