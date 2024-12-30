@@ -13,7 +13,7 @@
       note: expects data to be a proper grid, with all lines the same length. Padding will be added in a future update.
 
 
-    blank=1 2d_arr <create||cr> <arrname> <x> <y> - create empty array under <arrname> with size <x> by <y> (default 10x10)
+    blank=1 2d_arr <create||cr> <arrname> <x> <y> - create empty array under <arrname> with size <x> by <y> (default 10x10, each indice initialized with character ".")
 
 
     2d_arr <delete||del> <arr_name> - delete existing 2d array
@@ -60,6 +60,10 @@
 
 
     2d_arr <query_section||qs> <arr_name> <x> <y> <xx> <yy> - print section of grid starting from x y and ending at xx yy
+
+
+    2d_arr <invert||inv> <arr_name> - swaps x and y axes of grid corresponding to arr_name
+
 
 
 ---------------------------------

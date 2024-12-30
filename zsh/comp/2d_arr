@@ -37,6 +37,7 @@
                    'delete_link'
                    'update_section'
                    'query_section'
+                   'invert'
                    'del'
                    'cr'
                    'ss'
@@ -51,7 +52,8 @@
                    'ql'
                    'dl'
                    'us'
-                   'qs')
+                   'qs'
+                   'inv')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -79,14 +81,12 @@
     (dl) request=delete_link ;;
     (us) request=update_section ;;
     (qs) request=query_section ;;
+    (inv) request=invert ;;
   esac
 
   ## env setup
   autoload nrandom
   autoload isfile
-  autoload zmkdir
-  autoload zrm
-  autoload zrmdir
   autoload fox
   autoload fox-fr
   autoload getstrln
@@ -95,14 +95,14 @@
 
   # create working dir if not found
   ! isfile /tmp/libmisc_2d_arr && \
-    zmkdir /tmp/libmisc_2d_arr
+    mkdir /tmp/libmisc_2d_arr
 
   ## define functions
   # convert input provided on stdin to zsh-format arrays
   create() {
     isfile /tmp/libmisc_2d_arr/$arrname && \
       rm -rf /tmp/libmisc_2d_arr/$arrname
-    zmkdir /tmp/libmisc_2d_arr/$arrname
+    mkdir /tmp/libmisc_2d_arr/$arrname
     touch /tmp/libmisc_2d_arr/$arrname/input_arrays
     create_blank() {
       x_length="$op_three"
@@ -275,31 +275,10 @@
   # delete array
   delete() {
     (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
+      return 0 \
+    || \
+      rm -rf isfile /tmp/libmisc_2d_arr/$arrname
       return 0
-    preservedir=$(pwd)
-    isfile /tmp/libmisc_2d_arr/$arrname/links && {
-      cd /tmp/libmisc_2d_arr/$arrname/links
-      for delete_links in *; do
-        until ! isfile $delete_links &> /dev/null; do
-          zrm $delete_links &> /dev/null
-        done
-      done
-      cd ..
-      until ! isfile /tmp/libmisc_2d_arr/$arrname/links &> /dev/null; do
-        zrmdir /tmp/libmisc_2d_arr/$arrname/links &> /dev/null
-      done
-    }
-    cd /tmp/libmisc_2d_arr/$arrname
-    for delete_arr in *; do
-      until ! isfile $delete_arr &> /dev/null; do
-        zrm $delete_arr &> /dev/null
-      done
-    done
-    cd $preservedir
-    until ! isfile /tmp/libmisc_2d_arr/$arrname &> /dev/null; do
-      zrmdir /tmp/libmisc_2d_arr/$arrname &> /dev/null
-    done
-    return 0
   }
 
   # retrieve contents of indice at x y coord
@@ -616,7 +595,7 @@
       return 3
     }
     ! isfile /tmp/libmisc_2d_arr/$arrname/links && \
-      zmkdir /tmp/libmisc_2d_arr/$arrname/links
+      mkdir /tmp/libmisc_2d_arr/$arrname/links
     isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord" && {
       chk_link_dup=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
       IFS=$'\n'
@@ -884,6 +863,46 @@
       y_start_point=$((y_start_point+1))
       [ "$y_start_point" -gt "$y_stop_point" ] && \
         break
+    done
+    return 0
+  }
+
+  invert() {
+    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    # read x as y and y as x
+    invert_x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    invert_y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    # create blank array with inverted x y ln
+    arrname_orig="$arrname"
+    x_ln_orig=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln_orig=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    draw_inverted() {
+      invert_x_count=0
+      while true; do
+        invert_x_count=$((invert_x_count+1))
+        [ "$invert_x_count" -gt "$x_ln_orig" ] && \
+          break
+        print -n $(2d_arr qc $arrname $invert_x_count) && \
+        print ''
+      done
+    }
+    arr_contents_orig=$(draw_inverted)
+    invert_y_count=0
+    IFS=$'\n'
+    for invert_working in $=arr_contents_orig; do
+      invert_y_count=$((invert_y_count+1))
+      invert_x_count=0
+      IFS=$' '
+      for do_invert in $=invert_working; do
+        invert_x_count=$((invert_x_count+1))
+        (2d_arr update "$arrname_orig" "$do_invert" "$invert_x_count" "$invert_y_count")
+      done
+      unset IFS
     done
     return 0
   }
