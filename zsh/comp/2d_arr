@@ -100,6 +100,27 @@
   ## define functions
   # convert input provided on stdin to zsh-format arrays
   create() {
+    chkvldint $arrname && {
+      print "Error: arrname cannot be int"
+      fail
+      return 1
+    }
+    [ "$blank" = 1 ] && {
+      [ -z "$op_three" ] && \
+        op_three=10
+      [ -z "$op_four" ] && \
+        op_four=10
+      (! chkvldint $op_three || ! chkvldint $op_four) && {
+        print "Error: x_ln and y_ln must be int"
+        fail
+        return 1
+      }
+      ([ "$op_three" -le 0 ] || [ "$op_four" -le 0 ]) && {
+        print "Error: x_ln and y_ln must be > 0"
+        fail
+        return 1
+      }
+    }
     isfile /tmp/libmisc_2d_arr/$arrname && \
       rm -rf /tmp/libmisc_2d_arr/$arrname
     mkdir /tmp/libmisc_2d_arr/$arrname
@@ -107,21 +128,6 @@
     create_blank() {
       x_length="$op_three"
       y_length="$op_four"
-      #set default size to 10x10 if no x y given
-      [ -z "$x_length" ] && \
-        x_length=10
-      [ -z "$y_length" ] && \
-        y_length=10
-      (! chkvldint $x_length || ! chkvldint $y_length) && {
-        print "Error: x_ln and y_ln must be int"
-        fail
-        return 1
-      }
-      ([ "$x_length" -le 0 ] || [ "$y_length" -le 0 ]) && {
-        print "Error: x_ln and y_ln must be > 0"
-        fail
-        return 1
-      }
       y_count=0
       while true; do
         y_count=$((y_count+1))
@@ -132,14 +138,17 @@
           x_count=$((x_count+1))
           [ "$x_count" = $((x_length+1)) ] && \
             break
-          print -n '.'
+          [ ! -z "$init_char" ] && \
+            print -n "$init_char" \
+          || \
+            print -n '.'
         done
         print ''
       done
     }
     [ "$blank" = 1 ] && \
       conv_to_arr_input=$(create_blank) || \
-      conv_to_arr_input=$(fox)
+      conv_to_arr_input=$(zFOXT='' fox)
     unset blank
     array_count=0
     indice_count=0

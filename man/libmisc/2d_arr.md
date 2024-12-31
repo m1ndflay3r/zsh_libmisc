@@ -15,6 +15,8 @@
 
     blank=1 2d_arr <create||cr> <arrname> <x> <y> - create empty array under <arrname> with size <x> by <y> (default 10x10, each indice initialized with character ".")
 
+      note: set flag init_char to set initialization character for blank 2d array (default is ".")
+
 
     2d_arr <delete||del> <arr_name> - delete existing 2d array
 
@@ -75,3 +77,5 @@ able to handle multi-char entries in a single indice, though this will result in
 return code 3 = oob
 
 return code 4 (for links) = no link exists
+
+array names may not be integer, though string containing int is fine (ex, arrname a10 is fine but arrname 10 is disallowed)
