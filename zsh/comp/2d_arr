@@ -38,6 +38,7 @@
                    'update_section'
                    'query_section'
                    'invert'
+                   'mirror_x'
                    'del'
                    'cr'
                    'ss'
@@ -53,7 +54,8 @@
                    'dl'
                    'us'
                    'qs'
-                   'inv')
+                   'inv'
+                   'mx')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -82,6 +84,7 @@
     (us) request=update_section ;;
     (qs) request=query_section ;;
     (inv) request=invert ;;
+    (mx) request=mirror_x ;;
   esac
 
   ## env setup
@@ -797,6 +800,11 @@
       fail
       return 1
     }
+    ([ "$x_coord" -gt "$xx_coord" ] || [ "$y_coord" -gt "$yy_coord" ]) && {
+      print "Error: x and y begin must be smaller than x and y end"
+      fail
+      return 1
+    }
     x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
     y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
@@ -844,6 +852,11 @@
     (! chkvldint "$x_coord" || ! chkvldint "$y_coord" || \
     ! chkvldint "$xx_coord" || ! chkvldint "$yy_coord") && {
       print "Error: x and y must be int"
+      fail
+      return 1
+    }
+    ([ "$x_coord" -gt "$xx_coord" ] || [ "$y_coord" -gt "$yy_coord" ]) && {
+      print "Error: x and y begin must be smaller than x and y end"
       fail
       return 1
     }
@@ -920,6 +933,87 @@
       unset IFS
     done
     return 0
+  }
+
+  mirror_x() {
+    mx_coord="$op_five"
+    mxx_coord="$op_six"
+    my_coord="$op_three"
+    myy_coord="$op_four"
+    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+      print "Error: Attempted reference undeclared array"
+      fail
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    [ -z "$my_coord" ] && \
+      my_coord=1
+    [ -z "$myy_coord" ] && \
+      myy_coord="$y_ln"
+    [ -z "$mx_coord" ] && \
+      mx_coord=1
+    [ -z "$mxx_coord" ] && \
+      mxx_coord="$x_ln"
+    (! chkvldint "$my_coord" || ! chkvldint "$myy_coord" || \
+     ! chkvldint "$mx_coord" || ! chkvldint "$mxx_coord") && {
+      print "Error: x and y must be valid int"
+      fail
+      return 1
+    }
+    ([ "$mx_coord" -gt "$mxx_coord" ] || [ "$my_coord" -gt "$myy_coord" ]) && {
+      print "Error: x begin and y begin must not be greater than x end and y end"
+      fail
+      return 1
+    }
+    ([ "$my_coord" -gt "$y_ln" ] || [ "$myy_coord" -gt "$y_ln" ] || \
+     [ "$mx_coord" -gt "$x_ln" ] || [ "$mxx_coord" -gt "$x_ln" ] || \
+     [ "$my_coord" -le 0 ] || [ "$myy_coord" -le 0 ] || \
+     [ "$mx_coord" -le 0 ] || [ "$mxx_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    y_counter=$((my_coord-1))
+    while true; do
+      y_counter=$((y_counter+1))
+      [ "$y_counter" -gt "$myy_coord" ] && \
+        break
+      [ "$y_counter" -ge "$my_coord" ] && {
+        mirror_x_str=''
+        mirror_x_working=''
+        mirror_x_working=$(2d_arr qr $arrname $y_counter)
+        IFS=$' '
+        mirror_x_count=0
+        for do_mirror_x in $=mirror_x_working; do
+          mirror_x_count=$((mirror_x_count+1))
+          [ "$mirror_x_count" -gt "$mxx_coord" ] && \
+            break
+          [ "$mirror_x_count" -ge "$mx_coord" ] && \
+            mirror_x_str=""$do_mirror_x" "$mirror_x_str""
+        done
+        unset mirror_x_array
+        declare -a mirror_x_array
+        for do_mirror_x in $=mirror_x_str; do
+          mirror_x_array+=("$do_mirror_x")
+        done
+        unset IFS
+        x_counter=$((mx_coord-1))
+        x_arr_count=0
+        while true; do
+          x_counter=$((x_counter+1))
+          [ "$x_counter" -gt "$mxx_coord" ] && \
+            break
+          [ "$x_counter" -ge "$mx_coord" ] && {
+            x_arr_count=$((x_arr_count+1))
+            2d_arr update $arrname $mirror_x_array[$x_arr_count] $x_counter $y_counter
+          }
+        done
+      }
+    done
+    return 0
+  }
+
+  mirror_y() {
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }
