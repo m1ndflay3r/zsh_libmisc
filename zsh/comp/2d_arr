@@ -39,6 +39,7 @@
                    'query_section'
                    'invert'
                    'mirror_x'
+                   'mirror_y'
                    'del'
                    'cr'
                    'ss'
@@ -55,7 +56,8 @@
                    'us'
                    'qs'
                    'inv'
-                   'mx')
+                   'mx'
+                   'my')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -85,6 +87,7 @@
     (qs) request=query_section ;;
     (inv) request=invert ;;
     (mx) request=mirror_x ;;
+    (my) request=mirror_y ;;
   esac
 
   ## env setup
@@ -1054,12 +1057,39 @@
     x_counter=$((my_x_coord-1))
     while true; do
       x_counter=$((x_counter+1))
-      [ "$x_counter" -gt "$my_xx_counter" ] && \
+      [ "$x_counter" -gt "$my_xx_coord" ] && \
         break
       [ "$x_counter" -ge "$my_x_coord" ] && {
         mirror_y_str=''
         mirror_y_working=''
-        mirror_y_working=$(print -n $(2d_arr qc $arrname $x_counter))
+        mirror_y_working=$(2d_arr qc $arrname $x_counter)
+        IFS=$'\n'
+        mirror_y_count=0
+        for do_mirror_y in $=mirror_y_working; do
+          mirror_y_count=$((mirror_y_count+1))
+          [ "$mirror_y_count" -gt "$my_yy_coord" ] && \
+            break
+          [ "$mirror_y_count" -ge "$my_y_coord" ] && \
+            mirror_y_str=""$do_mirror_y" "$mirror_y_str""
+        done
+        IFS=$' '
+        unset mirror_y_array
+        declare -a mirror_y_array
+        for do_mirror_y in $=mirror_y_str; do
+          mirror_y_array+=("$do_mirror_y")
+        done
+        unset IFS
+        y_counter=$((my_y_coord-1))
+        y_arr_count=0
+        while true; do
+          y_counter=$((y_counter+1))
+          [ "$y_counter" -gt "$my_yy_coord" ] && \
+            break
+          [ "$y_counter" -ge "$my_y_coord" ] && {
+            y_arr_count=$((y_arr_count+1))
+            2d_arr update $arrname $mirror_y_array[$y_arr_count] $x_counter $y_counter
+          }
+        done
       }
     done
   }

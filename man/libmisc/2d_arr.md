@@ -70,6 +70,9 @@
     2d_arr <mirror_x||mx> <arr_name> <y_begin> <y_end> <x_begin> <x_end> - mirror (reverse) contents of rows from y_begin to y_end. Setting x begin and x end will only mirror contents within that range. Leave all values blank to mirror entire grid along x axis.
 
 
+    2d_arr <mirror_y||my> <arr_name> <x_begin> <x_end> <y_begin> <y_end> - mirror (reverse) contents of columns from x_begin to x_end. Setting y_begin and y_end will only mirror contents within that range. Leave all values blank to mirror entire grid along y axis.
+
+
 
 ---------------------------------
 
