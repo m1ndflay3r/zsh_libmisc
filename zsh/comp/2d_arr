@@ -1014,6 +1014,54 @@
   }
 
   mirror_y() {
+    my_x_coord="$op_three"
+    my_xx_coord="$op_four"
+    my_y_coord="$op_five"
+    my_yy_coord="$op_six"
+    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+      print "Error: Attempted reference undeclared array"
+      fail
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    [ -z "$my_y_coord" ] && \
+      my_y_coord=1
+    [ -z "$my_yy_coord" ] && \
+      my_yy_coord="$y_ln"
+    [ -z "$my_x_coord" ] && \
+      my_x_coord=1
+    [ -z "$my_xx_coord" ] && \
+      my_xx_coord="$x_ln"
+    (! chkvldint "$my_y_coord" || ! chkvldint "$my_yy_coord" || \
+     ! chkvldint "$my_x_coord" || ! chkvldint "$my_xx_coord") && {
+      print "Error: x and y must be valid int"
+      fail
+      return 1
+    }
+    ([ "$my_x_coord" -gt "$my_xx_coord" ] || [ "$my_y_coord" -gt "$my_yy_coord" ]) && {
+      print "Error: x begin and y begin must not be greater than x end and y end"
+      fail
+      return 1
+    }
+    ([ "$my_y_coord" -gt "$y_ln" ] || [ "$my_yy_coord" -gt "$y_ln" ] || \
+     [ "$my_x_coord" -gt "$x_ln" ] || [ "$my_xx_coord" -gt "$x_ln" ] || \
+     [ "$my_y_coord" -le 0 ] || [ "$my_yy_coord" -le 0 ] || \
+     [ "$my_x_coord" -le 0 ] || [ "$my_xx_coord" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    x_counter=$((my_x_coord-1))
+    while true; do
+      x_counter=$((x_counter+1))
+      [ "$x_counter" -gt "$my_xx_counter" ] && \
+        break
+      [ "$x_counter" -ge "$my_x_coord" ] && {
+        mirror_y_str=''
+        mirror_y_working=''
+        mirror_y_working=$(print -n $(2d_arr qc $arrname $x_counter))
+      }
+    done
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }
