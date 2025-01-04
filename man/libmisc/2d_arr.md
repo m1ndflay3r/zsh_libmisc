@@ -67,6 +67,9 @@
     2d_arr <invert||inv> <arr_name> - swaps x and y axes of grid corresponding to arr_name
 
 
+    2d_arr <invert_section||is> <arr_name> <x> <y> <xx> <yy> - swaps x and y axes of arr_name starting from indice x y and ending at indice xx yy. Set flag overwrite_indices to 1 to allow for non-square (rectangular) section inversion (will overwrite overlapping indices, and will error out if flipped x y coords are oob)
+
+
     2d_arr <mirror_x||mx> <arr_name> <y_begin> <y_end> <x_begin> <x_end> - mirror (reverse) contents of rows from y_begin to y_end. Setting x begin and x end will only mirror contents within that range. Leave all values blank to mirror entire grid along x axis.
 
 
@@ -85,3 +88,5 @@ return code 3 = oob
 return code 4 (for links) = no link exists
 
 array names may not be integer, though string containing int is fine (ex, arrname a10 is fine but arrname 10 is disallowed)
+
+any function which references a section of an array (such as query_section) begins in the upper left corner and ends in the lower right (i.e, start values aught to always be lower than end values)

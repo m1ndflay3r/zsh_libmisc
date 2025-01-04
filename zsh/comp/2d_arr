@@ -38,6 +38,7 @@
                    'update_section'
                    'query_section'
                    'invert'
+                   'invert_section'
                    'mirror_x'
                    'mirror_y'
                    'del'
@@ -57,7 +58,8 @@
                    'qs'
                    'inv'
                    'mx'
-                   'my')
+                   'my'
+                   'is')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -88,6 +90,7 @@
     (inv) request=invert ;;
     (mx) request=mirror_x ;;
     (my) request=mirror_y ;;
+    (is) request=invert_section ;;
   esac
 
   ## env setup
@@ -935,6 +938,110 @@
       done
       unset IFS
     done
+    return 0
+  }
+
+  invert_section() {
+    is_x_start="$op_three"
+    is_y_start="$op_four"
+    is_x_end="$op_five"
+    is_y_end="$op_six"
+    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    [ -z "$is_x_start" ] && \
+      is_x_start=1
+    [ -z "$is_y_start" ] && \
+      is_y_start=1
+    [ -z "$is_y_end" ] && \
+      is_y_end="$y_ln"
+    [ -z "$is_x_end" ] && \
+      is_x_end="$x_ln"
+    (! chkvldint "$is_x_start" || ! chkvldint "$is_x_end" || \
+     ! chkvldint "$is_y_start" || ! chkvldint "$is_y_end") && {
+      print "Error: x and y begin + end must be int"
+      fail
+      return 1
+    }
+    ([ "$is_x_start" -gt "$is_y_end" ] || [ "$is_y_start" -gt "$is_y_end" ]) && {
+      print "Error: x and y start must be smaller than x and y end"
+      fail
+      return 1
+    }
+    ([ "$is_x_start" -le 0 ] || [ "$is_y_start" -le 0 ] || \
+     [ "$is_x_end" -le 0 ] || [ "$is_y_end" -le 0 ] || \
+     [ "$is_x_start" -gt "$x_ln" ] || [ "$is_x_end" -gt "$x_ln" ] || \
+     [ "$is_y_start" -gt "$y_ln" ] || [ "$is_y_end" -gt "$y_ln" ]) && {
+      print "OOB"
+      return 3
+    }
+    # ensure input is square so we don't clash with other indices upon invert
+    is_test_x=$((is_x_end-is_x_start))
+    is_test_y=$((is_y_end-is_y_start))
+    [ "$is_test_x" != "$is_test_y" ] && [ "$overwrite_indices" != 1 ] && {
+      print "Error: (x_end - x_start) and (y_end - y_start) must be the same number"
+      fail
+      return 9
+    }
+    [ "$overwrite_indices" = 1 ] && {
+      ([ "$is_y_end" -gt "$x_ln" ] || [ "$is_x_end" -gt "$y_ln" ]) && {
+        print "OOB"
+        return 3
+      }
+    }
+    is_session_id=$(nrandom)
+    touch /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+    is_x_counter=$((is_x_start-1))
+    while true; do
+      is_x_counter=$((is_x_counter+1))
+      [ "$is_x_counter" -gt "$is_x_end" ] && \
+        break
+      is_working_indice=$(print -n $(2d_arr qc $arrname $is_x_counter))
+      unset is_working_array
+      declare -a is_working_array
+      is_indice_counter=0
+      IFS=$' '
+      for is_indice in $=is_working_indice; do
+        is_indice_counter=$((is_indice_counter+1))
+        [ "$is_indice_counter" -gt "$is_y_end" ] && \
+          break
+        [ "$is_indice_counter" -ge "$is_y_start" ] && {
+          is_working_array+=("$is_indice")
+        }
+      done
+      unset IFS
+      is_y_array_counter=0
+      is_new_x_counter=$((is_x_start-1))
+      while true; do
+        is_new_x_counter=$((is_new_x_counter+1))
+        [ "$is_new_x_counter" -gt "$is_x_end" ] && \
+          break
+        [ "$is_new_x_counter" -ge "$is_x_begin" ] && {
+          is_y_array_counter=$((is_y_array_counter+1))
+          print -n ""$is_working_array[$is_y_array_counter]" " >> /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+        }
+      done
+      print >> /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+    done
+    is_inverted_section=$(cat /tmp/libmisc_2d_arr/$arrname/is_$is_session_id)
+    rm -rf /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+    is_y_counter=$((is_y_start-1))
+    IFS=$'\n'
+    for do_invert_row in $=is_inverted_section; do
+      is_y_counter=$((is_y_counter+1))
+      is_x_counter=$((is_x_start-1))
+      IFS=$' '
+      for do_invert_indice in $=do_invert_row; do
+        is_x_counter=$((is_x_counter+1))
+        (2d_arr update $arrname $do_invert_indice $is_x_counter $is_y_counter)
+      done
+      unset IFS
+    done
+    unset IFS
     return 0
   }
 
