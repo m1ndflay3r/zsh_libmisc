@@ -70,10 +70,22 @@
     2d_arr <invert_section||is> <arr_name> <x> <y> <xx> <yy> - swaps x and y axes of arr_name starting from indice x y and ending at indice xx yy. Set flag overwrite_indices to 1 to allow for non-square (rectangular) section inversion (will overwrite overlapping indices, and will error out if flipped x y coords are oob)
 
 
+    2d_arr <anti_invert||ai> <arr_name> <x> <y> <xx> <yy> - same as invert, except from opposite corner (flipped x and y axes). Uses invert if opts are blank, or invert_section if opts are filled.
+
+
     2d_arr <mirror_x||mx> <arr_name> <y_begin> <y_end> <x_begin> <x_end> - mirror (reverse) contents of rows from y_begin to y_end. Setting x begin and x end will only mirror contents within that range. Leave all values blank to mirror entire grid along x axis.
 
 
     2d_arr <mirror_y||my> <arr_name> <x_begin> <x_end> <y_begin> <y_end> - mirror (reverse) contents of columns from x_begin to x_end. Setting y_begin and y_end will only mirror contents within that range. Leave all values blank to mirror entire grid along y axis.
+
+
+    2d_arr <rotate_90||r9> <arr_name> <x_begin> <y_begin> <x_end> <y_end> - rotate indices from x_begin y_begin to x_end y_end by 90°. Leave all opts blank to rotate entire array.
+
+
+    2d_arr <rotate_180||r18> <arr_name> <x_begin> <y_begin> <x_end> <y_end> - rotate indices from x_begin y_begin to x_end y_end by 180°. Leave all opts blank to rotate entire array.
+
+
+    2d_arr <rotate_270||r27> <arr_name> <x_begin> <y_begin> <x_end> <y_end> - rotate indices from x_begin y_begin to x_end y_end by 270°. Leave all opts blank to rotate entire array.
 
 
 

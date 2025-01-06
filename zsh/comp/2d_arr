@@ -41,6 +41,10 @@
                    'invert_section'
                    'mirror_x'
                    'mirror_y'
+                   'rotate_90'
+                   'rotate_180'
+                   'rotate_270'
+                   'anti_invert'
                    'del'
                    'cr'
                    'ss'
@@ -59,7 +63,11 @@
                    'inv'
                    'mx'
                    'my'
-                   'is')
+                   'is'
+                   'r9'
+                   'r18'
+                   'r27'
+                   'ai')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -91,6 +99,10 @@
     (mx) request=mirror_x ;;
     (my) request=mirror_y ;;
     (is) request=invert_section ;;
+    (r9) request=rotate_90 ;;
+    (r18) request=rotate_180 ;;
+    (r27) request=rotate_270 ;;
+    (ai) request=anti_invert ;;
   esac
 
   ## env setup
@@ -210,6 +222,12 @@
     ([ "$x_coord" -gt "$indice_count" ] || [ "$y_coord" -gt "$array_count" ] || [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
+    }
+    # error if attempt to use space or newline in update char
+    ([[ "$update_char" = *$'\n'* ]] || [[ "$update_char" = *' '* ]]) && {
+      print "Error: cannot use space or newline for updchar"
+      fail
+      return 1
     }
     # generate session ID (multithread clash prevention)
     zsession_id=$(nrandom)
@@ -1199,6 +1217,86 @@
         done
       }
     done
+  }
+
+  rotate_90() {
+    [ -z "$op_six" ] && {
+      (2d_arr invert $arrname) || \
+        return 1
+      (2d_arr mx $arrname) || \
+        return 1
+    } || {
+      r90_x_start="$op_three"
+      r90_x_end="$op_five"
+      r90_y_start="$op_four"
+      r90_y_end="$op_six"
+      (2d_arr invert_section $arrname $r90_x_start $r90_y_start $r90_x_end $r90_y_end) || \
+        return 1
+      (2d_arr mx $arrname $r90_y_start $r90_y_end $r90_x_start $r90_x_end) || \
+        return 1
+    }
+    return 0
+  }
+
+  rotate_180() {
+    [ -z "$op_six" ] && {
+      (2d_arr mx $arrname) || \
+        return 1
+      (2d_arr my $arrname) || \
+        return 1
+    } || {
+      r180_x_start="$op_three"
+      r180_x_end="$op_five"
+      r180_y_start="$op_four"
+      r180_y_end="$op_six"
+      (2d_arr mx $arrname $r180_y_start $r180_y_end $r180_x_start $r180_x_end) || \
+        return 1
+      (2d_arr my $arrname $r180_x_start $r180_x_end $r180_y_start $r180_y_end) || \
+        return 1
+    }
+    return 0
+  }
+
+  rotate_270() {
+    [ -z "$op_six" ] && {
+      (2d_arr invert $arrname) || \
+        return 1
+      (2d_arr my $arrname) || \
+        return 1
+    } || {
+      r270_x_start="$op_three"
+      r270_x_end="$op_five"
+      r270_y_start="$op_four"
+      r270_y_end="$op_six"
+      (2d_arr invert_section $arrname $r270_x_start $r270_y_start $r270_x_end $r270_y_end) || \
+        return 1
+      (2d_arr my $arrname $r270_x_start $r270_x_end $r270_y_start $r270_y_end) || \
+        return 1
+    }
+    return 0
+  }
+
+  anti_invert() {
+    [ -z "$op_six" ] && {
+      (2d_arr invert $arrname) || \
+        return 1
+      (2d_arr mx $arrname) || \
+        return 1
+      (2d_arr my $arrname) || \
+        return 1
+    } || {
+      anti_x_start="$op_three"
+      anti_x_end="$op_five"
+      anti_y_start="$op_four"
+      anti_y_end="$op_six"
+      (2d_arr invert_section $arrname $anti_x_start $anti_y_start $anti_x_end $anti_y_end) || \
+        return 1
+      (2d_arr mx $arrname $anti_y_start $anti_y_end $anti_x_start $anti_x_end) || \
+        return 1
+      (2d_arr my $arrname $anti_x_start $anti_x_end $anti_y_start $anti_y_end) || \
+        return 1
+    }
+    return 0
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }
