@@ -45,6 +45,8 @@
                    'rotate_180'
                    'rotate_270'
                    'anti_invert'
+                   'flush'
+                   'resize_arr'
                    'del'
                    'cr'
                    'ss'
@@ -67,7 +69,9 @@
                    'r9'
                    'r18'
                    'r27'
-                   'ai')
+                   'ai'
+                   'fl'
+                   'ra')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -103,6 +107,8 @@
     (r18) request=rotate_180 ;;
     (r27) request=rotate_270 ;;
     (ai) request=anti_invert ;;
+    (fl) request=flush ;;
+    (ra) request=resize_arr ;;
   esac
 
   ## env setup
@@ -1294,6 +1300,102 @@
       (2d_arr my $arrname $anti_x_start $anti_x_end $anti_y_start $anti_y_end) || \
         return 1
     }
+    return 0
+  }
+
+  flush() {
+    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    flush_working=$(2d_arr draw $arrname)
+    flush_x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    flush_y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    blank=1 2d_arr create $arrname $flush_x_ln $flush_y_ln
+    flush_y_count=0
+    IFS=$'\n'
+    for do_flush_row in $=flush_working; do
+      flush_y_count=$((flush_y_count+1))
+      flush_x_count=0
+      IFS=$' '
+      for do_flush_col in $=do_flush_row; do
+        flush_x_count=$((flush_x_count+1))
+        2d_arr update $arrname "$do_flush_col" $flush_x_count $flush_y_count
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
+  }
+
+  resize_arr() {
+    resize_arr_x_ln="$op_three"
+    resize_arr_y_ln="$op_four"
+    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    ([ -z "$resize_arr_x_ln" ] || [ -z "$resize_arr_y_ln" ]) && {
+      print "Error: x and y length cannot be blank"
+      fail
+      return 1
+    }
+    (! chkvldint "$resize_arr_x_ln" || ! chkvldint "$resize_arr_y_ln") && {
+      print "Error: x and y length must be int"
+      fail
+      return 1
+    }
+    ([ "$resize_arr_x_ln" -le 0 ] || [ "$resize_arr_y_ln" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    resize_arr_working=$(2d_arr draw $arrname)
+    blank=1 2d_arr create $arrname $resize_arr_x_ln $resize_arr_y_ln
+    [ -z "$ra_y" ] && \
+      resize_arr_y_count=0 || {
+        (! chkvldint "$ra_y") && {
+          print "Error: ra_y must be int"
+          fail
+          return 1
+        }
+        [ "$ra_y" -le 0 ] && {
+          print "Error: ra_y cannot be <= 0"
+          return 1
+        }
+        resize_arr_y_count=$((ra_y-1))
+      }
+    ! [ -z "$ra_x" ] && {
+      (! chkvldint "$ra_x") && {
+        print "Error: ra_x must be int"
+        fail
+        return 1
+      }
+      [ "$ra_x" -le 0 ] && {
+        print "Error: ra_x cannot be <= 0"
+        return 1
+      }
+    }
+    IFS=$'\n'
+    for do_resize_arr_row in $=resize_arr_working; do
+      resize_arr_y_count=$((resize_arr_y_count+1))
+      [ "$resize_arr_y_count" -gt "$resize_arr_y_ln" ] && \
+        break
+      [ -z "$ra_x" ] && \
+        resize_arr_x_count=0 \
+      || \
+        resize_arr_x_count=$((ra_x-1))
+      IFS=$' '
+      for do_resize_arr_col in $=do_resize_arr_row; do
+        resize_arr_x_count=$((resize_arr_x_count+1))
+        [ "$resize_arr_x_count" -gt "$resize_arr_x_ln" ] && \
+          break
+        2d_arr update $arrname "$do_resize_arr_col" $resize_arr_x_count $resize_arr_y_count
+      done
+      unset IFS
+    done
+    unset IFS
     return 0
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six

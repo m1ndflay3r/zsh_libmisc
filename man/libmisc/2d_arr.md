@@ -88,6 +88,15 @@
     2d_arr <rotate_270||r27> <arr_name> <x_begin> <y_begin> <x_end> <y_end> - rotate indices from x_begin y_begin to x_end y_end by 270°. Leave all opts blank to rotate entire array.
 
 
+    2d_arr <flush||fl> <arr_name> - consolidate ledger updates (ledger size management). Use this if your program updates the array enough for ledger size to become a concern.
+
+
+    2d_arr <resize_arr||ra> <arr_name> <new_x_ln> <new_y_ln> - resize array to new_x_ln by new_y_ln. Truncates from bottom right corner if new x y ln is smaller than old x y ln.
+
+      note: set flags ra_x and ra_y to specify an x y offset value for begin write old array contents to new array (ex, ra_x=2 ra_y=2 means old array contents will be aligned to x2 y2 in new array)
+
+
+
 
 ---------------------------------
 
