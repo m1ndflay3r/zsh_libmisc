@@ -108,8 +108,6 @@
   ## env setup
   autoload nrandom
   autoload isfile
-  autoload fox
-  autoload fox-fr
   autoload getstrln
   autoload chkvldint
   autoload revstr
@@ -169,7 +167,7 @@
     }
     [ "$blank" = 1 ] && \
       conv_to_arr_input=$(create_blank) || \
-      conv_to_arr_input=$(zFOXT='' fox)
+      conv_to_arr_input=$(cat)
     unset blank
     array_count=0
     indice_count=0
@@ -204,8 +202,8 @@
       fail
       return 1
     }
-    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received blank coord!"
@@ -306,7 +304,7 @@
       done
     }
     touch /tmp/libmisc_2d_arr/$arrname/ledger.lck
-    fox-fr /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id >> /tmp/libmisc_2d_arr/$arrname/ledger
+    cat /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id >> /tmp/libmisc_2d_arr/$arrname/ledger
     print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
     rm -rf /tmp/libmisc_2d_arr/$arrname/ledger.lck
     rm -rf /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id
@@ -331,8 +329,8 @@
       fail
       return 1
     }
-    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -390,8 +388,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     print ""$x_ln" "$y_ln""
   }
 
@@ -412,7 +410,7 @@
       fail
       return 1
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     ([ "$y_coord" -gt "$y_ln" ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
@@ -456,12 +454,12 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$x_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     y_counter=0
     while true; do
       y_counter=$((y_counter+1))
@@ -480,8 +478,8 @@
       fail
       return 1
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -615,8 +613,8 @@
       fail
       return 1
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty link req"
@@ -669,8 +667,8 @@
       fail
       return 1
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty link query"
@@ -693,7 +691,7 @@
       print "none"
       return 4
     }
-    fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
   }
 
@@ -707,8 +705,8 @@
       fail
       return 1
     }
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty unlink req"
@@ -734,7 +732,7 @@
       return 0
     }
     # read links into variable, blank out links
-    fetch_current_links=$(fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    fetch_current_links=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
     print -n '' > /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     # divide up links by newline, print back to links if not unlink target
     IFS=$'\n'
@@ -744,7 +742,7 @@
     done
     unset IFS
     # delete links if blank after unlink
-    fetch_adjusted_links=$(fox-fr /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    fetch_adjusted_links=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
     [ -z "$fetch_adjusted_links" ] && \
       rm -rf /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
@@ -757,8 +755,8 @@
       print "Error: attempted search undeclared array" && \
       fail && \
       return 1
-    array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
     x_coord=0
     y_coord=0
     found=0
@@ -786,8 +784,8 @@
         print "Error: attempted draw undeclared array" && \
         fail && \
         return 1
-      array_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
-      indice_count=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
+      array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+      indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
       x_coord=0
       y_coord=0
       while true; do
@@ -829,8 +827,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -884,8 +882,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -969,8 +967,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     [ -z "$is_x_start" ] && \
       is_x_start=1
     [ -z "$is_y_start" ] && \
@@ -1073,8 +1071,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_coord" ] && \
       my_coord=1
     [ -z "$myy_coord" ] && \
@@ -1151,8 +1149,8 @@
       fail
       return 1
     }
-    x_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(fox-fr /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_y_coord" ] && \
       my_y_coord=1
     [ -z "$my_yy_coord" ] && \
