@@ -38,7 +38,7 @@ Once done, every subsequent zsh session will have the functions of libmisc avail
 
 ### - latest feature -
 
-    == zterm       : tmux-like <zsh/zpty> wrapper, including attach / detach functionality
+    == 2d_arr      : 2d array (grid) support for zsh
 
 
 
