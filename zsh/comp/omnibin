@@ -29,7 +29,7 @@ omnibin() {
     zELFSPOOF="omn$OMNIRANDVAL"
   fi
   if [ -d "/tmp" ]; then
-    OMNIDIR='/tmp/.libmisc'
+    OMNIDIR="/tmp/.libmisc"$UID""
   else
     OMNIDIR=""$HOME"/.libmisc"
   fi

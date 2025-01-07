@@ -14,14 +14,13 @@ zmkfifo() {
     mkfifo_exec="$(printf '%s' "$mkfifo_exec")"
   }
   [ -d "/tmp" ] && {
-    mkfifo_working_dir='/tmp'
+    mkfifo_working_dir="/tmp/.libmisc"$UID""
   } || {
-    mkfifo_working_dir=$HOME
+    mkfifo_working_dir=""$HOME"/.libmisc"
   }
-  ! isfile ""$mkfifo_working_dir"/.libmisc" && {
-    mkdir ""$mkfifo_working_dir"/.libmisc"
+  ! isfile "$mkfifo_working_dir" && {
+    mkdir "$mkfifo_working_dir"
   }
-  mkfifo_working_dir=""$mkfifo_working_dir"/.libmisc"
   mkfifo_rand_val="$(nrandom)" &> /dev/null
   #define write amd64 mkfifo binary as function
   zmkfifo-amd-write() {

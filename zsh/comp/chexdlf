@@ -31,7 +31,7 @@ chexdlf() {
   CHEXDFIFO1="Ch"$(nrandom)"lF" &> /dev/null
   CHEXDFIFO2="Ch"$(nrandom)"lF" &> /dev/null
   if [ -d "/tmp" ]; then
-    CHEXDLFDIR='/tmp/.libmisc'
+    CHEXDLFDIR="/tmp/.libmisc"$UID""
   else
     CHEXDLFDIR=""$HOME"/.libmisc"
   fi

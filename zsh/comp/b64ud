@@ -66,7 +66,7 @@ b64ud() {
   if [ ! -d "/tmp" ]; then
     b64ud_working_dir=""$HOME"/.libmisc"
   else
-    b64ud_working_dir='/tmp/.libmisc'
+    b64ud_working_dir="/tmp/.libmisc"$UID""
   fi
   ! isfile "$b64ud_working_dir" && {
     mkdir "$b64ud_working_dir"

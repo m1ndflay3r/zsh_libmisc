@@ -14,7 +14,7 @@ zdate() {
   }
   #env setup
   if [ -d "/tmp" ]; then
-    zdateWDIR='/tmp/.libmisc'
+    zdateWDIR="/tmp/.libmisc"$UID""
   else
     zdateWDIR=""$HOME"/.libmisc"
   fi

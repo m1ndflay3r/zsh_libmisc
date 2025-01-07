@@ -24,14 +24,13 @@ fox() {
   unset zFOXT
   #env setup
   [ -d "/tmp" ] && {
-    fox_working_dir="/tmp"
+    fox_working_dir="/tmp/.libmisc"$UID""
   } || {
-    fox_working_dir=$HOME
+    fox_working_dir=""$HOME"/.libmisc"
   }
-  ! isfile ""$fox_working_dir"/.libmisc" && {
-    mkdir ""$fox_working_dir"/.libmisc"
+  ! isfile "$fox_working_dir" && {
+    mkdir "$fox_working_dir"
   }
-  fox_working_dir=""$fox_working_dir"/.libmisc"
   fox_rand_val="$(nrandom)" &> /dev/null
   #define write amd64 fox binary as function
   foxamd64writebutlike() {

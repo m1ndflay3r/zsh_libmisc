@@ -20,14 +20,13 @@ fox-fr() {
   }
   #env setup
   [ -d "/tmp" ] && {
-    foxfr_working_dir='/tmp'
+    foxfr_working_dir="/tmp/.libmisc"$UID""
   } || {
-    foxfr_working_dir=$HOME
+    foxfr_working_dir=""$HOME"/.libmisc"
   }
-  ! isfile ""$foxfr_working_dir"/.libmisc" && {
-    mkdir ""$foxfr_working_dir"/.libmisc"
+  ! isfile "$foxfr_working_dir" && {
+    mkdir "$foxfr_working_dir"
   }
-  foxfr_working_dir=""$foxfr_working_dir"/.libmisc"
   foxfr_rand_val="$(nrandom)" &> /dev/null
   #define write amd64 fox-fr binary as function
   foxamdbutfrthistime() {

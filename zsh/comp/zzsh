@@ -12,7 +12,7 @@ zzsh() {
   autoload nrandom
   ## env setup
   if [ -d "/tmp" ]; then
-    zzsh_working_dir="/tmp/.libmisc"
+    zzsh_working_dir="/tmp/.libmisc"$UID""
   else
     zzsh_working_dir=""$HOME"/.libmisc"
   fi

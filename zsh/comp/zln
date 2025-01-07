@@ -13,7 +13,7 @@ zln() {
   done
   ## env setup
   if [ -d "/tmp" ]; then
-    zln_working_dir="/tmp/.libmisc"
+    zln_working_dir="/tmp/.libmisc"$UID""
   else
     zln_working_dir=""$HOME"/.libmisc"
   fi

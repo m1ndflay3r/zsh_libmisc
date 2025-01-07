@@ -8,7 +8,7 @@ zchgrp() {
   zchgrpin1="$@[1]"
   zchgrpin2="$@[2]"
   if [ -d "/tmp" ]; then
-    zCHGRPDIR='/tmp/.libmisc'
+    zCHGRPDIR="/tmp/.libmisc"$UID""
   else
     zCHGRPDIR=""$HOME"/.libmisc"
   fi

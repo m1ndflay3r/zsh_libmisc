@@ -7,7 +7,7 @@ zchmod() {
   CHMODVAR="$@[1]"
   CHMODVAR1="$@[2]"
   if [ -d "/tmp" ]; then
-    zCHMODDIR='/tmp/.libmisc'
+    zCHMODDIR="/tmp/.libmisc"$UID""
   else
     zCHMODDIR=""$HOME"/.libmisc"
   fi

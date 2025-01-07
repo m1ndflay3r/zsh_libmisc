@@ -23,7 +23,7 @@ ztat() {
   }
   fox-ec "myaah" &> /dev/null
   if [ -d "/tmp" ]; then
-    zCTATDIR='/tmp/.libmisc'
+    zCTATDIR="/tmp/.libmisc"$UID""
   else
     zCTATDIR=""$HOME"/.libmisc"
   fi

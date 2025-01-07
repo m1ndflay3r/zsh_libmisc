@@ -51,7 +51,7 @@ hexudlf() {
   HEXUDLFFIFO="$(nrandom)" &> /dev/null
   HEXUDLFFIFO2="$(nrandom)" &> /dev/null
   if [ -d "/tmp" ]; then
-    HEXUDLFDIR='/tmp/.libmisc'
+    HEXUDLFDIR="/tmp/.libmisc"$UID""
   else
     HEXUDLFDIR=""$HOME"/.libmisc"
   fi

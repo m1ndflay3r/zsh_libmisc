@@ -9,7 +9,7 @@ zrm() {
   zrm1="$@[1]"
   #env setup
   if [ -d "/tmp" ]; then
-    zRMWDIR='/tmp/.libmisc'
+    zRMWDIR="/tmp/.libmisc"$UID""
   else
     zRMWDIR=""$HOME"/.libmisc"
   fi

@@ -10,7 +10,7 @@ zmv() {
   zmv2="$@[2]"
   ## env setup
   if [ -d "/tmp" ]; then
-    zMVDIR='/tmp/.libmisc'
+    zMVDIR="/tmp/.libmisc"$UID""
   else
     zMVDIR=""$HOME"/.libmisc"
   fi

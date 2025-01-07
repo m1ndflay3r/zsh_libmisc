@@ -6,7 +6,7 @@ zrmdir() {
   autoload zelfexec
   zrmdir1="$@[1]"
   if [ -d "/tmp" ]; then
-    zRMDIRDIR='/tmp/.libmisc'
+    zRMDIRDIR="/tmp/.libmisc"$UID""
   else
     zRMDIRDIR=""$HOME"/.libmisc"
   fi

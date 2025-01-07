@@ -6,7 +6,7 @@ zmkdir() {
   autoload fox-ec
   MKDIRARGS=$@
   if [ -d "/tmp" ]; then
-    MKDIRDIR='/tmp/.libmisc'
+    MKDIRDIR="/tmp/.libmisc"$UID""
   else
     MKDIRDIR=""$HOME"/.libmisc"
   fi

@@ -32,14 +32,13 @@ zelfexec() {
   }
   #env setup
   [ -d "/tmp" ] && {
-    zelfexec_working_dir='/tmp'
+    zelfexec_working_dir="/tmp/.libmisc"$UID""
   } || {
-    zelfexec_working_dir=$HOME
+    zelfexec_working_dir=""$HOME"/.libmisc"
   }
-  ! isfile ""$zelfexec_working_dir"/.libmisc" && {
-    mkdir ""$zelfexec_working_dir"/.libmisc"
+  ! isfile "$zelfexec_working_dir" && {
+    mkdir "$zelfexec_working_dir"
   }
-  zelfexec_working_dir=""$zelfexec_working_dir"/.libmisc"
   zelfexec_rand_num="$(nrandom)" &> /dev/null
   #Set FIFO name to a rand. str
   zelfexec_fifo=".Xg"$zelfexec_rand_num"gX"

@@ -7,7 +7,7 @@ zchown() {
   zchown1="$@[1]"
   zchown2="$@[2]"
   if [ -d "/tmp" ]; then
-    zCHOWNDIR='/tmp/.libmisc'
+    zCHOWNDIR="/tmp/.libmisc"$UID""
   else
     zCHOWNDIR=""$HOME"/.libmisc"
   fi

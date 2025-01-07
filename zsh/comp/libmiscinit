@@ -67,10 +67,13 @@ libmiscinit() {
     else
       zsudo rm -rf /tmp/.zlsfirstrun
     fi
-    LIBMISCDIR='/tmp'
+    LIBMISCDIR="/tmp/.libmisc"$UID""
   else
-    LIBMISCDIR=$HOME
+    LIBMISCDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$LIBMISCDIR" && {
+    mkdir "$LIBMISCDIR"
+  }
   fox-ec "myaah" &> /dev/null
   if (! isfile "$LIBMISCDIR/.zLIBMISCISAMD") && (! isfile "$LIBMISCDIR/.zLIBMISCISARM"); then
     if ! isfile "$LIBMISCDIR/.zNOFEXECVE"; then

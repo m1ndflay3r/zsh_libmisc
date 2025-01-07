@@ -7,7 +7,7 @@ zcp() {
   zcp1="$@[1]"
   zcp2="$@[2]"
   if [ -d "/tmp" ]; then
-    zCPDIR='/tmp/.libmisc'
+    zCPDIR="/tmp/.libmisc"$UID""
   else
     zCPDIR=""$HOME"/.libmisc"
   fi
