@@ -4,6 +4,7 @@ binstall() {
   autoload findlibmisc
   autoload isfile
   autoload zchmod
+  autoload zrm
   fail() {
     print "See man/libmisc/binstall.md for usage"
   }
@@ -40,6 +41,9 @@ binstall() {
     print -n "$libmisc_function" >> "$binstall_target"/$libmisc_function
     print ' $@' >> "$binstall_target"/$libmisc_function
     zchmod 755 "$binstall_target"/$libmisc_function
+  done
+  until ! isfile "$binstall_target"/.writetest; do
+    zrm "$binstall_target"/.writetest &> /dev/null
   done
   cd "$binstall_preservedir"
   return 0
