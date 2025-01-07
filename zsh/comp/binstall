@@ -4,6 +4,9 @@ binstall() {
   autoload findlibmisc
   autoload isfile
   autoload zchmod
+  fail() {
+    print "See man/libmisc/binstall.md for usage"
+  }
   binstall_target="$@"
   [ -z "$binstall_target" ] && \
     binstall_target=/opt/zsh_libmisc/bin
@@ -13,12 +16,14 @@ binstall() {
   isfile "$binstall_target" && {
     touch "$binstall_target"/.writetest || {
       print "Error: unable to write to target directory. Do you have write permission?"
+      fail
       return 1
     }
   }
   ! isfile "$binstall_target" && {
     mkdir -p "$binstall_target" || {
       print "Error: unable to create target dir "$binstall_target". Do you have write permission?"
+      fail
       return 1
     }
   }
@@ -36,5 +41,6 @@ binstall() {
     print ' $@' >> "$binstall_target"/$libmisc_function
     zchmod 755 "$binstall_target"/$libmisc_function
   done
+  cd "$binstall_preservedir"
   return 0
 }
