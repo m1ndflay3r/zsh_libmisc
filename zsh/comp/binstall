@@ -1,0 +1,40 @@
+#!/usr/bin/env zsh
+
+binstall() {
+  autoload findlibmisc
+  autoload isfile
+  autoload zchmod
+  binstall_target="$@"
+  [ -z "$binstall_target" ] && \
+    binstall_target=/opt/zsh_libmisc/bin
+  binstall_working=$(findlibmisc)
+  binstall_working=${binstall_working: :-11}
+  binstall_working=""$binstall_working"/zsh/comp"
+  isfile "$binstall_target" && {
+    touch "$binstall_target"/.writetest || {
+      print "Error: unable to write to target directory. Do you have write permission?"
+      return 1
+    }
+  }
+  ! isfile "$binstall_target" && {
+    mkdir -p "$binstall_target" || {
+      print "Error: unable to create target dir "$binstall_target". Do you have write permission?"
+      return 1
+    }
+  }
+  binstall_preservedir=$(pwd)
+  cd $binstall_working
+  for libmisc_function in *; do
+    print '#!/usr/bin/env zsh' > "$binstall_target"/$libmisc_function
+    print '' >> "$binstall_target"/$libmisc_function
+    print -n 'fpath=(' >> "$binstall_target"/$libmisc_function
+    print -n "$(findlibmisc)" >> "$binstall_target"/$libmisc_function
+    print ' $fpath)' >> "$binstall_target"/$libmisc_function
+    print "autoload "$libmisc_function"" >> "$binstall_target"/$libmisc_function
+    print '' >> "$binstall_target"/$libmisc_function
+    print -n "$libmisc_function" >> "$binstall_target"/$libmisc_function
+    print ' $@' >> "$binstall_target"/$libmisc_function
+    zchmod 755 "$binstall_target"/$libmisc_function
+  done
+  return 0
+}
