@@ -4,10 +4,9 @@
 A collection of various utilities and functions packed into a single, unified **zsh** library.
 
 
-This library is intended to be 100% self-sufficient, and should theoretically operate with nothing but a *Linux kernel and static zsh.*
-If you're thinking *"that sounds a lot like busybox"*, you're on the right track! This project was, in part, inspired by busybox.
+This library is essentially my own stdlib for ZSH, and comes packed with a variety of useful features which aim to extend the capability and scope of ZSH as a programming language.
 
-Many of the decisions made in creating libmisc were done for "coolness factor". Do with that what you will.
+Honestly, it's become so useful that I rarely write anything in ZSH without it anymore!
 
 To use libmisc, run the included build script like so:
 
