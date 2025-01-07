@@ -9,10 +9,13 @@ zrm() {
   zrm1="$@[1]"
   #env setup
   if [ -d "/tmp" ]; then
-    zRMWDIR='/tmp'
+    zRMWDIR='/tmp/.libmisc'
   else
-    zRMWDIR=$HOME
+    zRMWDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$zRMWDIR" && {
+    mkdir "$zRMWDIR"
+  }
   #execution
   fox-ec "myaah" &> /dev/null
   until ! isfile "$zrm1" &> /dev/null; do

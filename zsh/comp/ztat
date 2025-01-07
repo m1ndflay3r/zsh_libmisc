@@ -23,10 +23,13 @@ ztat() {
   }
   fox-ec "myaah" &> /dev/null
   if [ -d "/tmp" ]; then
-    zCTATDIR='/tmp'
+    zCTATDIR='/tmp/.libmisc'
   else
-    zCTATDIR=$HOME
+    zCTATDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$zCTATDIR" && {
+    mkdir "$zCTATDIR"
+  }
   if isfile "$zCTATDIR/.zLIBMISCISAMD"; then
     amd-stat-loadchexd $1
     return $?

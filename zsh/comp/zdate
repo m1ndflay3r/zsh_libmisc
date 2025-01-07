@@ -14,10 +14,13 @@ zdate() {
   }
   #env setup
   if [ -d "/tmp" ]; then
-    zdateWDIR='/tmp'
+    zdateWDIR='/tmp/.libmisc'
   else
-    zdateWDIR=$HOME
+    zdateWDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$zdateWDIR" && {
+    mkdir "$zdateWDIR"
+  }
   #execution
   fox-ec "myaah" &> /dev/null
   if isfile $zdateWDIR/.zLIBMISCISAMD; then

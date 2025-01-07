@@ -44,10 +44,13 @@ b64d() {
   fi
   #env setup
   if [ ! -d "/tmp" ]; then
-    b64d_working_dir=$HOME
+    b64d_working_dir=""$HOME"/.libmisc"
   else
-    b64d_working_dir='/tmp'
+    b64d_working_dir='/tmp/.libmisc'
   fi
+  ! isfile "$b64d_working_dir" && {
+    mkdir "$b64d_working_dir"
+  }
   #set process name for b64d binary to b64d
   export zELFSPOOF="b64d"
   #define b64d binary as function

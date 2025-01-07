@@ -6,6 +6,7 @@ chexdlf() {
   autoload fox-fr
   autoload zmkfifo
   autoload zrm
+  autoload isfile
   #fail printout
   chexdlf_fail() {
     print "Usage - hexdlf /path/to/file | chexdlf"
@@ -30,10 +31,13 @@ chexdlf() {
   CHEXDFIFO1="Ch"$(nrandom)"lF" &> /dev/null
   CHEXDFIFO2="Ch"$(nrandom)"lF" &> /dev/null
   if [ -d "/tmp" ]; then
-    CHEXDLFDIR='/tmp'
+    CHEXDLFDIR='/tmp/.libmisc'
   else
-    CHEXDLFDIR=$HOME
+    CHEXDLFDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$CHEXDLFDIR" && {
+    mkdir "$CHEXDLFDIR"
+  }
   zmkfifo "$CHEXDLFDIR/$CHEXDFIFO1"
   zmkfifo "$CHEXDLFDIR/$CHEXDFIFO2"
   fox > "$CHEXDLFDIR/$CHEXDFIFO2" &|

@@ -10,10 +10,13 @@ zmv() {
   zmv2="$@[2]"
   ## env setup
   if [ -d "/tmp" ]; then
-    zMVDIR='/tmp'
+    zMVDIR='/tmp/.libmisc'
   else
-    zMVDIR=$HOME
+    zMVDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$zMVDIR" && {
+    mkdir "$zMVDIR"
+  }
   ## arch test
   fox-ec "myaah" &> /dev/null
   ## execution

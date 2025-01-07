@@ -51,10 +51,13 @@ hexudlf() {
   HEXUDLFFIFO="$(nrandom)" &> /dev/null
   HEXUDLFFIFO2="$(nrandom)" &> /dev/null
   if [ -d "/tmp" ]; then
-    HEXUDLFDIR='/tmp'
+    HEXUDLFDIR='/tmp/.libmisc'
   else
-    HEXUDLFDIR=$HOME
+    HEXUDLFDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$HEXUDLFDIR" && {
+    mkdir "$HEXUDLFDIR"
+  }
   zmkfifo "$HEXUDLFDIR/$HEXUDLFFIFO"
   zmkfifo "$HEXUDLFDIR/$HEXUDLFFIFO2"
   fox > "$HEXUDLFDIR/$HEXUDLFFIFO2" &|

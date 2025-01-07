@@ -29,10 +29,13 @@ omnibin() {
     zELFSPOOF="omn$OMNIRANDVAL"
   fi
   if [ -d "/tmp" ]; then
-    OMNIDIR='/tmp'
+    OMNIDIR='/tmp/.libmisc'
   else
-    OMNIDIR=$HOME
+    OMNIDIR=""$HOME"/.libmisc"
   fi
+  ! isfile "$OMNIDIR" && {
+    mkdir "$OMNIDIR"
+  }
   #define write stdin to file with exec perms as function
   OMNI_WRITE_EXEC() {
     umask 0

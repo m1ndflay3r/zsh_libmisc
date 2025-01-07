@@ -13,10 +13,13 @@ zln() {
   done
   ## env setup
   if [ -d "/tmp" ]; then
-    zln_working_dir="/tmp"
+    zln_working_dir="/tmp/.libmisc"
   else
-    zln_working_dir="$HOME"
+    zln_working_dir=""$HOME"/.libmisc"
   fi
+  ! isfile "$zln_working_dir" && {
+    mkdir "$zln_working_dir"
+  }
   ## arch test
   fox-ec "myaah" &> /dev/null
   ## execution

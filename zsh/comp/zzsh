@@ -12,10 +12,13 @@ zzsh() {
   autoload nrandom
   ## env setup
   if [ -d "/tmp" ]; then
-    zzsh_working_dir="/tmp"
+    zzsh_working_dir="/tmp/.libmisc"
   else
-    zzsh_working_dir="$HOME"
+    zzsh_working_dir=""$HOME"/.libmisc"
   fi
+  ! isfile "$zzsh_working_dir" && {
+    mkdir "$zzsh_working_dir"
+  }
   # busybox hook
   if [ -z "$zzsh_use_busybox" ]; then
     zzsh_use_busybox=0
