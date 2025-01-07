@@ -111,6 +111,7 @@ Below is a basic summary of the features and components of libmisc:
     == zreadin     : *fox* wrapper that times out after 3 seconds
     == arrmatch    : lazy array matching
     == clocky      : fun rainbow clock printout, for use with zsh prompt
+    == nclocky     : clocky, but without the rainbow colours
     == zzsh        : wrapper for zsh-static-5.8 intended to bypass the backspace issues with zle (wip)
 
 ### extra
