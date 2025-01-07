@@ -56,6 +56,7 @@ Below is a basic summary of the features and components of libmisc:
     == libmiscinit : initialization tasks for libmisc
     == zelfexec    : "elfexec" implementation
      |-- omnibin       : fallback mode for zelfexec
+    == 2d_arr      : 2d array (grid) support for ZSH
     == zterm       : tmux-like <zsh/zpty> wrapper, including attach / detach functionality
     == hexd        : lightweight hex dumper
      |-- hexdlf        : hexd, with large (infinite) filesize handling
