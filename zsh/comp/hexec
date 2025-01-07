@@ -6,6 +6,7 @@ hexec() {
   autoload fox-fr
   autoload fox
   autoload zelfexec
+  autoload zmkfifo
   if [ ! -z "$@" ]; then
     if isfile "$@"; then
       fox-fr $@ | hexud | zelfexec
