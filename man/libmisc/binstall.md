@@ -7,6 +7,8 @@
 
 **example:**
 
-    command: binstall /opt/zsh_libmisc/bin
+    command: binstall <target directory>
 
 -----------------------------------------------------------
+
+note: default target is /opt/zsh_libmisc/bin if no opt given
