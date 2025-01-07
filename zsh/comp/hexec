@@ -4,6 +4,7 @@ hexec() {
   autoload isfile
   autoload hexud
   autoload fox-fr
+  autoload fox-ec
   autoload fox
   autoload zelfexec
   autoload zmkfifo
