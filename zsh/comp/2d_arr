@@ -118,9 +118,19 @@
   autoload chkvldint
   autoload revstr
 
+  [ -d '/tmp' ] && {
+    twodee_working_dir="/tmp/.libmisc"$UID""
+  } || {
+    twodee_working_dir=""$HOME"/.libmisc"
+  }
+
+  ! isfile "$twodee_working_dir" && {
+    mkdir "$twodee_working_dir"
+  }
+
   # create working dir if not found
-  ! isfile /tmp/libmisc_2d_arr && \
-    mkdir /tmp/libmisc_2d_arr
+  ! isfile "$twodee_working_dir"/libmisc_2d_arr && \
+    mkdir "$twodee_working_dir"/libmisc_2d_arr
 
   ## define functions
   # convert input provided on stdin to zsh-format arrays
@@ -146,10 +156,10 @@
         return 1
       }
     }
-    isfile /tmp/libmisc_2d_arr/$arrname && \
-      rm -rf /tmp/libmisc_2d_arr/$arrname
-    mkdir /tmp/libmisc_2d_arr/$arrname
-    touch /tmp/libmisc_2d_arr/$arrname/input_arrays
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && \
+      rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname
+    mkdir "$twodee_working_dir"/libmisc_2d_arr/$arrname
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
     create_blank() {
       x_length="$op_three"
       y_length="$op_four"
@@ -181,20 +191,20 @@
     for cr_array in $=conv_to_arr_input; do
       indice_placeholder=0
       array_count=$((array_count+1))
-      print -n ""$arrname"_y_array_"$array_count"=(" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+      print -n ""$arrname"_y_array_"$array_count"=(" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
       while IFS= noglob read -r -k1 -d '' -u0 array_indice; do
-        print -n "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
-        print -n "$array_indice" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
-        print "'" >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+        print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
+        print -n "$array_indice" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
+        print "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
         indice_placeholder=$((indice_placeholder+1))
       done < <(IFS= noglob print -rn "$cr_array")
       [ "$indice_placeholder" -gt "$indice_count" ] && \
         indice_count="$indice_placeholder"
-      print ')' >> /tmp/libmisc_2d_arr/$arrname/input_arrays
+      print ')' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays
     done
     unset IFS
-    print "$array_count" > /tmp/libmisc_2d_arr/$arrname/array_count
-    print "$indice_count" > /tmp/libmisc_2d_arr/$arrname/indice_count
+    print "$array_count" > "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count
+    print "$indice_count" > "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count
   }
 
   # update indice at x y coords in array
@@ -203,13 +213,13 @@
     update_char="$2"
     x_coord="$3"
     y_coord="$4"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted update undeclared array"
       fail
       return 1
     }
-    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received blank coord!"
@@ -236,93 +246,96 @@
     # generate session ID (multithread clash prevention)
     zsession_id=$(nrandom)
     # write position update script (I know, I know)
-    rm -rf /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
     #env setup
-    print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "arrname="$arrname"" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '#!/usr/bin/env zsh' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "arrname="$arrname"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'twodee_working_dir="' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$twodee_working_dir" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '"' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
     #fetch input arrays
-    print 'source /tmp/libmisc_2d_arr/$arrname/input_arrays' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'autoload isfile' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'isfile /tmp/libmisc_2d_arr/$arrname/ledger && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'source /tmp/libmisc_2d_arr/$arrname/ledger' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'source "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'autoload isfile' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
     #env setup
-    print 'rm -rf /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "x_coord="$x_coord"" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "y_coord="$y_coord"" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "zsession_id="$zsession_id"" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "update_char='" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$update_char" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "'" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "x_coord="$x_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "y_coord="$y_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "zsession_id="$zsession_id"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "update_char='" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$update_char" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
     #print start of updated array
-    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '_y_array_"$y_coord"=(" > /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '_y_array_"$y_coord"=(" > "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
     #iterate over each indice in target array, add indice as is if not target, add swap char instead if ta>
-    print 'indice_count=0' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print 'indice_count=0' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'for indice in $=' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n '_y_array_' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$y_coord" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '; do' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'for indice in $=' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n '_y_array_' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$y_coord" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '; do' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print '  indice_count=$((indice_count+1))' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '  indice_count=$((indice_count+1))' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print '  [ "$indice_count" = "$x_coord" ] && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '  [ "$indice_count" = "$x_coord" ] && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$update_char" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "$update_char" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'print "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id || \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id || \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n '(print -n "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n '(print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'print -n "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n '$indice' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '">> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n '$indice' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '">> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print -n 'print "' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id)' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n 'print "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
 
-    print 'done' >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "print ')' >> /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id" >> /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    chmod 755 /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
-    source /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id
-    ! isfile /tmp/libmisc_2d_arr/$arrname/ledger && \
-      touch /tmp/libmisc_2d_arr/$arrname/ledger
+    print 'done' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    print "print ')' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    chmod 755 "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
+    source "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \
+      touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     # utilize lock file for ledger write (multithread clash prevention)
-    isfile /tmp/libmisc_2d_arr/$arrname/ledger.lck && {
-      until ! isfile /tmp/libmisc_2d_arr/$arrname/ledger.lck; do
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck && {
+      until ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck; do
         sleep 1
       done
     }
-    touch /tmp/libmisc_2d_arr/$arrname/ledger.lck
-    cat /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id >> /tmp/libmisc_2d_arr/$arrname/ledger
-    print '' >> /tmp/libmisc_2d_arr/$arrname/ledger
-    rm -rf /tmp/libmisc_2d_arr/$arrname/ledger.lck
-    rm -rf /tmp/libmisc_2d_arr/$arrname/array_update_$zsession_id
-    rm -rf /tmp/libmisc_2d_arr/$arrname/working_$zsession_id
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
+    cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
   }
 
   # delete array
   delete() {
-    (! isfile /tmp/libmisc_2d_arr || ! isfile /tmp/libmisc_2d_arr/$arrname) && \
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname) && \
       return 0 \
     || \
-      rm -rf /tmp/libmisc_2d_arr/$arrname
+      rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname
       return 0
   }
 
@@ -330,13 +343,13 @@
   query() {
     x_coord="$op_three"
     y_coord="$op_four"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted query undeclared array"
       fail
       return 1
     }
-    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -355,53 +368,56 @@
     }
     # generate session id (multithread clash prevention)
     zsession_id=$(nrandom)
-    rm -rf /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     # write position query script (I know, I know)
-    print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print 'autoload isfile' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '#!/usr/bin/env zsh' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print 'autoload isfile' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     #env setup
-    print "x_coord="$x_coord"" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print "y_coord="$y_coord"" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print "arrname="$arrname"" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print "source /tmp/libmisc_2d_arr/$arrname/input_arrays" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print 'isfile /tmp/libmisc_2d_arr/$arrname/ledger && \' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print "source /tmp/libmisc_2d_arr/$arrname/ledger" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print 'indice_count=0' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    print "x_coord="$x_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print "y_coord="$y_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print "arrname="$arrname"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n 'twodee_working_dir="' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n "$twodee_working_dir" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '"' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print "source "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print 'isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print "source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print 'indice_count=0' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     #iterate over each indice until reaching x coord
-    print -n 'for indice in $=' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n '_y_array_' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n "$y_coord" >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '; do' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n 'for indice in $=' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n '_y_array_' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n "$y_coord" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '; do' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
 
-    print 'indice_count=$((indice_count+1))' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '[ "$indice_count" = "$x_coord" ] && \' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '  print "$indice" && \' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '  break' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    print 'indice_count=$((indice_count+1))' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '[ "$indice_count" = "$x_coord" ] && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '  print "$indice" && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print '  break' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
 
-    print 'done' >> /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    chmod 755 /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
-    query_result=$(/tmp/libmisc_2d_arr/$arrname/query_$zsession_id)
+    print 'done' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    chmod 755 "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    query_result=$("$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id)
     print "$query_result"
-    rm -rf /tmp/libmisc_2d_arr/$arrname/query_$zsession_id
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
   }
 
   query_grid() {
-    (! isfile /tmp/libmisc_2d_arr/$arrname/indice_count || ! isfile /tmp/libmisc_2d_arr/$arrname/array_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count) && {
       print "Error: attempted to query undeclared array"
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     print ""$x_ln" "$y_ln""
   }
 
   query_row() {
     y_coord="$op_three"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: attempted to query undeclared array!"
       fail
       return 1
@@ -416,36 +432,39 @@
       fail
       return 1
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$y_coord" -gt "$y_ln" ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
     # generate session id (multithread clash prevention)
     zsession_id=$(nrandom)
-    rm -rf /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print '#!/usr/bin/env zsh' > /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print 'autoload isfile' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print "y_coord="$y_coord"" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print "arrname="$arrname"" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print "source /tmp/libmisc_2d_arr/$arrname/input_arrays" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print 'isfile /tmp/libmisc_2d_arr/$arrname/ledger && {' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print "  source /tmp/libmisc_2d_arr/$arrname/ledger" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print '}' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print -n 'print $' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print -n "$arrname" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print -n '_y_array_' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print -n "$y_coord" >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print '[@]' >> /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    chmod 755 /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
-    print $(/tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id)
-    rm -rf /tmp/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print '#!/usr/bin/env zsh' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print 'autoload isfile' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print "y_coord="$y_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print "arrname="$arrname"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n 'twodee_working_dir="' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n "$twodee_working_dir" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print '"' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print "source "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print 'isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && {' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print "  source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print '}' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n 'print $' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n '_y_array_' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print -n "$y_coord" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print '[@]' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    chmod 755 "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
+    print $("$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id)
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_row_$zsession_id
   }
 
   query_col() {
     x_coord="$op_three"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: attempted to query undeclared array!"
       fail
       return 1
@@ -460,12 +479,12 @@
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$x_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     y_counter=0
     while true; do
       y_counter=$((y_counter+1))
@@ -479,13 +498,13 @@
     x_coord="$op_three"
     y_coord="$op_four"
     direction="$op_five"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted query undeclared array"
       fail
       return 1
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -614,13 +633,13 @@
     y_coord="$op_four"
     xx_coord="$op_five"
     yy_coord="$op_six"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty link req"
@@ -639,10 +658,10 @@
       print "OOB"
       return 3
     }
-    ! isfile /tmp/libmisc_2d_arr/$arrname/links && \
-      mkdir /tmp/libmisc_2d_arr/$arrname/links
-    isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord" && {
-      chk_link_dup=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links && \
+      mkdir "$twodee_working_dir"/libmisc_2d_arr/$arrname/links
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord" && {
+      chk_link_dup=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
       IFS=$'\n'
       for chk_link in $=chk_link_dup; do
         [ "$chk_link" = ""$xx_coord" "$yy_coord"" ] && \
@@ -650,16 +669,16 @@
       done
       unset IFS
     } || \
-    touch /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     # use lock file (multithread clash prevention)
-    isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck && {
-      until ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck; do
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck && {
+      until ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck; do
         sleep 1
       done
     }
-    touch /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
-    print ""$xx_coord" "$yy_coord"" >> /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
-    rm -rf /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
+    print ""$xx_coord" "$yy_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
     ! [ "$mono" = 1 ] && \
       2d_arr create_link $arrname $xx_coord $yy_coord $x_coord $y_coord
     return 0
@@ -668,13 +687,13 @@
   query_link() {
     x_coord="$op_three"
     y_coord="$op_four"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty link query"
@@ -693,11 +712,11 @@
       return 3
     }
     # error if link not exist
-    (! isfile /tmp/libmisc_2d_arr/$arrname/links || ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
       print "none"
       return 4
     }
-    cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
   }
 
@@ -706,13 +725,13 @@
     y_coord="$op_four"
     xx_coord="$op_five"
     yy_coord="$op_six"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty unlink req"
@@ -734,35 +753,35 @@
       return 3
     }
     # return 0 if link not exist
-    (! isfile /tmp/libmisc_2d_arr/$arrname/links || ! isfile /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord") && {
       return 0
     }
     # read links into variable, blank out links
-    fetch_current_links=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
-    print -n '' > /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    fetch_current_links=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    print -n '' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     # divide up links by newline, print back to links if not unlink target
     IFS=$'\n'
     for zlinks in $=fetch_current_links; do
       [ "$zlinks" != ""$xx_coord" "$yy_coord"" ] && \
-        print "$zlinks" >> /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+        print "$zlinks" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     done
     unset IFS
     # delete links if blank after unlink
-    fetch_adjusted_links=$(cat /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    fetch_adjusted_links=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
     [ -z "$fetch_adjusted_links" ] && \
-      rm -rf /tmp/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+      rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
   }
 
   # search array for indices containing value
   search() {
     do_search=$op_three
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && \
       print "Error: attempted search undeclared array" && \
       fail && \
       return 1
-    array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     x_coord=0
     y_coord=0
     found=0
@@ -786,12 +805,12 @@
 
   draw() {
     draw_proto() {
-      (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && \
+      (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && \
         print "Error: attempted draw undeclared array" && \
         fail && \
         return 1
-      array_count=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-      indice_count=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+      array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
       x_coord=0
       y_coord=0
       while true; do
@@ -810,8 +829,8 @@
     y_coord="$op_four"
     xx_coord="$op_five"
     yy_coord="$op_six"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
-     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
@@ -833,8 +852,8 @@
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -865,8 +884,8 @@
     y_coord="$op_four"
     xx_coord="$op_five"
     yy_coord="$op_six"
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
-     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
@@ -888,8 +907,8 @@
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -923,19 +942,19 @@
   }
 
   invert() {
-    (! isfile /tmp/libmisc_2d_arr/$arrname/array_count || \
-     ! isfile /tmp/libmisc_2d_arr/$arrname/indice_count) && {
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || \
+     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
     # read x as y and y as x
-    invert_x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
-    invert_y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
+    invert_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    invert_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # create blank array with inverted x y ln
     arrname_orig="$arrname"
-    x_ln_orig=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln_orig=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln_orig=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln_orig=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     draw_inverted() {
       invert_x_count=0
       while true; do
@@ -968,13 +987,13 @@
     is_y_start="$op_four"
     is_x_end="$op_five"
     is_y_end="$op_six"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$is_x_start" ] && \
       is_x_start=1
     [ -z "$is_y_start" ] && \
@@ -1016,7 +1035,7 @@
       }
     }
     is_session_id=$(nrandom)
-    touch /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
     is_x_counter=$((is_x_start-1))
     while true; do
       is_x_counter=$((is_x_counter+1))
@@ -1044,13 +1063,13 @@
           break
         [ "$is_new_x_counter" -ge "$is_x_begin" ] && {
           is_y_array_counter=$((is_y_array_counter+1))
-          print -n ""$is_working_array[$is_y_array_counter]" " >> /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+          print -n ""$is_working_array[$is_y_array_counter]" " >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
         }
       done
-      print >> /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+      print >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
     done
-    is_inverted_section=$(cat /tmp/libmisc_2d_arr/$arrname/is_$is_session_id)
-    rm -rf /tmp/libmisc_2d_arr/$arrname/is_$is_session_id
+    is_inverted_section=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id)
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
     is_y_counter=$((is_y_start-1))
     IFS=$'\n'
     for do_invert_row in $=is_inverted_section; do
@@ -1072,13 +1091,13 @@
     mxx_coord="$op_six"
     my_coord="$op_three"
     myy_coord="$op_four"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: Attempted reference undeclared array"
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_coord" ] && \
       my_coord=1
     [ -z "$myy_coord" ] && \
@@ -1150,13 +1169,13 @@
     my_xx_coord="$op_four"
     my_y_coord="$op_five"
     my_yy_coord="$op_six"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: Attempted reference undeclared array"
       fail
       return 1
     }
-    x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_y_coord" ] && \
       my_y_coord=1
     [ -z "$my_yy_coord" ] && \
@@ -1304,14 +1323,14 @@
   }
 
   flush() {
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
     }
     flush_working=$(2d_arr draw $arrname)
-    flush_x_ln=$(cat /tmp/libmisc_2d_arr/$arrname/indice_count)
-    flush_y_ln=$(cat /tmp/libmisc_2d_arr/$arrname/array_count)
+    flush_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    flush_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     blank=1 2d_arr create $arrname $flush_x_ln $flush_y_ln
     flush_y_count=0
     IFS=$'\n'
@@ -1332,7 +1351,7 @@
   resize_arr() {
     resize_arr_x_ln="$op_three"
     resize_arr_y_ln="$op_four"
-    ! isfile /tmp/libmisc_2d_arr/$arrname && {
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
       print "Error: attempted reference undeclared array"
       fail
       return 1
