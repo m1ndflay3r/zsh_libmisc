@@ -47,6 +47,10 @@
                    'anti_invert'
                    'flush'
                    'resize_arr'
+                   'delete_row'
+                   'delete_col'
+                   'insert_row'
+                   'insert_col'
                    'del'
                    'cr'
                    'ss'
@@ -71,7 +75,11 @@
                    'r27'
                    'ai'
                    'fl'
-                   'ra')
+                   'ra'
+                   'dlr'
+                   'dlc'
+                   'inr'
+                   'inc')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -109,6 +117,10 @@
     (ai) request=anti_invert ;;
     (fl) request=flush ;;
     (ra) request=resize_arr ;;
+    (dlr) request=delete_row ;;
+    (dlc) request=delete_col ;;
+    (inr) request=insert_row ;;
+    (inc) request=insert_col ;;
   esac
 
   ## env setup
@@ -117,6 +129,11 @@
   autoload getstrln
   autoload chkvldint
   autoload revstr
+
+  # there's no reason this should ever be empty, but we'll account for it in case of weird setup
+  [ -z "$UID" ] && {
+    export UID=$(nrandom)
+  }
 
   [ -d '/tmp' ] && {
     twodee_working_dir="/tmp/.libmisc"$UID""
@@ -405,14 +422,26 @@
   }
 
   query_grid() {
+    qg_input="$op_three"
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count) && {
       print "Error: attempted to query undeclared array"
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    print ""$x_ln" "$y_ln""
+    ([ "$qg_input" != '-x' ] && [ "$qg_input" != '-y' ]) && {
+      x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+      y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      print ""$x_ln" "$y_ln""
+      return 0
+    } || [ "$qg_input" = '-x' ] && {
+      x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+      print "$x_ln"
+      return 0
+    } || [ "$qg_input" = '-y' ] && {
+      y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      print "$y_ln"
+      return 0
+    }
   }
 
   query_row() {
@@ -1416,6 +1445,236 @@
     done
     unset IFS
     return 0
+  }
+
+  delete_row() {
+    dlr_input="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$dlr_input" ] && {
+      print "Error: y_coord cannot be blank"
+      fail
+      return 1
+    }
+    (! chkvldint "$dlr_input") && {
+      print "Error: y_coord must be int"
+      fail
+      return 1
+    }
+    ([ "$dlr_input" -gt "$(2d_arr qg $arrname -y)" ] || [ "$dlr_input" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    delrow_working=$(2d_arr draw $arrname)
+    delrow_working=$(del_row_count=0
+                     IFS=$'\n'
+                     for do_del_row in $=delrow_working; do
+                       del_row_count=$((del_row_count+1))
+                       [ "$del_row_count" != "$dlr_input" ] && {
+                         print "$do_del_row"
+                       }
+                     done
+                     unset IFS)
+    delrow_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    delrow_y_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)-1))
+    blank=1 2d_arr create $arrname $delrow_x_ln $delrow_y_ln
+    delrow_y_count=0
+    IFS=$'\n'
+    for do_delrow_row in $=delrow_working; do
+      delrow_y_count=$((delrow_y_count+1))
+      delrow_x_count=0
+      IFS=$' '
+      for do_delrow_col in $=do_delrow_row; do
+        delrow_x_count=$((delrow_x_count+1))
+        2d_arr update $arrname "$do_delrow_col" $delrow_x_count $delrow_y_count
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
+  }
+
+  delete_col() {
+    dlc_input="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$dlc_input" ] && {
+      print "Error: y_coord cannot be blank"
+      fail
+      return 1
+    }
+    (! chkvldint "$dlc_input") && {
+      print "Error: y_coord must be int"
+      fail
+      return 1
+    }
+    ([ "$dlc_input" -gt "$(2d_arr qg $arrname -x)" ] || [ "$dlc_input" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    delcol_working=$(2d_arr draw $arrname)
+    delcol_working=$(IFS=$'\n'
+                     for do_del_col in $=delcol_working; do
+                       del_col_row_count=0
+                       IFS=$' '
+                       for do_del_col_ind in $=do_del_col; do
+                         del_col_row_count=$((del_col_row_count+1))
+                         [ "$del_col_row_count" != "$dlc_input" ] && {
+                           print -n ""$do_del_col_ind" "
+                         }
+                       done
+                       unset IFS
+                       print ''
+                     done
+                     unset IFS)
+    delcol_x_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)-1))
+    delcol_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    blank=1 2d_arr create $arrname $delcol_x_ln $delcol_y_ln
+    delcol_y_count=0
+    IFS=$'\n'
+    for do_delcol_col in $=delcol_working; do
+      delcol_y_count=$((delcol_y_count+1))
+      delcol_x_count=0
+      IFS=$' '
+      for do_delcol_col in $=do_delcol_col; do
+        delcol_x_count=$((delcol_x_count+1))
+        2d_arr update $arrname "$do_delcol_col" $delcol_x_count $delcol_y_count
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
+  }
+
+  insert_row() {
+    inr_input="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$inr_input" ] && {
+      print "Error: y_coord cannot be blank"
+      fail
+      return 1
+    }
+    (! chkvldint "$inr_input") && {
+      print "Error: y_coord must be int"
+      fail
+      return 1
+    }
+    ([ "$inr_input" -gt "$(2d_arr qg $arrname -y)" ] || [ "$inr_input" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    insrow_working=$(2d_arr draw $arrname)
+    insrow_working=$(ins_row_count=0
+                     IFS=$'\n'
+                     for do_ins_row in $=insrow_working; do
+                       ins_row_count=$((ins_row_count+1))
+                       [ "$ins_row_count" != "$inr_input" ] && {
+                         print "$do_ins_row"
+                       } || {
+                         insrow_x_ln=$(2d_arr qg $arrname -x)
+                         insrow_print_counter=0
+                         while true; do
+                           insrow_print_counter=$((insrow_print_counter+1))
+                           [ $insrow_print_counter -gt "$insrow_x_ln" ] && {
+                             break
+                           }
+                           print -n ". "
+                         done
+                         print ''
+                         print "$do_ins_row"
+                       }
+                     done
+                     unset IFS)
+    insrow_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    insrow_y_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)+1))
+    blank=1 2d_arr create $arrname $insrow_x_ln $insrow_y_ln
+    insrow_y_count=0
+    IFS=$'\n'
+    for do_insrow_row in $=insrow_working; do
+      insrow_y_count=$((insrow_y_count+1))
+      insrow_x_count=0
+      IFS=$' '
+      for do_insrow_col in $=do_insrow_row; do
+        insrow_x_count=$((insrow_x_count+1))
+        2d_arr update $arrname "$do_insrow_col" $insrow_x_count $insrow_y_count
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
+  }
+
+  insert_col() {
+    inc_input="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$inc_input" ] && {
+      print "Error: y_coord cannot be blank"
+      fail
+      return 1
+    }
+    (! chkvldint "$inc_input") && {
+      print "Error: y_coord must be int"
+      fail
+      return 1
+    }
+    ([ "$inc_input" -gt "$(2d_arr qg $arrname -x)" ] || [ "$inc_input" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    inscol_working=$(2d_arr draw $arrname)
+    inscol_working=$(IFS=$'\n'
+                     for do_ins_col in $=inscol_working; do
+                       ins_col_row_count=0
+                       IFS=$' '
+                       for do_ins_col_ind in $=do_ins_col; do
+                         ins_col_row_count=$((ins_col_row_count+1))
+                         [ "$ins_col_row_count" != "$inc_input" ] && {
+                           print -n ""$do_ins_col_ind" "
+                         } || {
+                           print -n ". "$do_ins_col_ind" "
+                         }
+                       done
+                       unset IFS
+                       print ''
+                     done
+                     unset IFS)
+    inscol_x_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)+1))
+    inscol_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    blank=1 2d_arr create $arrname $inscol_x_ln $inscol_y_ln
+    inscol_y_count=0
+    IFS=$'\n'
+    for do_inscol_col in $=inscol_working; do
+      inscol_y_count=$((inscol_y_count+1))
+      inscol_x_count=0
+      IFS=$' '
+      for do_inscol_col in $=do_inscol_col; do
+        inscol_x_count=$((inscol_x_count+1))
+        2d_arr update $arrname "$do_inscol_col" $inscol_x_count $inscol_y_count
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
+  }
+
+  clone_col() {
+  }
+
+  clone_row() {
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }

@@ -1,7 +1,7 @@
 ‎
 =
 
-## 2d_arr - *basic 2d array (grid) support for zsh*
+## 2d_arr - *2d array (grid) support for zsh*
 
 ---------------------------------
 
@@ -24,7 +24,7 @@
     2d_arr <query||qu> <arr_name> <x> <y> - return contents of indice at pos x y in given array
 
 
-    2d_arr <query_grid||qg> <arr_name> - returns x and y length of grid stored at arrname (in format of "x y")
+    2d_arr <query_grid||qg> <arr_name> <-x||-y> - returns x and y length of grid stored at arrname (in format of "x y"). Pass -x or -y to return only x_ln or only y_ln.
 
 
     2d_arr <query_col||qc> <arr_name> <x> - returns contents of column x (printed horizontally)
@@ -96,11 +96,21 @@
       note: set flags ra_x and ra_y to specify an x y offset value for begin write old array contents to new array (ex, ra_x=2 ra_y=2 means old array contents will be aligned to x2 y2 in new array)
 
 
+    2d_arr <insert_col||inc> <arr_name> <x> - insert new, empty column at col x. Previous col x and subsequent columns move up by one (new col x is inserted behind previous col x contents), increasing array x_ln by 1.
+
+
+    2d_arr <insert_row||inr> <arr_name> <y> - insert new, empty row at row y. Previous row y and subsequent rows move up by one (new row y is inserted behind previous row y), increasing array y_ln by 1.
+
+
+    2d_arr <delete_col||dlc> <arr_name> <x> - deletes col x, moving all subsequent columns down by one, and reducing array x_ln by 1.
+
+
+    2d_arr <delete_row||dlr> <arr_name> <y> - deletes row y, moving all subsequent rows down by one, and reducing array y_ln by 1.
+
+
 
 
 ---------------------------------
-
-utilizes zelfexec
 
 able to handle multi-char entries in a single indice, though this will result in draw appearing warped
 
