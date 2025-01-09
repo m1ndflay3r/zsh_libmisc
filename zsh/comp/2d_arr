@@ -434,7 +434,7 @@
       fail
       return 1
     }
-    ([ "$qg_input" != '-x' ] && [ "$qg_input" != '-y' ]) && {
+    ([ "$qg_input" != '-x' ] && [ "$qg_input" != '-y' ] && [ "$qg_input" != '-d' ]) && {
       x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
       y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
       print ""$x_ln" "$y_ln""
@@ -446,6 +446,16 @@
     } || [ "$qg_input" = '-y' ] && {
       y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
       print "$y_ln"
+      return 0
+    } || [ "$qg_input" = '-d' ] && {
+      qg_diag_counter=1
+      qg_adj_to_count=$(2d_arr qa $arrname 1 1 se)
+      IFS=$'\n'
+      for do_qg_d in $=qg_adj_to_count; do
+        qg_diag_counter=$((qg_diag_counter+1))
+      done
+      unset IFS
+      print "$qg_diag_counter"
       return 0
     }
   }
