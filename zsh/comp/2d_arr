@@ -51,6 +51,7 @@
                    'delete_col'
                    'insert_row'
                    'insert_col'
+                   'readin_col'
                    'del'
                    'cr'
                    'ss'
@@ -79,7 +80,8 @@
                    'dlr'
                    'dlc'
                    'inr'
-                   'inc')
+                   'inc'
+                   'ric')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -121,6 +123,7 @@
     (dlc) request=delete_col ;;
     (inr) request=insert_row ;;
     (inc) request=insert_col ;;
+    (ric) request=readin_col ;;
   esac
 
   ## env setup
@@ -231,7 +234,7 @@
     x_coord="$3"
     y_coord="$4"
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
-      print "Error: attempted update undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -361,7 +364,7 @@
     x_coord="$op_three"
     y_coord="$op_four"
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
-      print "Error: attempted query undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -424,7 +427,7 @@
   query_grid() {
     qg_input="$op_three"
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count) && {
-      print "Error: attempted to query undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -447,7 +450,7 @@
   query_row() {
     y_coord="$op_three"
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
-      print "Error: attempted to query undeclared array!"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -494,7 +497,7 @@
   query_col() {
     x_coord="$op_three"
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
-      print "Error: attempted to query undeclared array!"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -528,7 +531,7 @@
     y_coord="$op_four"
     direction="$op_five"
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && {
-      print "Error: attempted query undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -806,7 +809,7 @@
   search() {
     do_search=$op_three
     (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && \
-      print "Error: attempted search undeclared array" && \
+      print "Error: attempted reference undeclared array" && \
       fail && \
       return 1
     array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
@@ -835,7 +838,7 @@
   draw() {
     draw_proto() {
       (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count) && \
-        print "Error: attempted draw undeclared array" && \
+        print "Error: attempted reference undeclared array" && \
         fail && \
         return 1
       array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
@@ -1121,7 +1124,7 @@
     my_coord="$op_three"
     myy_coord="$op_four"
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
-      print "Error: Attempted reference undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -1199,7 +1202,7 @@
     my_y_coord="$op_five"
     my_yy_coord="$op_six"
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
-      print "Error: Attempted reference undeclared array"
+      print "Error: attempted reference undeclared array"
       fail
       return 1
     }
@@ -1671,10 +1674,100 @@
     return 0
   }
 
+  readin_col() {
+    ric_target="$op_three"
+    ric_upd="$op_four"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    ([ -z "$ric_target" ] || \
+     [ -z "$ric_upd" ]) && {
+      print "Error: readin_col was provided insufficient input"
+      fail
+      return 1
+    }
+    (! chkvldint "$ric_target") && {
+      print "Error: col x must be int"
+      fail
+      return 1
+    }
+    ([ "$ric_target" -gt "$(2d_arr qg $arrname -x)" ] || [ "$ric_target" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    ric_y_counter=0
+    [ "$ric_by_space" = 1 ] && {
+      IFS=$' '
+    } || {
+      IFS=$'\n'
+    }
+    for do_ric_upd in $=ric_upd; do
+      ric_y_counter=$((ric_y_counter+1))
+      [ "$ric_y_counter" -gt "$(2d_arr qg $arrname -y)" ] && \
+        break
+      2d_arr update $arrname "$do_ric_upd" $ric_target $ric_y_counter || \
+        return 1
+    done
+    unset IFS
+    return 0
+  }
+
+  readin_row() {
+
+  }
+
+  readin_section() {
+
+  }
+
+  clone_indice() {
+
+  }
+
   clone_col() {
+
   }
 
   clone_row() {
+
+  }
+
+  clone_section() {
+
+  }
+
+  swap_indice() {
+
+  }
+
+  swap_col() {
+
+  }
+
+  swap_row() {
+
+  }
+
+  swap_section() {
+
+  }
+
+  mov_indice() {
+
+  }
+
+  mov_col() {
+
+  }
+
+  mov_row() {
+
+  }
+
+  mov_section() {
+
   }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }

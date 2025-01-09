@@ -108,6 +108,11 @@
     2d_arr <delete_row||dlr> <arr_name> <y> - deletes row y, moving all subsequent rows down by one, and reducing array y_ln by 1.
 
 
+    2d_arr <readin_col||ric> <arr_name> <x> <col_data> - separating by newline, replace contents of col x with contents of col_data, starting from y1 and moving down until either no data remains or y ln exceeded.
+
+      note: set flag ric_by_space=1 to divide col_data by space instead of by newline
+
+
 
 
 ---------------------------------
