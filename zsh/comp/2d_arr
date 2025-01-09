@@ -52,6 +52,7 @@
                    'insert_row'
                    'insert_col'
                    'readin_col'
+                   'readin_row'
                    'del'
                    'cr'
                    'ss'
@@ -81,7 +82,8 @@
                    'dlc'
                    'inr'
                    'inc'
-                   'ric')
+                   'ric'
+                   'rir')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -124,6 +126,7 @@
     (inr) request=insert_row ;;
     (inc) request=insert_col ;;
     (ric) request=readin_col ;;
+    (rir) request=readin_row ;;
   esac
 
   ## env setup
@@ -1715,7 +1718,43 @@
   }
 
   readin_row() {
-
+    rir_target="$op_three"
+    rir_upd="$op_four"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    ([ -z "$rir_target" ] || \
+     [ -z "$rir_upd" ]) && {
+      print "Error: readin_col was provided insufficient input"
+      fail
+      return 1
+    }
+    (! chkvldint "$rir_target") && {
+      print "Error: col x must be int"
+      fail
+      return 1
+    }
+    ([ "$rir_target" -gt "$(2d_arr qg $arrname -y)" ] || [ "$rir_target" -le 0 ]) && {
+      print "OOB"
+      return 3
+    }
+    rir_x_counter=0
+    [ "$rir_by_newline" = 1 ] && {
+      IFS=$'\n'
+    } || {
+      IFS=$' '
+    }
+    for do_rir_upd in $=rir_upd; do
+      rir_x_counter=$((rir_x_counter+1))
+      [ "$rir_x_counter" -gt "$(2d_arr qg $arrname -x)" ] && \
+        break
+      2d_arr update $arrname "$do_rir_upd" $rir_x_counter $rir_target || \
+        return 1
+    done
+    unset IFS
+    return 0
   }
 
   readin_section() {

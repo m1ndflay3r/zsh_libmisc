@@ -113,6 +113,11 @@
       note: set flag ric_by_space=1 to divide col_data by space instead of by newline
 
 
+    2d_arr <readin_row||rir> <arr_name> <y> <row_data> - separating by space, replace contents of row y with contents of row_data, starting from x1 and moving down until either no data remains or x_ln exceeded.
+
+      note: set flag rir_by_newline=1 to divide row_data by newline instead of by space
+
+
 
 
 ---------------------------------
