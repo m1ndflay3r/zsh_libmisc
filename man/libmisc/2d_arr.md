@@ -118,6 +118,9 @@
       note: set flag rir_by_newline=1 to divide row_data by newline instead of by space
 
 
+    2d_arr <readin_section||ris> <arr_name> <x> <y> <section_data> - starting at x y, and with x delim of ' ' and y delim of '\n', replace indices in section with contents of section_data, stopping either when data ends or when OOB (x OOB continues on next y, y OOB terminates)
+
+
 
 
 ---------------------------------

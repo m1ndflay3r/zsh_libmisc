@@ -53,6 +53,7 @@
                    'insert_col'
                    'readin_col'
                    'readin_row'
+                   'readin_section'
                    'del'
                    'cr'
                    'ss'
@@ -83,7 +84,8 @@
                    'inr'
                    'inc'
                    'ric'
-                   'rir')
+                   'rir'
+                   'ris')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -127,6 +129,7 @@
     (inc) request=insert_col ;;
     (ric) request=readin_col ;;
     (rir) request=readin_row ;;
+    (ris) request=readin_section ;;
   esac
 
   ## env setup
@@ -1768,7 +1771,48 @@
   }
 
   readin_section() {
-
+    ris_x="$op_three"
+    ris_y="$op_four"
+    ris_upd="$op_five"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    ([ -z "$ris_upd" ] || [ -z "$ris_x" ] || [ -z "$ris_y" ]) && {
+      print "Error: ris received insufficient input"
+      fail
+      return 1
+    }
+    (! chkvldint "$ris_x" || ! chkvldint "$ris_y") && {
+      print "Error: ris x and y must be int"
+      fail
+      return 1
+    }
+    ([ "$ris_x" -le 0 ] || [ "$ris_y" -le 0 ] || \
+     [ "$ris_x" -gt "$(2d_arr qg $arrname -x)" ] || [ "$ris_y" -gt "$(2d_arr qg $arrname -y)" ]) && {
+      print "OOB"
+      return 3
+    }
+    ris_y_counter=$((ris_y-1))
+    IFS=$'\n'
+    for do_ris_y in $=ris_upd; do
+      ris_y_counter=$((ris_y_counter+1))
+      [ "$ris_y_counter" -gt "$(2d_arr qg $arrname -y)" ] && \
+        break
+      ris_x_counter=$((ris_x-1))
+      IFS=$' '
+      for do_ris_x in $=do_ris_y; do
+        ris_x_counter=$((ris_x_counter+1))
+        [ "$ris_x_counter" -gt "$(2d_arr qg $arrname -x)" ] && \
+          break
+        2d_arr update $arrname "$do_ris_x" $ris_x_counter $ris_y_counter || \
+          return 1
+      done
+      unset IFS
+    done
+    unset IFS
+    return 0
   }
 
   clone_indice() {
