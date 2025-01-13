@@ -1814,53 +1814,5 @@
     unset IFS
     return 0
   }
-
-  clone_indice() {
-
-  }
-
-  clone_col() {
-
-  }
-
-  clone_row() {
-
-  }
-
-  clone_section() {
-
-  }
-
-  swap_indice() {
-
-  }
-
-  swap_col() {
-
-  }
-
-  swap_row() {
-
-  }
-
-  swap_section() {
-
-  }
-
-  mov_indice() {
-
-  }
-
-  mov_col() {
-
-  }
-
-  mov_row() {
-
-  }
-
-  mov_section() {
-
-  }
   $request $arrname $op_two $op_three $op_four $op_five $op_six
 }
