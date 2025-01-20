@@ -507,14 +507,43 @@
       print "$y_ln"
       return 0
     } || [ "$qg_input" = '-d' ] && {
-      qg_diag_counter=1
+      qg_diag_counter=0
       qg_adj_to_count=$(2d_arr qa $arrname 1 1 se)
       IFS=$'\n'
       for do_qg_d in $=qg_adj_to_count; do
-        qg_diag_counter=$((qg_diag_counter+1))
+        qg_diag_counter=$((qg_diag_counter+2))
+        do_qg_next="$do_qg_d"
+      done
+      qgd_skip_fr=0
+      unset qgd_next_x
+      unset qgd_next_y
+      IFS=$' '
+      for do_qg_next_parse in $=do_qg_next; do
+        [ "$qgd_skip_fr" = 0 ] && {
+          qgd_skip_fr=1
+        } || {
+          [ -z "$qgd_next_x" ] && {
+            qgd_next_x="$do_qg_next_parse"
+          } || {
+            qgd_next_y="$do_qg_next_parse"
+          }
+        }
       done
       unset IFS
-      print "$qg_diag_counter"
+      qgd_x_ln=$(2d_arr qg $arrname -x)
+      [ $(getstrln $qgd_next_x) -lt "$qgd_x_ln" ] && {
+        qg_adj_to_count=$(2d_arr qa $arrname $qgd_next_x $qgd_next_y e)
+      } || {
+        qg_adj_to_count=$(2d_arr qa $arrname $qgd_next_x $qgd_next_y s)
+      }
+      ! [ -z "$qg_adj_to_count" ] && {
+        IFS=$'\n'
+        for do_d_south in $=qg_adj_to_count; do
+          qg_diag_counter=$((qg_diag_counter+1))
+        done
+        unset IFS
+      }
+      print "$((qg_diag_counter+1))"
       return 0
     }
   }
