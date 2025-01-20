@@ -211,6 +211,62 @@
       conv_to_arr_input=$(create_blank) || \
       conv_to_arr_input=$(cat)
     unset blank
+    ([[ "$conv_to_arr_input" = *' '* ]] || \
+     [[ "$conv_to_arr_input" = *'\'* ]]) && {
+      print "Error: indice cannot be space or backslash"
+      fail
+      return 1
+    }
+    [ "$padded" = 1 ] && {
+      longest_row=0
+      IFS=$'\n'
+      for cr_row in $=conv_to_arr_input; do
+        cr_row_ln=$(getstrln $cr_row)
+        [ "$cr_row_ln" -gt "$longest_row" ] && {
+          longest_row=$cr_row_ln
+        }
+      done
+      unset cr_out_padded
+      declare -a cr_out_padded
+      for cr_row in $=conv_to_arr_input; do
+        until [ $(getstrln $cr_row) = $longest_row ]; do
+          [ ! -z "$pad_char" ] && \
+          [ "$pad_char" != ' ' ] && \
+          [ "$pad_char" != $'\n' ] && {
+            cr_row=""$cr_row""$pad_char""
+          } || {
+            cr_row=""$cr_row"."
+          }
+        done
+        cr_out_padded+=("$cr_row")
+      done
+      unset IFS
+      conv_to_arr_input=$(\
+        for do_out_pad in $=cr_out_padded; do
+          print "$do_out_pad"
+        done\
+      )
+    } || {
+      longest_row=0
+      IFS='$\n'
+      for do_get_longest in $=conv_to_arr_input; do
+        [ $(getstrln "$do_get_longest") -gt "$longest_row" ] && {
+          longest_row=$(getstrln "$do_get_longest")
+        }
+      done
+      for do_check_longest in $=conv_to_arr_input; do
+        [ $(getstrln "$do_check_longest") -lt "$longest_row" ] && {
+          (! [ -z "$DEBUGWARN" ] && \
+          [ "$DEBUGWARN" = "1" ]) && {
+            print "Warning: non-uniform length detected, but padded is not set."
+          }
+          unset IFS
+          (print "$conv_to_arr_input" | padded=1 2d_arr create $arrname)
+          return $?
+        }
+      done
+      unset IFS
+    }
     array_count=0
     indice_count=0
     IFS=$'\n'
@@ -264,8 +320,8 @@
       return 3
     }
     # error if attempt to use space or newline in update char
-    ([[ "$update_char" = *$'\n'* ]] || [[ "$update_char" = *' '* ]]) && {
-      print "Error: cannot use space or newline for updchar"
+    ([[ "$update_char" = *$'\n'* ]] || [[ "$update_char" = *' '* ]] || [[ "$update_char" = *'\'* ]]) && {
+      print "Error: cannot use space, backslash, or newline for updchar"
       fail
       return 1
     }
