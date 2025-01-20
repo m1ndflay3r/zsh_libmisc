@@ -42,7 +42,9 @@ Return contents of indice at pos x y in given array
 Returns x and y length of grid stored at arrname (in format of "x y").
 
 
-Pass -x or -y to return only x_ln or only y_ln. Pass -d to return diagonal length from 1 1 to ((OOB-1))
+Pass -x or -y to return only x_ln or only y_ln.
+
+Pass -d to return diagonal length from 1 1 to ((OOB-1))
 
 
     2d_arr <query_col||qc> <arr_name> <x>
