@@ -13,7 +13,10 @@
 Read data from stdin, convert to 2d array under <arr_name>
 
 
-Automatically pads non-uniform input. Set flag pad_char=<char> to set character to be used for padding (default is ".")
+Automatically pads non-uniform input.
+
+
+Set flag pad_char= to set character to be used for padding (default is ".")
 
 
     blank=1 2d_arr <create||cr> <arrname> <x> <y>
@@ -21,7 +24,7 @@ Automatically pads non-uniform input. Set flag pad_char=<char> to set character 
 Create empty array under <arrname> with size <x> by <y> (default 10x10, each indice initialized with character ".")
 
 
-Set flag init_char to set initialization character for blank 2d array (default is ".")
+Set flag init_char= to set initialization character for blank 2d array (default is ".")
 
 
     2d_arr <delete||del> <arr_name>
@@ -113,7 +116,10 @@ Swaps x and y axes of grid corresponding to arr_name
 
     2d_arr <invert_section||is> <arr_name> <x> <y> <xx> <yy>
 
-Swaps x and y axes of arr_name starting from indice x y and ending at indice xx yy. Set flag overwrite_indices to 1 to allow for non-square (rectangular) section inversion (will overwrite overlapping indices, and will error out if flipped x y coords are oob)
+Swaps x and y axes of arr_name starting from indice x y and ending at indice xx yy.
+
+
+Set flag overwrite_indices to 1 to allow for non-square (rectangular) section inversion (will overwrite overlapping indices, and will error out if flipped x y coords are oob)
 
 
     2d_arr <anti_invert||ai> <arr_name> <x> <y> <xx> <yy>
@@ -123,12 +129,18 @@ Same as invert, except from opposite corner (flipped x and y axes). Uses invert 
 
     2d_arr <mirror_x||mx> <arr_name> <y_begin> <y_end> <x_begin> <x_end>
 
-Mirror (reverse) contents of rows from y_begin to y_end. Setting x begin and x end will only mirror contents within that range. Leave all values blank to mirror entire grid along x axis.
+Mirror (reverse) contents of rows from y_begin to y_end.
+
+
+Setting x begin and x end will only mirror contents within that range. Leave all values blank to mirror entire grid along x axis.
 
 
     2d_arr <mirror_y||my> <arr_name> <x_begin> <x_end> <y_begin> <y_end>
 
-Mirror (reverse) contents of columns from x_begin to x_end. Setting y_begin and y_end will only mirror contents within that range. Leave all values blank to mirror entire grid along y axis.
+Mirror (reverse) contents of columns from x_begin to x_end.
+
+
+Setting y_begin and y_end will only mirror contents within that range. Leave all values blank to mirror entire grid along y axis.
 
 
     2d_arr <rotate_90||r9> <arr_name> <x_begin> <y_begin> <x_end> <y_end>
