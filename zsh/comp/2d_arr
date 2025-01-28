@@ -325,77 +325,6 @@
       fail
       return 1
     }
-    # generate session ID (multithread clash prevention)
-    zsession_id=$(nrandom)
-    # write position update script (I know, I know)
-    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    #env setup
-    print '#!/usr/bin/env zsh' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "arrname="$arrname"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n 'twodee_working_dir="' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$twodee_working_dir" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '"' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    #fetch input arrays
-    print 'source "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'autoload isfile' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print 'source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    #env setup
-    print 'rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "x_coord="$x_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "y_coord="$y_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "zsession_id="$zsession_id"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "update_char='" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$update_char" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    #print start of updated array
-    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '_y_array_"$y_coord"=(" > "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    #iterate over each indice in target array, add indice as is if not target, add swap char instead if ta>
-    print 'indice_count=0' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'for indice in $=' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n '_y_array_' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$y_coord" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '; do' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print '  indice_count=$((indice_count+1))' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print '  [ "$indice_count" = "$x_coord" ] && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "$update_char" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'print "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id || \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n '(print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'print -n "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n '$indice' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '">> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print -n 'print "' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print -n "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print '" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-
-    print 'done' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    print "print ')' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    chmod 755 "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
-    source "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \
       touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     # utilize lock file for ledger write (multithread clash prevention)
@@ -405,11 +334,9 @@
       done
     }
     touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
-    cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    print ""$arrname"_y_array_"$y_coord"["$x_coord"]="$update_char"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
-    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_update_$zsession_id
-    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/working_$zsession_id
   }
 
   # delete array
