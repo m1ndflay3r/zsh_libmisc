@@ -378,7 +378,7 @@
     # generate session id (multithread clash prevention)
     zsession_id=$(nrandom)
     rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    # write position query script (I know, I know)
+    # write position query script
     print '#!/usr/bin/env zsh' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     print 'fpath=(/usr/lib/zsh_libmisc/libmisc.zwc $fpath)' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
@@ -393,20 +393,8 @@
     print "source "$twodee_working_dir"/libmisc_2d_arr/$arrname/input_arrays" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     print 'isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     print "source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print 'indice_count=0' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    #iterate over each indice until reaching x coord
-    print -n 'for indice in $=' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n "$arrname" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n '_y_array_' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print -n "$y_coord" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '; do' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-
-    print 'indice_count=$((indice_count+1))' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '[ "$indice_count" = "$x_coord" ] && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '  print "$indice" && \' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-    print '  break' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
-
-    print 'done' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print -n 'print $' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
+    print ""$arrname"_y_array_"$y_coord"["$x_coord"]" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     chmod 755 "$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id
     query_result=$("$twodee_working_dir"/libmisc_2d_arr/$arrname/query_$zsession_id)
     print "$query_result"
