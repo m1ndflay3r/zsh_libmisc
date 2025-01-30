@@ -334,7 +334,9 @@
       done
     }
     touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
-    print ""$arrname"_y_array_"$y_coord"["$x_coord"]="$update_char"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    print -n ""$arrname"_y_array_"$y_coord"["$x_coord"]='" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    print -n "$update_char" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
+    print "'" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     print '' >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger.lck
   }
