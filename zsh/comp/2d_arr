@@ -216,7 +216,9 @@
       fail
       return 1
     }
-    conv_to_arr_input=${conv_to_arr_input//'\'/'BKSLSH'}
+    [[ "$conv_to_arr_input" = *'\'* ]] && {
+      conv_to_arr_input=${conv_to_arr_input//'\'/'BKSLSH'}
+    }
     [ "$padded" = 1 ] && {
       longest_row=0
       IFS=$'\n'
@@ -325,7 +327,9 @@
       fail
       return 1
     }
-    update_char=${update_char//'\'/'BKSLSH'}
+    [[ "$update_char" = *'\'* ]] && {
+      update_char=${update_char//'\'/'BKSLSH'}
+    }
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger && \
       touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     # utilize lock file for ledger write (multithread clash prevention)
@@ -383,7 +387,11 @@
       source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     }
     query_buffer=$(eval 'print "${'"$arrname"'_y_array_'"$y_coord"'['"$x_coord"']}"')
-    print -r ${query_buffer//'BKSLSH'/'\'}
+    [[ "$query_buffer" = *'BKSLSH'* ]] && {
+      print -r ${query_buffer//'BKSLSH'/'\'}
+    } || {
+      print -r "$query_buffer"
+    }
   }
 
   query_grid() {
@@ -475,7 +483,11 @@
       source "$twodee_working_dir"/libmisc_2d_arr/$arrname/ledger
     }
     query_row_buffer=$(eval 'print "${'"$arrname"'_y_array_'"$y_coord"'[@]}"')
-    print -r ${query_row_buffer//'BKSLSH'/'\'}
+    [[ "$query_row_buffer" = *'BKSLSH'* ]] && {
+      print -r ${query_row_buffer//'BKSLSH'/'\'}
+    } || {
+      print -r "$query_row_buffer"
+    }
   }
 
   query_col() {
@@ -506,8 +518,7 @@
       y_counter=$((y_counter+1))
       [ $y_counter -gt $y_ln ] && \
         break
-      query_col_buffer=$(2d_arr query $arrname $x_coord $y_counter)
-      print -r ${query_col_buffer//'BKSLSH'/'\'}
+      2d_arr query $arrname $x_coord $y_counter
     done
   }
 
@@ -565,8 +576,7 @@
         y_coord=$((y_coord-1))
         ([ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ]) && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -576,8 +586,7 @@
         y_coord=$((y_coord-1))
         [ "$y_coord" -le 0 ] && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -588,8 +597,7 @@
         y_coord=$((y_coord-1))
         ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -le 0 ]) && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -599,8 +607,7 @@
         x_coord=$((x_coord+1))
         [ "$x_coord" -gt "$x_ln" ] && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -611,8 +618,7 @@
         y_coord=$((y_coord+1))
         ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ]) && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -622,8 +628,7 @@
         y_coord=$((y_coord+1))
         [ "$y_coord" -gt "$y_ln" ] && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -634,8 +639,7 @@
         y_coord=$((y_coord+1))
         ([ "$x_coord" -le 0 ] || [ "$y_coord" -gt "$y_ln" ]) && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -645,8 +649,7 @@
         x_coord=$((x_coord-1))
         [ "$x_coord" -le 0 ] && \
           return 0
-        qa_buffer=""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
-        print -r ${qa_buffer//'BKSLSH'/'\'}
+        print -r ""$(2d_arr query $arrname $x_coord $y_coord)" "$x_coord" "$y_coord""
         [ "$single" = "1" ] && \
           return 0
       done
@@ -892,7 +895,9 @@
       print "OOB"
       return 3
     }
-    updstr=${updstr//'\'/'BKSLSH'}
+    [[ "$updstr" = *'\'* ]] && {
+      updstr=${updstr//'\'/'BKSLSH'}
+    }
     upd_y_count=$op_four
     y_stop_point=$yy_coord
     x_stop_point=$xx_coord
@@ -959,8 +964,9 @@
       for query_sect_working in $=query_section_working; do
         query_sec_county=$((query_sec_county+1))
         [ "$query_sec_county" -ge "$x_start_point" ] && \
-        [ "$query_sec_county" -le "$x_stop_point" ] && \
-          print -rn ""${query_sect_working//'BKSLSH'/'\'}" "
+        [ "$query_sec_county" -le "$x_stop_point" ] && {
+            print -rn ""$query_sect_working" "
+        }
         [ "$query_sec_county" -gt "$x_stop_point" ] && \
           break
       done
@@ -993,7 +999,12 @@
         invert_x_count=$((invert_x_count+1))
         [ "$invert_x_count" -gt "$x_ln_orig" ] && \
           break
-        print -rn ${$(2d_arr qc $arrname $invert_x_count)//'\'/'BKSLSH'}
+        qc_buffer=$(2d_arr qc $arrname $invert_x_count)
+        [[ "$qc_buffer" = *'\'* ]] && {
+          print -rn ${qc_buffer//'\'/'BKSLSH'}
+        } || {
+          print -rn "$qc_buffer"
+        }
         print ''
       done
     }
@@ -1074,7 +1085,6 @@
       [ "$is_x_counter" -gt "$is_x_end" ] && \
         break
       is_working_indice=$(print -rn $(2d_arr qc $arrname $is_x_counter))
-#      is_working_indice=$(print -n ${is_buffer//'\'/'BKSLSH'})
       unset is_working_array
       declare -a is_working_array
       is_indice_counter=0
