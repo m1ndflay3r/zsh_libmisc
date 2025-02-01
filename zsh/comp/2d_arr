@@ -302,8 +302,8 @@
       fail
       return 1
     }
-    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received blank coord!"
@@ -364,8 +364,8 @@
       fail
       return 1
     }
-    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -402,16 +402,16 @@
       return 1
     }
     ([ "$qg_input" != '-x' ] && [ "$qg_input" != '-y' ] && [ "$qg_input" != '-d' ]) && {
-      x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-      y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+      y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
       print ""$x_ln" "$y_ln""
       return 0
     } || [ "$qg_input" = '-x' ] && {
-      x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+      x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
       print "$x_ln"
       return 0
     } || [ "$qg_input" = '-y' ] && {
-      y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
       print "$y_ln"
       return 0
     } || [ "$qg_input" = '-d' ] && {
@@ -473,7 +473,7 @@
       fail
       return 1
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$y_coord" -gt "$y_ln" ] || [ "$y_coord" -le 0 ]) && {
       print "OOB"
       return 3
@@ -507,12 +507,12 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$x_coord" -le 0 ]) && {
       print "OOB"
       return 3
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     y_counter=0
     while true; do
       y_counter=$((y_counter+1))
@@ -531,8 +531,8 @@
       fail
       return 1
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty query"
@@ -666,8 +666,8 @@
       fail
       return 1
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty link req"
@@ -689,7 +689,7 @@
     ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links && \
       mkdir "$twodee_working_dir"/libmisc_2d_arr/$arrname/links
     isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord" && {
-      chk_link_dup=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+      chk_link_dup=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
       IFS=$'\n'
       for chk_link in $=chk_link_dup; do
         [ "$chk_link" = ""$xx_coord" "$yy_coord"" ] && \
@@ -720,8 +720,8 @@
       fail
       return 1
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ]) && {
       print "Error: received empty link query"
@@ -744,7 +744,7 @@
       print "none"
       return 4
     }
-    cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
+    <"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
   }
 
@@ -758,8 +758,8 @@
       fail
       return 1
     }
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # error if insufficient input
     ([ -z "$x_coord" ] || [ -z "$y_coord" ] || [ -z "$xx_coord" ] || [ -z "$yy_coord" ]) && {
       print "Error: received empty unlink req"
@@ -785,7 +785,7 @@
       return 0
     }
     # read links into variable, blank out links
-    fetch_current_links=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    fetch_current_links=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
     print -n '' > "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     # divide up links by newline, print back to links if not unlink target
     IFS=$'\n'
@@ -795,7 +795,7 @@
     done
     unset IFS
     # delete links if blank after unlink
-    fetch_adjusted_links=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
+    fetch_adjusted_links=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord")
     [ -z "$fetch_adjusted_links" ] && \
       rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord"
     return 0
@@ -814,8 +814,8 @@
       fail
       return 1
     }
-    array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    array_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    indice_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     x_coord=0
     y_coord=0
     found=0
@@ -843,8 +843,8 @@
         print "Error: attempted reference undeclared array" && \
         fail && \
         return 1
-      array_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-      indice_count=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+      array_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+      indice_count=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
       x_coord=0
       y_coord=0
       while true; do
@@ -886,8 +886,8 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -944,8 +944,8 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     ([ "$x_coord" -gt "$x_ln" ] || [ "$y_coord" -gt "$y_ln" ] || \
      [ "$xx_coord" -gt "$x_ln" ] || [ "$yy_coord" -gt "$y_ln" ] || \
      [ "$x_coord" -le 0 ] || [ "$y_coord" -le 0 ] || \
@@ -987,12 +987,12 @@
       return 1
     }
     # read x as y and y as x
-    invert_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
-    invert_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    invert_x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    invert_y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
     # create blank array with inverted x y ln
     arrname_orig="$arrname"
-    x_ln_orig=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln_orig=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln_orig=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln_orig=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     draw_inverted() {
       invert_x_count=0
       while true; do
@@ -1035,8 +1035,8 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$is_x_start" ] && \
       is_x_start=1
     [ -z "$is_y_start" ] && \
@@ -1111,7 +1111,7 @@
       done
       print >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
     done
-    is_inverted_section=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id)
+    is_inverted_section=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id)
     rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/is_$is_session_id
     is_y_counter=$((is_y_start-1))
     IFS=$'\n'
@@ -1139,8 +1139,8 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_coord" ] && \
       my_coord=1
     [ -z "$myy_coord" ] && \
@@ -1219,8 +1219,8 @@
       fail
       return 1
     }
-    x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     [ -z "$my_y_coord" ] && \
       my_y_coord=1
     [ -z "$my_yy_coord" ] && \
@@ -1376,8 +1376,8 @@
       return 1
     }
     flush_working=$(2d_arr draw $arrname)
-    flush_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    flush_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    flush_x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    flush_y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     blank=1 2d_arr create $arrname $flush_x_ln $flush_y_ln
     flush_y_count=0
     IFS=$'\n'
@@ -1496,8 +1496,8 @@
                        }
                      done
                      unset IFS)
-    delrow_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    delrow_y_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)-1))
+    delrow_x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    delrow_y_ln=$(($(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)-1))
     blank=1 2d_arr create $arrname $delrow_x_ln $delrow_y_ln
     delrow_y_count=0
     IFS=$'\n'
@@ -1551,8 +1551,8 @@
                        print ''
                      done
                      unset IFS)
-    delcol_x_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)-1))
-    delcol_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    delcol_x_ln=$(($(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)-1))
+    delcol_y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     blank=1 2d_arr create $arrname $delcol_x_ln $delcol_y_ln
     delcol_y_count=0
     IFS=$'\n'
@@ -1613,8 +1613,8 @@
                        }
                      done
                      unset IFS)
-    insrow_x_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
-    insrow_y_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)+1))
+    insrow_x_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)
+    insrow_y_ln=$(($(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)+1))
     blank=1 2d_arr create $arrname $insrow_x_ln $insrow_y_ln
     insrow_y_count=0
     IFS=$'\n'
@@ -1670,8 +1670,8 @@
                        print ''
                      done
                      unset IFS)
-    inscol_x_ln=$(($(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)+1))
-    inscol_y_ln=$(cat "$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
+    inscol_x_ln=$(($(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/indice_count)+1))
+    inscol_y_ln=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/array_count)
     blank=1 2d_arr create $arrname $inscol_x_ln $inscol_y_ln
     inscol_y_count=0
     IFS=$'\n'
