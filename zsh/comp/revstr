@@ -4,7 +4,7 @@ revstr() {
   unset zREVSTROUT
   while IFS= noglob read -r -k1 -d '' -u0 char; do
     zREVSTROUT=""$char""$zREVSTROUT""
-  done < <(printf '%s'"$zREVSTR")
-  printf '%s'"$zREVSTROUT"
+  done < <(IFS= noglob print -rn "$zREVSTR")
+  IFS= noglob print -rn "$zREVSTROUT"
   return 0
 }
