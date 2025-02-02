@@ -6,7 +6,7 @@ hexudlf() {
   autoload isfile
   autoload nrandom
   autoload zmkfifo
-  autoload zrm
+  zmodload zsh/files
   #failure printout
   hexudlf_fail() {
     print "Usage: print -n <hex> | hexudlf"
@@ -15,46 +15,46 @@ hexudlf() {
     print "       print -n 'file:/path/to/file' | hexudlf"
   }
   #fetch user input
-  if [ -z "$zHEXUDLFWAITINDEF" ] || [ "$zHEXUDLFWAITINDEF" = 0 ]; then
+  ([ -z "$zHEXUDLFWAITINDEF" ] || [ "$zHEXUDLFWAITINDEF" = 0 ]) && {
     while IFS= noglob read -r -k5 -t3 -d '' -u0 HEXUDLFINREAD5; do
       HEXUDLFIN="$HEXUDLFINREAD5"
       break
     done
-  else
+  } || {
     while IFS= noglob read -r -k5 -d '' -u0 HEXUDLFINREAD5; do
       HEXUDLFIN="$HEXUDLFINREAD5"
       break
     done
-  fi
-  if [ -z "$HEXUDLFIN" ]; then
-    if [ -z "$@" ]; then
+  }
+  [ -z "$HEXUDLFIN" ] && {
+    [ -z "$@" ] && {
       hexudlf_fail
       return 1
-    else
+    } || {
       HEXUDLFIN="$@"
-      if isfile "$HEXUDLFIN"; then
+      isfile "$HEXUDLFIN" && {
         fox-fr "$HEXUDLFIN" | hexudlf
         return $?
-      fi
-    fi
-  elif [ "$HEXUDLFIN" = 'file:' ]; then
+      }
+    }
+  } || [ "$HEXUDLFIN" = 'file:' ] && {
     HEXUDLFIN=""$(fox)""
-    if isfile "$HEXUDLFIN"; then
+    isfile "$HEXUDLFIN" && {
       fox-fr "$HEXUDLFIN" | hexudlf
       return $?
-    else
+    } || {
       hexudlf_fail
       return 1
-    fi
-  fi
+    }
+  }
   #fifo setup
   HEXUDLFFIFO="$(nrandom)" &> /dev/null
   HEXUDLFFIFO2="$(nrandom)" &> /dev/null
-  if [ -d "/tmp" ]; then
+  [ -d "/tmp" ] && {
     HEXUDLFDIR="/tmp/.libmisc"$UID""
-  else
+  } || {
     HEXUDLFDIR=""$HOME"/.libmisc"
-  fi
+  }
   ! isfile "$HEXUDLFDIR" && {
     mkdir "$HEXUDLFDIR"
   }
@@ -66,7 +66,7 @@ hexudlf() {
   while IFS= noglob read -r -k2 -d '' -u0 HEXUDLFOUT; do
     print -n "\x"$HEXUDLFOUT""
   done < <(fox-fr "$HEXUDLFDIR/$HEXUDLFFIFO")
-  zrm "$HEXUDLFDIR/$HEXUDLFFIFO"
-  zrm "$HEXUDLFDIR/$HEXUDLFFIFO2"
+  rm -rf "$HEXUDLFDIR/$HEXUDLFFIFO"
+  rm -rf "$HEXUDLFDIR/$HEXUDLFFIFO2"
   return 0
 }

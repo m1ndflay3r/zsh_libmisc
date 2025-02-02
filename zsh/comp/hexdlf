@@ -69,8 +69,8 @@ hexdlf() {
     done < <(fox-fr "$HEXDLFDIR/$HEXDLFFIFO")
   }
   hexdlf_cleaner() {
-    rm -rf "$HEXDLFDIR/$HEXDLFFIFO" &> /dev/null
-    rm -rf "$HEXDLFDIR/$HEXDLFFIFO2" &> /dev/null
+    rm -rf "$HEXDLFDIR/$HEXDLFFIFO"
+    rm -rf "$HEXDLFDIR/$HEXDLFFIFO2"
   }
   #if no opt flags set (except for zHEX36D), print hexdump as-is
   [ "$zHEXXD" = 0 ] && {

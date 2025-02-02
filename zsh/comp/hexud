@@ -12,33 +12,33 @@ hexud() {
     print "       print -n 'file:/path/to/file' | hexud"
   }
   #fetch user input
-  if [ -z "$zHEXUDWAITINDEF" ] || [ "$zHEXUDWAITINDEF" = 0 ]; then
+  ([ -z "$zHEXUDWAITINDEF" ] || [ "$zHEXUDWAITINDEF" = 0 ]) && {
     export zFOXT=3
-  else
+  } || {
     unset zFOXT
     unset zHEXUDWAITINDEF
-  fi
+  }
   HEXUDIN="$(fox)"
   HEXUDINTEST=${HEXUDIN: 5}
-  if [ "$HEXUDINTEST" = "error" ]; then
-    if [ -z "$@" ]; then
+  [ "$HEXUDINTEST" = "error" ] && {
+    [ -z "$@" ] && {
       hexud_fail
       return 1
-    else
+    } || {
       HEXUDIN="$@"
-      if isfile "$HEXUDIN"; then
+      isfile "$HEXUDIN" && {
         HEXUDIN="$(fox-fr "$HEXUDIN")"
-      fi
-    fi
-  elif [ "$HEXUDINTEST" = 'file:' ]; then
+      }
+    }
+  } || [ "$HEXUDINTEST" = 'file:' ] && {
     HEXUDIN=${HEXUDIN:5}
-    if isfile "$HEXUDIN"; then
+    isfile "$HEXUDIN" && {
       HEXUDIN="$(fox-fr "$HEXUDIN")"
-    else
+    } || {
       hexud_fail
       return 1
-    fi
-  fi
+    }
+  }
   #perform hexdump reversal
   while IFS= noglob read -r -k2 -d '' -u0 HEXUDOUT; do
     print -n "\x"$HEXUDOUT""
