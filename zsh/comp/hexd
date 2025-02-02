@@ -14,31 +14,31 @@ hexd() {
   }
   #fetch user input
   TARGGY="$@"
-  if [ -z "$TARGGY" ]; then
-    if [ -z "$zHEXDWAITINDEF" ] || [ "$zHEXDWAITINDEF" = 0 ]; then
+  [ -z "$TARGGY" ] && {
+    ([ -z "$zHEXDWAITINDEF" ] || [ "$zHEXDWAITINDEF" = 0 ]) && {
       export zFOXT=33
-    else
+    } || {
       unset zFOXT
       unset zHEXDWAITINDEF
-    fi
+    }
     TARGGY="$(fox)"
     unset zFOXT
     TARGGYTEST="${TARGGY: :5}"
-    if [ "$TARGGYTEST" = "error" ]; then
+    [ "$TARGGYTEST" = "error" ] && {
       hexd_fail
       return 1
-    elif [ "$TARGGYTEST" = 'file:' ]; then
+    } || [ "$TARGGYTEST" = 'file:' ] && {
       TARGGY="${TARGGY:5}"
-      if isfile "$TARGGY"; then
+      isfile "$TARGGY" && {
         TARGGY="$(fox-fr "$TARGGY")"
-      else
+      } || {
         hexd_fail
         return 1
-      fi
-    fi
-  elif isfile "$TARGGY"; then
+      }
+    }
+  } || isfile "$TARGGY" && {
     TARGGY="$(fox-fr "$TARGGY")"
-  fi
+  }
   #perform hexdump, store output to variable
   set +o MULTIBYTE
   HEXD_BASE() {
@@ -47,42 +47,42 @@ hexd() {
     done < <(noglob printf '%s' "$TARGGY")
   }
   #if no opt flags set (except for zHEX36D), print hexdump as-is
-  if [ "$zHEXXD" = 0 ]; then
+  [ "$zHEXXD" = 0 ] && {
     unset zHEXXD
-  fi
-  if [ "$zHEXDSH" = 0 ]; then
+  }
+  [ "$zHEXDSH" = 0 ] && {
     unset zHEXDSH
-  fi
-  if [ -z "$zHEXXD" ] && [ -z "$zHEXDSH" ]; then
+  }
+  ([ -z "$zHEXXD" ] && [ -z "$zHEXDSH" ]) && {
     HEXD_BASE
     return 0
   #if flag zHEXXD is set, format hexdump to mimic `xxd -p`
-  elif [ -z "$zHEXDSH" ]; then
+  } || [ -z "$zHEXDSH" ] && {
     unset HEXD_BASE1
     while IFS= noglob read -r -k60 -d '' -u0 HEXD_BASE1; do
       IFS= noglob print -nr "$HEXD_BASE1"
       print
     done < <(HEXD_BASE)
-    if [ ! -z "$HEXD_BASE1" ]; then
+    [ ! -z "$HEXD_BASE1" ] && {
       IFS= noglob print -nr "$HEXD_BASE1"
       print
       unset HEXD_BASE1
-    fi
+    }
     unset zHEXXD
     return 0
   #if flag zHEXDSH is set, print hexdump in shell format `\x00\x00...`
-  else
+  } || {
     unset HEXD_BASE1
     while IFS= noglob read -r -k2 -d '' -u0 HEXD_BASE1; do
       print -rn '\x'
       IFS= noglob print -rn "$HEXD_BASE1"
     done < <(HEXD_BASE)
-    if [ ! -z "$HEXD_BASE1" ]; then
+    [ ! -z "$HEXD_BASE1" ] && {
       print -rn '\x'
       IFS= noglob print -rn "$HEXD_BASE1"
       unset HEXD_BASE1
-    fi
+    }
     unset zHEXDSH
     return 0
-  fi
+  }
 }
