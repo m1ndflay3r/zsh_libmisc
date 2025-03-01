@@ -54,6 +54,11 @@
                    'readin_col'
                    'readin_row'
                    'readin_section'
+                   'create_named_link'
+                   'add_named_link'
+                   'remove_named_link'
+                   'delete_named_link'
+                   'query_named_link'
                    'del'
                    'cr'
                    'ss'
@@ -85,7 +90,12 @@
                    'inc'
                    'ric'
                    'rir'
-                   'ris')
+                   'ris'
+                   'cln'
+                   'aln'
+                   'rln'
+                   'dln'
+                   'qln')
   invalid=1
   for chk_valid in $=valid_comm_list; do
     [ "$chk_valid" = "$request" ] && \
@@ -130,6 +140,11 @@
     (ric) request=readin_col ;;
     (rir) request=readin_row ;;
     (ris) request=readin_section ;;
+    (cln) request=create_named_link ;;
+    (aln) request=add_named_link ;;
+    (rln) request=remove_named_link ;;
+    (dln) request=delete_named_link ;;
+    (qln) request=query_named_link ;;
   esac
 
   ## env setup
@@ -656,6 +671,9 @@
     }
   }
 
+  query_hitbox() {
+  }
+
   create_link() {
     x_coord="$op_three"
     y_coord="$op_four"
@@ -709,6 +727,214 @@
     rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$x_coord""$y_coord".lck
     ! [ "$mono" = 1 ] && \
       2d_arr create_link $arrname $xx_coord $yy_coord $x_coord $y_coord
+    return 0
+  }
+
+  create_named_link() {
+    create_link_name="$op_three"
+    ! isfile ""$twodee_working_dir"/libmisc_2d_arr/"$arrname"" && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$create_link_name" ] && {
+      print "Error: link name cannot be blank"
+      fail
+      return 1
+    }
+    ([[ "$create_link_name" = *' '* ]] || [[ "$create_link_name" = *$'\n'* ]]) && {
+      print "Error: link name cannot contain space or newline"
+      fail
+      return 1
+    }
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links && \
+      mkdir "$twodee_working_dir"/libmisc_2d_arr/$arrname/links
+    # use lock file (multithread clash prevention)
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name".lck && {
+      until ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name".lck; do
+        sleep 1
+      done
+    }
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name".lck
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name" && \
+      rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name"
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name"
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$create_link_name".lck
+  }
+
+  add_named_link() {
+    aln_name="$op_three"
+    aln_x_coord="$op_four"
+    aln_y_coord="$op_five"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$aln_name" ] && {
+      print "Error: link name cannot be blank"
+      fail
+      return 1
+    }
+    [ -z "$aln_x_coord" ] && {
+      print "Error: x coord cannot be blank"
+      fail
+      return 1
+    }
+    [ -z "$aln_y_coord" ] && {
+      print "Error: y coord cannot be blank"
+      fail
+      return 1
+    }
+    ([[ "$aln_name" = *' '* ]] || [[ "$aln_name" = *$'\n'* ]]) && {
+      print "Error: link name cannot contain space or newline"
+      fail
+      return 1
+    }
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name") && {
+      print "Error: attempted reference non-existent link"
+      fail
+      return 1
+    }
+    (! chkvldint "$aln_x_coord" || ! chkvldint "$aln_y_coord") && {
+      print "Error: x and y coord must be int"
+      fail
+      return 1
+    }
+    aln_x_ln=$(2d_arr qg $arrname -x)
+    aln_y_ln=$(2d_arr qg $arrname -y)
+    ([ "$aln_x_coord" -le 0 ] || [ "$aln_y_coord" -le 0 ] || \
+    [ "$aln_x_coord" -gt "$aln_x_ln" ] || [ "$aln_y_coord" -gt "$aln_y_ln" ]) && {
+      print "OOB"
+      return 3
+    }
+    chk_link_dup=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name")
+    IFS=$'\n'
+    for chk_link in $=chk_link_dup; do
+      [ "$chk_link" = ""$aln_x_coord" "$aln_y_coord"" ] && \
+        return 0
+    done
+    unset IFS
+    # use lock file (multithread clash prevention)
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name".lck && {
+      until ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name".lck; do
+        sleep 1
+      done
+    }
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name".lck
+    print ""$aln_x_coord" "$aln_y_coord"" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name"
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$aln_name".lck
+    return 0
+  }
+
+  remove_named_link() {
+    rln_name="$op_three"
+    rln_x_coord="$op_four"
+    rln_y_coord="$op_five"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$rln_name" ] && {
+      print "Error: link name cannot be blank"
+      fail
+      return 1
+    }
+    [ -z "$rln_x_coord" ] && {
+      print "Error: x coord cannot be blank"
+      fail
+      return 1
+    }
+    [ -z "$rln_y_coord" ] && {
+      print "Error: y coord cannot be blank"
+      fail
+      return 1
+    }
+    ([[ "$rln_name" = *' '* ]] || [[ "$rln_name" = *$'\n'* ]]) && {
+      print "Error: link name cannot contain space or newline"
+      fail
+      return 1
+    }
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name") && {
+      print "Error: attempted reference non-existent link"
+      fail
+      return 1
+    }
+    (! chkvldint "$rln_x_coord" || ! chkvldint "$rln_y_coord") && {
+      print "Error: x and y coord must be int"
+      fail
+      return 1
+    }
+    rln_x_ln=$(2d_arr qg $arrname -x)
+    rln_y_ln=$(2d_arr qg $arrname -y)
+    ([ "$rln_x_coord" -le 0 ] || [ "$rln_y_coord" -le 0 ] || \
+    [ "$rln_x_coord" -gt "$rln_x_ln" ] || [ "$rln_y_coord" -gt "$rln_y_ln" ]) && {
+      print "OOB"
+      return 3
+    }
+    # use lock file (multithread clash prevention)
+    isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name".lck && {
+      until ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name".lck; do
+        sleep 1
+      done
+    }
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name".lck
+    rln_to_snip=$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name")
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name"
+    touch "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name"
+    IFS=$'\n'
+    for rln_do_snip in $=rln_to_snip; do
+      [ "$rln_do_snip" != ""$rln_x_coord" "$rln_y_coord"" ] && {
+        print "$rln_do_snip" >> "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name"
+      }
+    done
+    unset IFS
+    rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$rln_name".lck
+    return 0
+  }
+
+  delete_named_link() {
+    dln_name="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    ([[ "$dln_name" = *' '* ]] || [[ "$dln_name" = *$'\n'* ]]) && {
+      print "Error: link name cannot contain space or newline"
+    }
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$dln_name" && {
+      return 0
+    } || {
+      rm -rf "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$dln_name"
+      return 0
+    }
+  }
+
+  query_named_link() {
+    qln_name="$op_three"
+    ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname && {
+      print "Error: attempted reference undeclared array"
+      fail
+      return 1
+    }
+    [ -z "$qln_name" ] && {
+      print "Error: link name cannot be blank"
+      fail
+      return 1
+    }
+    ([[ "$qln_name" = *' '* ]] || [[ "$qln_name" = *$'\n' ]]) && {
+      print "Error: link name cannot contain space or newline"
+      fail
+      return 1
+    }
+    (! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links || ! isfile "$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$qln_name") && {
+      print "Error: attempted reference non-existent link"
+      fail
+      return 1
+    }
+    print "$(<"$twodee_working_dir"/libmisc_2d_arr/$arrname/links/"$qln_name")"
     return 0
   }
 

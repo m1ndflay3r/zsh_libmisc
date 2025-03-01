@@ -86,6 +86,31 @@ Query indice x y for x y coords of all indices linked to it (in format of "x y",
 Unlink indice x y from indice xx yy
 
 
+    2d_arr <create_named_link||cln> <arr_name> <link_name>
+
+create a new named link in array arr_name with name link_name
+
+
+    2d_arr <add_named_link||aln> <arr_name> <link_name> <x> <y>
+
+add indice x y to named link link_name within array arr_name
+
+
+    2d_arr <remove_named_link||rln> <arr_name> <link_name> <x> <y>
+
+remove indice x y from named link link_name within array arr_name
+
+
+    2d_arr <delete_named_link||dln> <arr_name> <link_name>
+
+delete named link link_name from array arr_name
+
+
+    2d_arr <query_named_link||qln> <arr_name> <link_name>
+
+print all indices listed in named link link_name within array arr_name
+
+
     2d_arr <search||ss> <arr_name> <search term>
 
 Search 2d array for all indices matching search term (in format of "x y", each result on newline)
