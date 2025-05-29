@@ -11,6 +11,10 @@ chkvldint() {
   (! [ -z "$hex" ] && [ "$hex" = 1 ]) && {
     cvi_vld_chars+=('a' 'b' 'c' 'd' 'e' 'f')
   }
+  # account for negative values
+  [ ${cvi_op: :1} = "-" ] && {
+    cvi_op=${cvi_op:1}
+  }
   # read user input 1 character at a time
   while read -k1 -u0 cvi_char; do
     cvi_match_found=0

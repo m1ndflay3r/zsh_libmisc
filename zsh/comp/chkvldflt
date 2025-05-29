@@ -8,6 +8,10 @@ chkvldflt() {
   [ -z "$cvf_op" ] && {
     return 1
   }
+  # account for negative values
+  [ ${cvf_op: :1} = "-" ] && {
+    cvf_op=${cvf_op:1}
+  }
   # define valid chars (all digits + ".")
   cvf_vld_chars=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9' '.')
   (! [ -z "$hex" ] && [ "$hex" = 1 ]) && {
