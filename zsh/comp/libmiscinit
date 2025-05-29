@@ -60,6 +60,7 @@ libmiscinit() {
   autoload 2d_arr
   autoload query_jobs
   autoload binstall
+  autoload chkvldflt
   rm -rf $HOME/.zlsfirstrun
   if [ -d "/tmp" ]; then
     if ! which zsudo &> /dev/null; then

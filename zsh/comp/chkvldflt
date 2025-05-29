@@ -1,0 +1,43 @@
+#!/usr/bin/env zsh
+chkvldflt() {
+  # env setup
+  autoload revstr
+  # fetch user input
+  cvf_op=$@
+  # ensure input is not blank
+  [ -z "$cvf_op" ] && {
+    return 1
+  }
+  # define valid chars (all digits + ".")
+  cvf_vld_chars=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9' '.')
+  (! [ -z "$hex" ] && [ "$hex" = 1 ]) && {
+    cvf_vld_chars+=('a' 'b' 'c' 'd' 'e' 'f')
+  }
+  # ensure neither first nor last char is "."
+  ([ ${cvf_op: :1} = "." ] || [ ${"$(revstr $cvf_op)": :1} = "." ]) && {
+    return 1
+  }
+  # ensure input contains "."
+  [[ "$cvf_op" != *"."* ]] && {
+    return 1
+  }
+  # read user input 1 character at a time
+  while read -k1 -u0 cvf_char; do
+    cvf_match_found=0
+    # check read character against valid float array. Set match flag if found
+    for cvf_check in $=cvf_vld_chars; do
+      [[ "$cvf_char" = *"$cvf_check"* ]] && {
+        cvf_match_found=1
+        break
+      } || {
+        cvf_match_found=0
+      }
+    done
+    # return 1 if no match, or 0 if match. Doesn't break loop if match not found
+    [ $cvf_match_found = 0 ] && {
+      return 1
+    } || {
+      true
+    }
+  done < <(printf "%s" $cvf_op)
+}

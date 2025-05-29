@@ -108,6 +108,7 @@ Below is a basic summary of the features and components of libmisc:
     == isyes       : easy handling of simple Y/n input prompts
     == nullbyte    : print N number of null bytes (default 1)
     == chkvldint   : return 0 if input is a valid integer, or 1 if not
+    == chkvldflt   : return 0 if input is a valid floating point number, or 1 if not
     == isevennum   : return 0 if input is even integer, 1 if not
     == isfile      : return 0 if anything of any type exists at given filepath
     == zreadin     : *fox* wrapper that times out after 3 seconds

@@ -1,26 +1,33 @@
 #!/usr/bin/env zsh
 chkvldint() {
   # fetch user input
-  OP=$@
-  # define valid integers
-  zVALID=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9')
+  cvi_op=$@
+  # ensure input is not blank
+  [ -z "$cvi_op" ] && {
+    return 1
+  }
+  # define valid chars (all digits)
+  cvi_vld_chars=('0' '1' '2' '3' '4' '5' '6' '7' '8' '9')
+  (! [ -z "$hex" ] && [ "$hex" = 1 ]) && {
+    cvi_vld_chars+=('a' 'b' 'c' 'd' 'e' 'f')
+  }
   # read user input 1 character at a time
-  while read -k1 -u0 character; do
-    FLAGGY=0
-    # check read character against valid int array. Set match flag if found
-    for i in $=zVALID; do
-      if printf "%s\n" $character | grep $i &> /dev/null; then
-        FLAGGY=1
+  while read -k1 -u0 cvi_char; do
+    cvi_match_found=0
+    # check read character against valid float array. Set match flag if found
+    for cvi_check in $=cvi_vld_chars; do
+      [[ "$cvi_char" = *"$cvi_check"* ]] && {
+        cvi_match_found=1
         break
-      else
-        FLAGGY=0
-      fi
+      } || {
+        cvi_match_found=0
+      }
     done
-    # return 1 if no match, or 0 if match. Doesn't break loop if matched.
-    if [ $FLAGGY = 0 ]; then
+    # return 1 if no match, or 0 if match. Doesn't break loop if match not found
+    [ $cvi_match_found = 0 ] && {
       return 1
-    else
+    } || {
       true
-    fi
-  done < <(printf "%s" $OP)
+    }
+  done < <(printf "%s" $cvi_op)
 }
