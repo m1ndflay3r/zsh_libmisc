@@ -1,3 +1,8 @@
+**This project is deprecated**
+
+
+I'll always view zsh_libmisc fondly as I learned so very much in the process of writing it. That said, most of the code here is either fairly rough or just plain has a superior native counterpart within zsh. With little exception, if you find yourself needing it theres probably something you're missing.
+
 ‎
 =
 # zsh_libmisc (WIP)
